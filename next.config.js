@@ -5,10 +5,12 @@ const nextConfig = {
             {
                 protocol: 'https',
                 hostname: 'raw.githubusercontent.com',
-                pathname: '/PokeAPI/sprites/master/sprites/pokemon/other/**'
+                pathname: '/PokeAPI/sprites/master/sprites/pokemon/**'
             }
         ]
-    }
+    },
+    // *********
+    reactStrictMode: false
 }
 
 module.exports = nextConfig

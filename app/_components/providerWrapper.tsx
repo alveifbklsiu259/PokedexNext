@@ -1,22 +1,22 @@
-'use client'
-import { Provider } from "react-redux";
-import store from "../_app/store";
-import { getInitialData } from "./pokemonData/pokemonDataSlice";
-import NavBar from "./navBar";
+// 'use client'
+// import { Provider } from "react-redux";
+// import store from "../_app/store";
+// import { getInitialData } from "./pokemonData/pokemonDataSlice";
+// import NavBar from "./navBar";
 
-store.dispatch(getInitialData());
+// store.dispatch(getInitialData());
 
-type ProviderWrapperProps = {
-	children: React.ReactNode
-}
+// type ProviderWrapperProps = {
+// 	children: React.ReactNode
+// }
 
-export default function ProviderWrapper({children}: ProviderWrapperProps) {
-	return (
-		<>
-			<Provider store={store}>
-				<NavBar/>
-				{children}
-			</Provider>
-		</>
-	)
-}
+// export default function ProviderWrapper({children}: ProviderWrapperProps) {
+// 	return (
+// 		<>
+// 			<Provider store={store}>
+// 				<NavBar/>
+// 				{children}
+// 			</Provider>
+// 		</>
+// 	)
+// }

@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch, type TypedUseSelectorHook } from "react-redux";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState, AppDispatch } from "./store";
-import { type LanguageOption, selectLanguage, dataLoading } from "../_components/display/displaySlice";
-import { type GetRequiredData, CachedPokemon, getRequiredDataThunk } from "../_components/pokemonData/pokemonDataSlice";
+import { type LanguageOption, selectLanguage, dataLoading } from "@/app/[language]/_components/display/displaySlice";
+import { type GetRequiredData, CachedPokemon, getRequiredDataThunk } from "@/app/[language]/_components/pokemonData/pokemonDataSlice";
 import { getRequiredData, getData } from '../_utils/api';
 
 

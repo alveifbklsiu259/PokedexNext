@@ -1,5 +1,6 @@
+import { ReadonlyURLSearchParams } from "next/navigation";
 import type { Pokemon, PokemonSpecies } from "../../typeModule";
-import type { LanguageOption } from "../_components/display/displaySlice";
+import { LanguageOption } from "../[language]/_components/display/displaySlice";
 import type { EndPointRequest } from "./api";
 
 export function getIdFromURL<T extends string | undefined>(url: T): T extends string ? number : undefined;
@@ -109,4 +110,21 @@ export function toEndPointString(str: EndPointRequest) {
 		};
 	};
 	return endPointString;
+};
+
+// export const updateSearchParam = (searchParams: ReadonlyURLSearchParams, key: string, value: string): string => {
+// 	const params = new URLSearchParams(searchParams);
+// 	params.set(key, value);
+// 	return params.toString();
+// };
+export const updateSearchParam = (searchParams: ReadonlyURLSearchParams, newParam: {
+	[key: string]: string
+}): string => {
+	const params = new URLSearchParams(searchParams);
+	const keyValuePairs = Object.entries(newParam);
+	for (let i = 0; i < keyValuePairs.length; i++) {
+		const [key, value] = keyValuePairs[i];
+		params.set(key, value);
+	};
+	return params.toString();
 };

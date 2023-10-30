@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import { Zen_Maru_Gothic } from 'next/font/google';
 import '@/App.css'
 // import NavBar from "./_components/navBar";
-import ProviderWrapper from "./_components/providerWrapper";
 
 const DynamicBootstrap = dynamic(
 	() => require('bootstrap/dist/js/bootstrap.min.js'),
@@ -32,9 +31,7 @@ export default async function RootLayout({children}: RootLayoutProps) {
 	return (
 		<html lang="en">
 			<body className={zen_maru_gothic.className}>
-				<ProviderWrapper>
-					{children}
-				</ProviderWrapper>
+				{children}
 			</body>
 		</html>
 	);

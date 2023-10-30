@@ -704,6 +704,17 @@ h1 {
     color: #fff
 }
 
+.advancedSearchContent {
+    /* transition: 1s max-height ease-in ; */
+    /* max-height: 400px; */
+}
+
+.advancedSearchContent.hide {
+    height: 0;
+    /* max-height: 0; */
+    visibility: hidden;
+}
+
 /* input */
 #searchInput {
     border-radius: 5px;
@@ -861,7 +872,7 @@ h1 {
     margin-bottom: -1px;
 }
 
-.varieties ul li.active button {
+.varieties ul li.active a {
     font-weight: bold;
 }
 
@@ -878,7 +889,7 @@ h1 {
     border: 1px solid #464646;
 }
 
-.varieties button {
+.varieties a {
     border: none;
     background-color: #fff;
     padding: 8px 16px;

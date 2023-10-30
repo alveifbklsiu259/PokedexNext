@@ -1,8 +1,9 @@
 import { getIdFromURL, transformToKeyName, transformToDash, toEndPointString } from "./util";
-import { type GetRequiredData, type CachedAbility, type CachedPokemon, type CachedPokemonSpecies, type CachedAllPokemonNamesAndIds, type PokemonDataTypes} from "../_components/pokemonData/pokemonDataSlice";
-import { dataLoading, type LanguageOption, type SortOption } from '../_components/display/displaySlice';
+import { PokemonDataTypes } from "../[language]/_components/pokemonData/pokemonDataSlice";
+import type { LanguageOption, SortOption } from "../[language]/_components/display/displaySlice";
 import type { AppDispatch, RootState } from '../_app/store';
 import type { Pokemon, EndPointData, PokemonForm, GetStringOrNumberKey, EvolutionChain, EvolutionChainResponse, NonNullableArray } from '../../typeModule';
+import { CachedPokemon, CachedAbility, CachedAllPokemonNamesAndIds, CachedPokemonSpecies, GetRequiredData } from "../[language]/_components/pokemonData/pokemonDataSlice";
 
 const BASE_URL = 'https://pokeapi.co/api/v2';
 
@@ -86,6 +87,11 @@ export const getAbilities = async (pokemonData: Pokemon.Root | Pokemon.Root[], c
 	if (abilitiesToFetch.length) {
 		return await getData('ability', abilitiesToFetch, 'name');
 	};
+};
+
+export const getAbilities2 = async (pokemonData: Pokemon.Root | Pokemon.Root[]) => {
+	const abilitiesToDisplay = getAbilitiesToDisplay(pokemonData);
+	return await getData('ability', abilitiesToDisplay.map(ability => transformToDash(ability)), 'name');
 };
 
 type GetSortField<T extends SortOption> = T extends `${infer A}Asc` ? A : SortOption extends `${infer B}Desc` ? B : never;
@@ -182,7 +188,7 @@ export const getPokemons = async (cachedPokemons: CachedPokemon, allPokemonNames
 	if (!isSortByNameOrId) {
 		pokemonsToFetch = getDataToFetch(cachedPokemons, request);
 		if (pokemonsToFetch.length) {
-			dispatch(dataLoading());
+			// dispatch(dataLoading());
 			fetchedPokemons = await getData('pokemon', pokemonsToFetch, 'id');
 			allPokemons = {...cachedPokemons, ...fetchedPokemons};
 		};
@@ -195,7 +201,7 @@ export const getPokemons = async (cachedPokemons: CachedPokemon, allPokemonNames
 	if (isSortByNameOrId) {
 		pokemonsToFetch = getDataToFetch(cachedPokemons, pokemonsToDisplay);
 		if (pokemonsToFetch.length) {
-			dispatch(dataLoading());
+			// dispatch(dataLoading());
 			fetchedPokemons = await getData('pokemon', pokemonsToFetch, 'id');
 		};
 	};
@@ -221,60 +227,61 @@ const addFormData = async (cachedPokemons: CachedPokemon, fetchedPokemons: Cache
 	return fetchedPokemons;
 };
 
-const getChainData = async(chainId: number, cachedPokemons: CachedPokemon, cachedSpecies: CachedPokemonSpecies) => {
-	const getEvolutionChains = async () => {
-		const evolutionChainResponse = await getData('evolutionChain', chainId);
+export const getEvolutionChains = async (chainId: number) => {
+	const evolutionChainResponse = await getData('evolutionChain', chainId);
 
-		// get chains, details
-		let evolutionDetails: EvolutionChain.Root['details'] = {};
-		let chainIds: {[depth: string]: number}[] = [];
-		let index = 0;
-		let depth = 1;
-		chainIds[index] = {};
-		const getIdsFromChain = (chains: EvolutionChainResponse.Chain) => {
-			// get details
-			if (chains.evolution_details.length) {
-				evolutionDetails[getIdFromURL(chains.species.url)] = chains.evolution_details;
-			};
-			// get ids
-			chainIds[index][`depth-${depth}`] = getIdFromURL(chains.species.url);
-			if (chains.evolves_to.length) {
-				depth ++;
-				chains.evolves_to.forEach((chain, index, array) => {
-					getIdsFromChain(chain);
-					// the last chain of each depth
-					if (index === array.length - 1) {
-						depth --;
-					};
-				});
-			} else {
-				if (index !== 0) {
-					const minDepth = Number(Object.keys(chainIds[index])[0].split('-')[1]);
-					for (let i = 1; i < minDepth; i++) {
-						// get pokemon ids from the prvious chain, since they share the same pokemon(s)
-						chainIds[index][`depth-${i}`] = chainIds[index - 1][`depth-${i}`];
-					};
-				};
-				index ++;
-				chainIds[index] = {};
-			};
+	// get chains, details
+	let evolutionDetails: EvolutionChain.Root['details'] = {};
+	let chainIds: {[depth: string]: number}[] = [];
+	let index = 0;
+	let depth = 1;
+	chainIds[index] = {};
+	const getIdsFromChain = (chains: EvolutionChainResponse.Chain) => {
+		// get details
+		if (chains.evolution_details.length) {
+			evolutionDetails[getIdFromURL(chains.species.url)] = chains.evolution_details;
 		};
-		getIdsFromChain(evolutionChainResponse.chain);
-		chainIds.pop();
-		// sort chains
-		const sortedChains = chainIds.map(chain => {
-			// sort based on depth
-			const sortedKeys = Object.keys(chain).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
-			const sortedChain = sortedKeys.reduce<typeof chain>((previousReturn, currentElement) => {
-				previousReturn[currentElement] = chain[currentElement];
-				return previousReturn;
-			}, {});
-			return Object.values(sortedChain);
-		});
-		return {sortedChains, evolutionDetails};
+		// get ids
+		chainIds[index][`depth-${depth}`] = getIdFromURL(chains.species.url);
+		if (chains.evolves_to.length) {
+			depth ++;
+			chains.evolves_to.forEach((chain, index, array) => {
+				getIdsFromChain(chain);
+				// the last chain of each depth
+				if (index === array.length - 1) {
+					depth --;
+				};
+			});
+		} else {
+			if (index !== 0) {
+				const minDepth = Number(Object.keys(chainIds[index])[0].split('-')[1]);
+				for (let i = 1; i < minDepth; i++) {
+					// get pokemon ids from the prvious chain, since they share the same pokemon(s)
+					chainIds[index][`depth-${i}`] = chainIds[index - 1][`depth-${i}`];
+				};
+			};
+			index ++;
+			chainIds[index] = {};
+		};
 	};
+	getIdsFromChain(evolutionChainResponse.chain);
+	chainIds.pop();
+	// sort chains
+	const sortedChains = chainIds.map(chain => {
+		// sort based on depth
+		const sortedKeys = Object.keys(chain).sort((a, b) => a.localeCompare(b, undefined, {numeric: true}));
+		const sortedChain = sortedKeys.reduce<typeof chain>((previousReturn, currentElement) => {
+			previousReturn[currentElement] = chain[currentElement];
+			return previousReturn;
+		}, {});
+		return Object.values(sortedChain);
+	});
+	return {chains: sortedChains, details: evolutionDetails};
+};
 
-	const chainData = await getEvolutionChains();
+
+const getChainData = async(chainId: number, cachedPokemons: CachedPokemon, cachedSpecies: CachedPokemonSpecies) => {
+	const chainData = await getEvolutionChains(chainId);
 
 	type EmptyObj = Record<string, never>;
 
@@ -282,7 +289,7 @@ const getChainData = async(chainId: number, cachedPokemons: CachedPokemon, cache
 	let fetchedSpecies: GetReturnedDataType<'pokemonSpecies', []> | EmptyObj = {};
 	
 	// get all pokemons' pokemon/species data from the chain(s), including non-default-pokemon's pokemon data(for evolutionChain to correctly display chain of different form).
-	const pokemonsInChain = new Set(chainData.sortedChains.flat());
+	const pokemonsInChain = new Set(chainData.chains.flat());
 	const speciesToFetch = getDataToFetch(cachedSpecies, [...pokemonsInChain]);
 	if (speciesToFetch.length) {
 		fetchedSpecies = await getData('pokemonSpecies', speciesToFetch, 'id');
@@ -427,7 +434,7 @@ export const getRequiredData = async(pokeData: RootState['pokeData'], requestPok
 	for (let req of sortedRequests) {
 		if (isFetchNeeded(req)) {
 			if (disaptch) {
-				disaptch(dataLoading());
+				// disaptch(dataLoading());
 			};
 			break;
 		};
@@ -469,7 +476,7 @@ export const getRequiredData = async(pokeData: RootState['pokeData'], requestPok
 						const cachedPokemons = {...pokeData.pokemon, ...fetchedData['pokemon']};
 						const cachedSpecies = {...pokeData.pokemonSpecies, ...fetchedData['pokemonSpecies']};
 
-						const [{sortedChains: chains, evolutionDetails: details}, fetchedPokemons, fetchedSpecies] = await getChainData(chainToFetch[0], cachedPokemons, cachedSpecies);
+						const [{chains: chains, details: details}, fetchedPokemons, fetchedSpecies] = await getChainData(chainToFetch[0], cachedPokemons, cachedSpecies);
 
 						fetchedData[req] = {
 							chainData: {[chainToFetch[0]]: {chains, details}},

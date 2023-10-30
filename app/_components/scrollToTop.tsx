@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef, useState, memo, useCallback } from "react";
 import { FaAngleUp } from 'react-icons/fa'
 
