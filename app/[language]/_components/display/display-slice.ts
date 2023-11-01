@@ -2,8 +2,8 @@
 import { PayloadAction, createSlice, isAnyOf } from "@reduxjs/toolkit";
 import { getIdFromURL, getNameByLanguage } from "@/app/_utils/util"
 import { getAllSpecies, getRequiredData, getPokemons } from "@/app/_utils/api";
-import { GetRequiredData, getInitialData, getPokemonsOnScroll, getRequiredDataThunk, type CachedAllPokemonNamesAndIds } from "../pokemonData/pokemonDataSlice";
-import { searchPokemon } from "../search/searchSlice";
+import { GetRequiredData, getInitialData, getPokemonsOnScroll, getRequiredDataThunk, type CachedAllPokemonNamesAndIds } from "../pokemonData/pokemon-data-slice";
+import { searchPokemon } from "../search/search-slice";
 import type { RootState } from "@/app/_app/store"; 
 import { createAppAsyncThunk } from "@/app/_app/hooks";
 import { sortOptions } from "./sort";

@@ -1,11 +1,11 @@
 import { memo, useCallback } from 'react';
 import { Switch, Stack, Typography, FormControlLabel } from '@mui/material';
 import { getNameByLanguage } from '@/app/_utils/util';
-import type { SelectedTypes } from './searchSlice';
+import type { SelectedTypes } from './search-slice';
 import Image from 'next/image';
-import { CachedType } from '../pokemonData/pokemonDataSlice';
+import { CachedType } from '../pokemonData/pokemon-data-slice';
 import { useParams } from 'next/navigation';
-import { LanguageOption } from '../display/displaySlice';
+import { LanguageOption } from '../display/display-slice';
 
 type FilterTypesProps = {
 	selectedTypes: SelectedTypes

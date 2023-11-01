@@ -1,5 +1,5 @@
 import { forwardRef, memo, useCallback } from "react";
-import { CachedAllPokemonNamesAndIds } from "../pokemonData/pokemonDataSlice";
+import { CachedAllPokemonNamesAndIds } from "../pokemonData/pokemon-data-slice";
 import Image from "next/image";
 
 const colorMatching = (pokemonName: string, searchParam: string | number) => {

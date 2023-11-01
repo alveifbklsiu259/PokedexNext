@@ -2,7 +2,7 @@ import { memo, useMemo } from 'react';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useAppDispatch, useAppSelector } from '@/app/_app/hooks';
-import { selectViewMode, sortPokemons, tableInfoChanged, changeViewMode } from './displaySlice';
+import { selectViewMode, sortPokemons, tableInfoChanged, changeViewMode } from './display-slice';
 import type { TableInfoRefTypes } from '../pokemonData/pokemons';
 import { BsListUl } from 'react-icons/bs'
 import { FaTableCellsLarge } from 'react-icons/fa6'

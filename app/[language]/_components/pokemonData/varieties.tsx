@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { LanguageOption } from '../display/displaySlice';
+import { LanguageOption } from '../display/display-slice';
 import { getFormName, getIdFromURL } from '@/app/_utils/util';
 import { Pokemon, PokemonSpecies } from '@/typeModule';
 import Link from 'next/link';

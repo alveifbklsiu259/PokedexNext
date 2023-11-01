@@ -1,6 +1,6 @@
 import { useState, memo } from "react";
-import { selectChainDataByChainId, CachedItem } from "./pokemonDataSlice";
-import { LanguageOption } from "../display/displaySlice";
+import { selectChainDataByChainId, CachedItem } from "./pokemon-data-slice";
+import { LanguageOption } from "../display/display-slice";
 import Modal from "@/app/_components/modal";
 import { transformToKeyName, getNameByLanguage } from "@/app/_utils/util";
 import { useAppSelector } from "@/app/_app/hooks";

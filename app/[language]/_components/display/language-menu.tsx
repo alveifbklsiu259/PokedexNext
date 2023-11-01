@@ -3,7 +3,7 @@ import Button from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useAppDispatch, useAppSelector } from '@/app/_app/hooks';
-import { selectLanguage, changeLanguage, languageOptions } from './displaySlice';
+import { selectLanguage, changeLanguage, languageOptions } from './display-slice';
 import { FaLanguage } from 'react-icons/fa6';
 
 type AnchorElTypes = null | HTMLButtonElement;

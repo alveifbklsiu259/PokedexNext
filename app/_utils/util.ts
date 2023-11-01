@@ -1,6 +1,6 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
 import type { Pokemon, PokemonSpecies } from "../../typeModule";
-import { LanguageOption } from "../[language]/_components/display/displaySlice";
+import { LanguageOption } from "../[language]/_components/display/display-slice";
 import type { EndPointRequest } from "./api";
 
 export function getIdFromURL<T extends string | undefined>(url: T): T extends string ? number : undefined;

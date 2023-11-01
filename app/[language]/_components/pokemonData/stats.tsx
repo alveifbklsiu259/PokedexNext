@@ -1,6 +1,6 @@
 import { memo } from "react";
-import { LanguageOption } from "../display/displaySlice";
-import { CachedStat } from "./pokemonDataSlice";
+import { LanguageOption } from "../display/display-slice";
+import { CachedStat } from "./pokemon-data-slice";
 import { getNameByLanguage, transformToKeyName } from "@/app/_utils/util";
 import { Pokemon } from "@/typeModule";
 

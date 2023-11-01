@@ -1,8 +1,8 @@
 import { useRef, useState, useMemo, memo, useCallback, forwardRef} from "react";
 import { flushSync } from "react-dom";
-import DataList from './dataList';
+import DataList from './data-list';
 import { FaXmark } from 'react-icons/fa6'
-import { CachedAllPokemonNamesAndIds } from "../pokemonData/pokemonDataSlice";
+import { CachedAllPokemonNamesAndIds } from "../pokemonData/pokemon-data-slice";
 
 type InputProps = {
 	searchParam: string,

@@ -1,9 +1,9 @@
 import { getIdFromURL, transformToKeyName, transformToDash, toEndPointString } from "./util";
-import { PokemonDataTypes } from "../[language]/_components/pokemonData/pokemonDataSlice";
-import type { LanguageOption, SortOption } from "../[language]/_components/display/displaySlice";
+import { PokemonDataTypes } from "../[language]/_components/pokemonData/pokemon-data-slice";
+import type { LanguageOption, SortOption } from "../[language]/_components/display/display-slice";
 import type { AppDispatch, RootState } from '../_app/store';
 import type { Pokemon, EndPointData, PokemonForm, GetStringOrNumberKey, EvolutionChain, EvolutionChainResponse, NonNullableArray } from '../../typeModule';
-import { CachedPokemon, CachedAbility, CachedAllPokemonNamesAndIds, CachedPokemonSpecies, GetRequiredData } from "../[language]/_components/pokemonData/pokemonDataSlice";
+import { CachedPokemon, CachedAbility, CachedAllPokemonNamesAndIds, CachedPokemonSpecies, GetRequiredData } from "../[language]/_components/pokemonData/pokemon-data-slice";
 
 const BASE_URL = 'https://pokeapi.co/api/v2';
 

@@ -1,8 +1,8 @@
 import { memo } from "react";
-import { advancedSearchReset, type SelectedTypes, type SelectedGenerations } from "./searchSlice";
-import FilterGeneration from "./filterGeneration";
-import FilterTypes from "./filterTypes";
-import { CachedGeneration, CachedType } from "../pokemonData/pokemonDataSlice";
+import { advancedSearchReset, type SelectedTypes, type SelectedGenerations } from "./search-slice";
+import FilterGeneration from "./filter-generation";
+import FilterTypes from "./filter-types";
+import { CachedGeneration, CachedType } from "../pokemonData/pokemon-data-slice";
 // import { useAppDispatch } from "../../_app/hooks";
 
 type AdvancedSearchProps = {

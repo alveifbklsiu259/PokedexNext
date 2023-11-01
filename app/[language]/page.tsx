@@ -1,8 +1,7 @@
-import { Suspense } from 'react'
-import { LanguageOption, languageOptions } from "@/app/[language]/_components/display/displaySlice";
+import { LanguageOption, languageOptions } from "@/app/[language]/_components/display/display-slice";
 import { getEndpointData, getData } from "../_utils/api";
-import Search from "./_components/search/searchWrapper";
-import { CachedAllPokemonNamesAndIds } from "@/app/[language]/_components/pokemonData/pokemonDataSlice";
+import Search from "./_components/search/search-wrapper";
+import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from "@/app/[language]/_components/pokemonData/pokemon-data-slice";
 import { getIdFromURL } from "../_utils/util";
 import Pokemons from "./_components/pokemonData/pokemons";
 
@@ -19,14 +18,112 @@ import Pokemons from "./_components/pokemonData/pokemons";
 // };
 
 // this is not working, why?
-export const dynamicParams = false;
+// export const dynamicParams = false;
 
-export async function generateStaticParams() {
-	return Object.keys(languageOptions).map(lan => ({
-		// language: lan as LanguageOption
-		language: lan
-	}));
+// export async function generateStaticParams() {
+// 	return Object.keys(languageOptions).map(lan => ({
+// 		// language: lan as LanguageOption
+// 		language: lan
+// 	}));
+// };
+
+function getArrFromParam (searchParam: string | string[] | undefined): string[] {
+	if (!searchParam) {
+		return [];
+	} else if (Array.isArray(searchParam)) {
+		return searchParam.filter(param => param.trim() !== '');
+	} else {
+		return searchParam.split(',');
+	};
 };
+
+function getStringFromParam (searchParam: string | string[] | undefined): string {
+	if (!searchParam) {
+		return '';
+	} else if (Array.isArray(searchParam)) {
+		return searchParam.join();
+	} else {
+		return searchParam
+	};
+};
+
+export const getIntersection = (searchParams: {[key: string]: string | string[] | undefined} , generations: CachedGeneration, types: CachedType, language: LanguageOption): number[] => {
+	const {query, type, gen, match} = searchParams;
+	const selectedTypes = getArrFromParam(type);
+	const selectedGenerations = getArrFromParam(gen);
+	let matchMethod = getStringFromParam(match);
+	matchMethod = matchMethod === '' ? 'all' : matchMethod;
+	// should handle cases that user types in unaccessible param value early.
+
+
+	// get range
+	let pokemonRange: {
+		name: string,
+		url: string
+	}[] = [];
+	// when searching in error page, selectedGenerations will be undefined.
+	if (selectedGenerations.length === 0) {
+		pokemonRange = Object.values(generations).flatMap(gen => gen.pokemon_species);
+	} else {
+		pokemonRange = selectedGenerations.flatMap(gen => generations[`generation_${gen}`].pokemon_species);
+	};
+
+	// handle search param
+	const trimmedText = getStringFromParam(query).trim();
+
+	let searchResult: typeof pokemonRange;
+	if (trimmedText === '') {
+		// no input or only contains white space(s)
+		searchResult = pokemonRange;
+	} else if (isNaN(Number(trimmedText))) {
+		// search by name
+		searchResult = pokemonRange.filter(pokemon => {
+			if (language === 'en') {
+				return pokemon.name.toLowerCase().includes(trimmedText.toLowerCase())
+			} else {
+				// const speciesData = pokeData.pokemonSpecies[getIdFromURL(pokemon.url)]
+				// return getNameByLanguage(pokemon.name.toLowerCase(), language, speciesData).toLocaleLowerCase().includes(trimmedText.toLowerCase());
+
+				// handle non-en
+
+			};
+		});
+	} else {
+		// search by id
+		searchResult = pokemonRange.filter(pokemon => String(getIdFromURL(pokemon.url)).padStart(4 ,'0').includes(String(trimmedText)));
+	};
+
+	// get intersection
+	let intersection = searchResult.map(pokemon => getIdFromURL(pokemon.url));
+
+	// handle types
+	if (selectedTypes.length) {
+		if (matchMethod === 'all') {
+			const matchedTypeArray = selectedTypes.reduce<number[][]>((pre, cur) => {
+				pre.push(types[cur].pokemon.map(entry => getIdFromURL(entry.pokemon.url)));
+				return pre;
+			}, []);
+			for (let i = 0; i < matchedTypeArray.length; i ++) {
+				intersection = intersection.filter(pokemon => matchedTypeArray[i].includes(pokemon));
+			};
+		} else if (matchMethod === 'part') {
+			const matchedTypeIds = selectedTypes.reduce<number[]>((pre, cur) => {
+				types[cur].pokemon.forEach(entry => pre.push(getIdFromURL(entry.pokemon.url)));
+				return pre;
+			}, []);
+			intersection = intersection.filter(id => matchedTypeIds.includes(id));
+		};
+	};
+	return intersection;
+	// const {fetchedPokemons, pokemonsToDisplay, nextRequest} = await getPokemons(pokeData.pokemon, allNamesAndIds, dispatch, intersection, dispalyData.sortBy);
+
+	// return {intersection, searchParam, selectedGenerations, selectedTypes, fetchedPokemons, nextRequest, pokemonsToDisplay};
+};
+
+
+
+
+
 
 type PageProps = {
 	params: {
@@ -38,22 +135,29 @@ type PageProps = {
 }
 
 export default async function Page({params, searchParams}: PageProps) {
-
-	console.log('root')
 	const { language } = params;
-	const range: number[] = [];
-	for (let i = 1; i <= 24; i ++) {
-		range.push(i)
-	};
-	const pokemonData = await getData('pokemon', range, 'id');
-	const speciesData = await getData('pokemonSpecies', range, 'id');
 
+	// will this component being run on navigation?
+
+	// I can also fetch all the data concurrently, e.g. getData no await, then Promise.all()
+
+
+	// generations
 	const generationResponse = await getEndpointData('generation');
-	const generationData = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
 
-	// get type
+	// types
 	const typeResponse = await getEndpointData('type');
-	const typeData = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
+	const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
+
+	const intersection = getIntersection(searchParams, generations, types, language);
+	const sortedIntersection = intersection.sort((a,b) => a - b)
+
+	const initialPokemonIds = [...sortedIntersection].splice(0, 24);
+	
+
+	const initialPokemonData = await getData('pokemon', initialPokemonIds, 'id');
+	const initialSpeciesData = await getData('pokemonSpecies', initialPokemonIds, 'id');
 
 
 	let pokemonsNamesAndId: CachedAllPokemonNamesAndIds = {};
@@ -64,21 +168,50 @@ export default async function Page({params, searchParams}: PageProps) {
 	}; // this should be the corresponding names, have to get all species data if !== 'en'
 
 
-
-
 	return (
 		<>
 			{/* <Suspense fallback={<Spinner/>}> */}
-			<Search generations={generationData} types={typeData} namesAndIds={pokemonsNamesAndId} />
+			<Search 
+				generations={generations} 
+				types={types} 
+				namesAndIds={pokemonsNamesAndId}
+			/>
 			{/* </Suspense> */}
 			{/* what's the use of Suspense here? we're not fetching any data in the Search
 				reference: https://nextjs.org/docs/app/api-reference/functions/use-search-params#static-rendering
 			*/}
-			<Pokemons types={typeData} generations={generationData} pokemonData={pokemonData} speciesData={speciesData} language={language} searchParams={searchParams} />
+			<Pokemons
+				types={types}
+				generations={generations}
+				initialPokemonData={initialPokemonData}
+				initialSpeciesData={initialSpeciesData}
+				language={language}
+				searchParams={searchParams}
+			/>
 		</>
 		
 	)
 }
+
+// when searching, Pokemons need to reset scroll count,;;;
+
+// scrolling -- intersection will not change, display should change
+// search -- intersection will change, display should change
+
+
+
+
+
+
+
+// get initial data from the server --> pass it down to client component --> fetch data when scrolling --> store data in the state,
+// this way we can render the initial data
+
+
+
+// how to check if a fetch request in run on server really gets cached? (it doesn't run on subsequent render?)
+
+
 
 // Search component is gonna be a client component, we can fetch the initial data from server then pass down to it,
 
@@ -119,16 +252,12 @@ is the same as adding a loading.ts file
 
 
 
+//The generateStaticParams function can be used in combination with dynamic route segments to statically generate routes at build time instead of on-demand at request time.
+
+// in my case, I have so many different language, and 1000+ pokemon page for each language, if I use generateStaticParams, does it bloat up the files?
 
 
-/* 
-Caching
-
-
-
-*/
-
-
+// change the file name back to camelCase
 
 
 

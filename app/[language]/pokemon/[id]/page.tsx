@@ -1,6 +1,6 @@
 import { getAbilities2, getData, getEndpointData, getEvolutionChains, getItemsFromChain } from "@/app/_utils/api";
 import Pokemon from "@/app/[language]/_components/pokemonData/pokemon";
-import { LanguageOption } from "@/app/[language]/_components/display/displaySlice";
+import { LanguageOption, languageOptions } from "@/app/[language]/_components/display/display-slice";
 import { getIdFromURL } from "@/app/_utils/util";
 
 type PageProps = {
@@ -10,20 +10,58 @@ type PageProps = {
 	}
 };
 
+// I can have the /pokemon/x SSR or SSG
+
+
 // this is not working
-export const dynamicParams = false;
+// export const dynamicParams = false;
 
-export async function generateStaticParams() {
-	const speciesResponse = await getEndpointData('pokemonSpecies');
-	const pokemonCount = speciesResponse.count;
-	const staticParams: {id: string}[] = [];
-	for (let i = 1; i < pokemonCount; i ++) {
-		staticParams.push({id: String(i)});
-	};
 
-	// have to handle non-default-form
-	return staticParams;
-};
+
+// export async function generateStaticParams() {
+// 	const speciesResponse = await getEndpointData('pokemonSpecies');
+// 	const pokemonCount = speciesResponse.count;
+
+// 	// const languages = Object.keys(languageOptions).map(lan => ({
+// 	// 	language: lan
+// 	// }));
+
+// 	const staticParams: {language: string, id: string}[] = [];
+
+// 	const languageOptions2 = {
+// 		'en': 's',
+
+// 	}
+
+// 	// Object.keys(languageOptions2).forEach(lan => {
+// 	// 	for (let i = 1; i <= 100; i ++) {
+// 	// 		staticParams.push({language: lan, id: String(i)});
+// 	// 	};
+// 	// });
+
+// 	return staticParams;
+
+
+// 	Object.keys(languageOptions).forEach(lan => {
+// 		for (let i = 1; i < pokemonCount; i ++) {
+// 			staticParams.push({id: String(i), language: lan});
+// 		};
+// 	});
+
+// 	console.log(staticParams)
+
+
+
+
+
+
+
+
+
+
+// 	// have to handle non-default-form
+// 	return staticParams;
+// };
 
 export default async function Page ({params}: PageProps) {
 	// requests: ['pokemon', 'pokemonSpecies', 'evolutionChain', 'ability', 'item'], moves
@@ -132,4 +170,4 @@ export default async function Page ({params}: PageProps) {
 // 2. error.tsx
 // 3. 404.tsx
 // 4. pokemon table
-// 5. 
+// 5. show loading, if pokemon/x is SSG, it's fast between navigation, but if it's SSR, it lags a bit before navigating.

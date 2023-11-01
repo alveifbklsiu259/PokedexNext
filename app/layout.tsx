@@ -5,10 +5,10 @@ import { Zen_Maru_Gothic } from 'next/font/google';
 import '@/App.css'
 // import NavBar from "./_components/navBar";
 
-const DynamicBootstrap = dynamic(
-	() => require('bootstrap/dist/js/bootstrap.min.js'),
-	{ ssr: false }
-);
+// const DynamicBootstrap = dynamic(
+// 	() => require('bootstrap/dist/js/bootstrap.min.js'),
+// 	{ ssr: false }
+// );
 
 const zen_maru_gothic = Zen_Maru_Gothic({
 	weight: '400',

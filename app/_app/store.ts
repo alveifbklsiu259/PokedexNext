@@ -1,8 +1,8 @@
 'use client'
 import { configureStore } from "@reduxjs/toolkit";
-import pokemonDataReducer from '@/app/[language]/_components/pokemonData/pokemonDataSlice';
-import searchSliceReducer from "@/app/[language]/_components/search/searchSlice";
-import displaySliceReducer from "@/app/[language]/_components/display/displaySlice";
+import pokemonDataReducer from '@/app/[language]/_components/pokemonData/pokemon-data-slice';
+import searchSliceReducer from "@/app/[language]/_components/search/search-slice";
+import displaySliceReducer from "@/app/[language]/_components/display/display-slice";
 
 const store = configureStore({
 	reducer: {

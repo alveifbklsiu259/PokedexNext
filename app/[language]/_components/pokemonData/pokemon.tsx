@@ -1,11 +1,11 @@
 import React, { memo, Suspense } from "react";
-import { CachedType, CachedAbility, CachedItem, CachedStat, CachedPokemon, CachedGeneration, CachedPokemonSpecies, CachedVersion, CachedMoveDamageClass } from "./pokemonDataSlice";
-import { LanguageOption } from "../display/displaySlice";
+import { CachedType, CachedAbility, CachedItem, CachedStat, CachedPokemon, CachedGeneration, CachedPokemonSpecies, CachedVersion, CachedMoveDamageClass } from "./pokemon-data-slice";
+import { LanguageOption } from "../display/display-slice";
 import BasicInfo from "@/app/[language]/_components/pokemonData/basicInfo";
 import Detail from "./detail";
 import Stats from "./stats";
-import EvolutionChains from "./evolutionChains";
-import ScrollToTop from "@/app/_components/scrollToTop";
+import EvolutionChains from "./evolution-chains";
+// import ScrollToTop from "@/app/_components/scroll-to-top";
 // import Moves from "./moves";
 import Varieties from "./varieties";
 import Link from "next/link";
@@ -127,7 +127,7 @@ export default function Pokemon({
 						</div>
 					</div>
 				</div>
-				<ScrollToTop />
+				{/* <ScrollToTop /> */}
 			</>
 		)
 	// } else if (status === 'loading') {

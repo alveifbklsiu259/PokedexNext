@@ -1,9 +1,9 @@
 import { Pokemon, PokemonSpecies } from '@/typeModule';
 import { memo } from 'react';
 import { getFormName, getIdFromURL, getNameByLanguage } from '@/app/_utils/util';
-import { LanguageOption } from '../display/displaySlice';
+import { LanguageOption } from '../display/display-slice';
 import Image from 'next/image';
-import { CachedType } from './pokemonDataSlice';
+import { CachedType } from './pokemon-data-slice';
 
 type BasicInfoProps = {
 	pokemonData: Pokemon.Root,

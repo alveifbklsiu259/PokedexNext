@@ -1,7 +1,7 @@
 import { memo, useCallback } from 'react';
 import type { Generation as GenerationType } from '@/typeModule';
 import Image from 'next/image';
-import { CachedGeneration } from '../pokemonData/pokemonDataSlice';
+import { CachedGeneration } from '../pokemonData/pokemon-data-slice';
 
 type FilterGenerationProps = {
 	selectedGenerations: string[],

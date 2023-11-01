@@ -1,5 +1,5 @@
 'use client';
-import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from "../pokemonData/pokemonDataSlice";
+import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from "../pokemonData/pokemon-data-slice";
 import Search from "./search";
 
 

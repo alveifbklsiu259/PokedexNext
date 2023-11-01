@@ -1,10 +1,10 @@
 import React, { memo } from "react";
 import BasicInfo from "./basicInfo";
 // import EvolutionDetails from "./evolutionDetails";
-import { CachedGeneration, CachedItem, CachedPokemon, CachedPokemonSpecies, CachedType } from "./pokemonDataSlice";
+import { CachedGeneration, CachedItem, CachedPokemon, CachedPokemonSpecies, CachedType } from "./pokemon-data-slice";
 import { getIdFromURL } from "@/app/_utils/util";
 import { EvolutionChain, Pokemon } from "@/typeModule";
-import { LanguageOption } from "../display/displaySlice";
+import { LanguageOption } from "../display/display-slice";
 
 type NonDefaultFormPokemonData = Required<Pokemon.Root>;
 

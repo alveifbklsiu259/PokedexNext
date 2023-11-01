@@ -1,12 +1,12 @@
 'use client';
 import { useState, useLayoutEffect, useRef, memo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import AdvancedSearch from './advancedSearch';
+import AdvancedSearch from './advanced-search';
 import Input from './input';
 import Image from 'next/image';
 import { AiOutlineCaretDown } from 'react-icons/ai'
 import { useSearchParams } from 'next/navigation';
-import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from '../pokemonData/pokemonDataSlice';
+import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from '../pokemonData/pokemon-data-slice';
 import { updateSearchParam } from '@/app/_utils/util';
 
 

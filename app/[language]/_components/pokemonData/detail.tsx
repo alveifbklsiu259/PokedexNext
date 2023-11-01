@@ -1,11 +1,11 @@
 import React, { memo } from "react";
-import { LanguageOption } from "../display/displaySlice";
+import { LanguageOption } from "../display/display-slice";
 // import Abilities from "./abilities";
 import { getTextByLanguage } from "@/app/_utils/util";
 import { FaMars, FaVenus } from 'react-icons/fa';
 import { BsQuestionLg } from 'react-icons/bs';
 import { Pokemon, PokemonSpecies } from "@/typeModule";
-import { CachedAbility } from "./pokemonDataSlice";
+import { CachedAbility } from "./pokemon-data-slice";
 
 function getGender(gender_rate: number) {
 	switch(gender_rate) {
