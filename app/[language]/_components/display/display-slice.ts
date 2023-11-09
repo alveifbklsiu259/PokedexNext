@@ -190,6 +190,7 @@ export const sortPokemons = createAppAsyncThunk('display/sortPokemons', async(so
 	const displayData = getState().display
 
 	if (displayData.status === 'idle') {
+		// const res = await getPokemons(pokeData.pokemon, pokeData.allPokemonNamesAndIds, dispatch, displayData.intersection, sortOption);
 		const res = await getPokemons(pokeData.pokemon, pokeData.allPokemonNamesAndIds, dispatch, displayData.intersection, sortOption);
 		return res;
 	} else {

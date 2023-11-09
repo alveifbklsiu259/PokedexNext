@@ -2,7 +2,7 @@
 'use client'
 import { memo } from 'react'
 import { SortOption } from './display-slice';
-// import 'bootstrap/dist/js/bootstrap.bundle';
+import 'bootstrap/dist/js/bootstrap.bundle';
 // maybe use Script ?
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { updateSearchParam } from '@/app/_utils/util';

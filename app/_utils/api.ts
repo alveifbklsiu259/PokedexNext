@@ -175,6 +175,27 @@ const sortPokemons = (allPokemons: CachedPokemon, sortOption: SortOption, allPok
 	};
 };
 
+export const getPokemons2 = async (cachedPokemons: CachedPokemon, allPokemonNamesAndIds: CachedAllPokemonNamesAndIds, request: number[], sortOption: SortOption) => {
+	
+	let sortedRequest: number[],
+		fetchedPokemons: GetReturnedDataType<'pokemon', []> | undefined,
+		pokemonsToDisplay: number[],
+		allPokemons = {...cachedPokemons};
+	const isSortByNameOrId = (sortOption.includes('number') || sortOption.includes('name'));
+	// when sort by options other than number or name, it requires all the pokemon data in intersection to make some comparison.
+	if (!isSortByNameOrId) {
+		fetchedPokemons = await getData('pokemon', request, 'id');
+		allPokemons = {...fetchedPokemons};
+	};
+
+	sortedRequest = sortPokemons(allPokemons, sortOption, allPokemonNamesAndIds, request).slice();
+	pokemonsToDisplay = sortedRequest.slice().splice(0, 24);
+
+	if (isSortByNameOrId) {
+		fetchedPokemons = await getData('pokemon', pokemonsToDisplay, 'id');
+	};
+	return {fetchedPokemons, sortedIntersection: sortedRequest};
+};
 export const getPokemons = async (cachedPokemons: CachedPokemon, allPokemonNamesAndIds: CachedAllPokemonNamesAndIds, dispatch: AppDispatch, request: number[], sortOption: SortOption) => {
 	// the dataLoading dispatches in this function will not cause extra re-render in getInitialData thunk.
 	let sortedRequest: number[],
@@ -506,4 +527,10 @@ export const getRequiredData = async(pokeData: RootState['pokeData'], requestPok
 		};
 	};
 	return fetchedData;
+};
+
+export const testServerRequest = async () => {
+	const response = await fetch('http://localhost:5500/posts/7');
+	const data = await response.json();
+	return data;
 };

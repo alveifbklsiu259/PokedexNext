@@ -9,8 +9,6 @@ import { useSearchParams } from 'next/navigation';
 import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from '../pokemonData/pokemon-data-slice';
 import { updateSearchParam } from '@/app/_utils/util';
 
-
-
 type SearchProps = {
 	onCloseModal?: () => void,
 	viewModeRef?: React.RefObject<HTMLDivElement>,

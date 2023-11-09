@@ -63,7 +63,7 @@ type PageProps = {
 // 	return staticParams;
 // };
 
-export default async function Page ({params}: PageProps) {
+export default async function Page({params}: PageProps) {
 	// requests: ['pokemon', 'pokemonSpecies', 'evolutionChain', 'ability', 'item'], moves
 
 

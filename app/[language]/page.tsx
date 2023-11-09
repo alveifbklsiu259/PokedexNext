@@ -1,9 +1,10 @@
-import { LanguageOption, languageOptions } from "@/app/[language]/_components/display/display-slice";
-import { getEndpointData, getData } from "../_utils/api";
+import { LanguageOption, SortOption, languageOptions } from "@/app/[language]/_components/display/display-slice";
+import { getEndpointData, getData, getPokemons2 } from "../_utils/api";
 import Search from "./_components/search/search-wrapper";
-import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from "@/app/[language]/_components/pokemonData/pokemon-data-slice";
+import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedPokemon, CachedType } from "@/app/[language]/_components/pokemonData/pokemon-data-slice";
 import { getIdFromURL } from "../_utils/util";
 import Pokemons from "./_components/pokemonData/pokemons";
+import { testServerRequest } from "../_utils/api";
 
 
 // can we export non next-defined things from page/layout...?
@@ -47,8 +48,8 @@ function getStringFromParam (searchParam: string | string[] | undefined): string
 	};
 };
 
-export const getIntersection = (searchParams: {[key: string]: string | string[] | undefined} , generations: CachedGeneration, types: CachedType, language: LanguageOption): number[] => {
-	const {query, type, gen, match} = searchParams;
+const getIntersection = (searchParams: {[key: string]: string | string[] | undefined} , generations: CachedGeneration, types: CachedType, language: LanguageOption): number[] => {
+	const {query, type, gen, match, sort} = searchParams;
 	const selectedTypes = getArrFromParam(type);
 	const selectedGenerations = getArrFromParam(gen);
 	let matchMethod = getStringFromParam(match);
@@ -122,9 +123,6 @@ export const getIntersection = (searchParams: {[key: string]: string | string[] 
 
 
 
-
-
-
 type PageProps = {
 	params: {
 		language: LanguageOption
@@ -134,15 +132,25 @@ type PageProps = {
 	}
 }
 
+// this is an SSR route, but data fetched on the server will be cached in data cache, but is it a good practice to fetch data on the server after an user interaction? React will render on the server then reconcile and hydrate on the client, cna't we just skip rendering on the server after a user interaction, but directly reconcile and hydrate the client component?
+
+// is it possible that we get data in a unaccessable SSG route, 
+
 export default async function Page({params, searchParams}: PageProps) {
+	console.log('render starts')
 	const { language } = params;
+	const sortBy = (searchParams.sort || 'numberAsc') as SortOption;
+
+	// all requests in this route will not be cached!! since it's a dynamic route.
+	// maybe fetching common data (generations, versions, types...) in a static route?
 
 	// will this component being run on navigation?
 
 	// I can also fetch all the data concurrently, e.g. getData no await, then Promise.all()
 
-
 	// generations
+
+
 	const generationResponse = await getEndpointData('generation');
 	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
 
@@ -150,22 +158,39 @@ export default async function Page({params, searchParams}: PageProps) {
 	const typeResponse = await getEndpointData('type');
 	const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
 
-	const intersection = getIntersection(searchParams, generations, types, language);
-	const sortedIntersection = intersection.sort((a,b) => a - b)
-
-	const initialPokemonIds = [...sortedIntersection].splice(0, 24);
-	
-
-	const initialPokemonData = await getData('pokemon', initialPokemonIds, 'id');
-	const initialSpeciesData = await getData('pokemonSpecies', initialPokemonIds, 'id');
-
-
 	let pokemonsNamesAndId: CachedAllPokemonNamesAndIds = {};
 	// get pokemon count, all names and ids
 	const speciesResponse = await getEndpointData('pokemonSpecies'); // will this be dedeupe?
 	for (let pokemon of speciesResponse.results) {
 		pokemonsNamesAndId[pokemon.name] = getIdFromURL(pokemon.url);
 	}; // this should be the corresponding names, have to get all species data if !== 'en'
+
+	const intersection = getIntersection(searchParams, generations, types, language);
+
+
+	// each time sort changes, new request will be made
+	// if we can get the cached data here to replace {}, we can probably not fetche data.
+	const {sortedIntersection, fetchedPokemons} = await getPokemons2({}, pokemonsNamesAndId ,intersection , sortBy)
+
+	const display = sortedIntersection.slice().splice(0, 24);
+
+	await testServerRequest();
+
+
+	// sort intersection
+	// const sortedIntersection2 = intersection.sort((a,b) => a - b);
+
+	// takes in intersection, output sorted intersection, 
+
+	// const initialPokemonIds = [...sortedIntersection2].splice(0, 24);
+	// const initialPokemonData = await getData('pokemon', initialPokemonIds, 'id');
+	const initialSpeciesData = await getData('pokemonSpecies', display, 'id');
+	console.log('render ends')
+	// why does Pokemons take so long to be rendered after data are all fetched?
+	// why the request is not sent to the server at build time? instead, at  request time
+
+
+
 
 
 	return (
@@ -181,17 +206,35 @@ export default async function Page({params, searchParams}: PageProps) {
 				reference: https://nextjs.org/docs/app/api-reference/functions/use-search-params#static-rendering
 			*/}
 			<Pokemons
+				// key={JSON.stringify(searchParams)}
 				types={types}
 				generations={generations}
-				initialPokemonData={initialPokemonData}
+				initialPokemonData={fetchedPokemons!}
 				initialSpeciesData={initialSpeciesData}
+				intersection={sortedIntersection}
 				language={language}
 				searchParams={searchParams}
 			/>
 		</>
-		
 	)
-}
+};
+
+
+// since the rout /en is SSR, when search params change, we'll fetch the data on the server first, then render Pokemons and Search.
+
+
+// What chaching mechanisms each rendering method has:
+// 1. SSG: router cache, full route cache, data cache, (request memoization)
+// 2. SSR: router cache,  data cache?? , (request memoization)
+// I'm not sure about data cache in SSR, check what the docs says
+// https://nextjs.org/docs/app/building-your-application/caching#full-route-cache:~:text=The%20Data%20Cache%20can%20still%20be%20used.
+
+
+// 3. CSR: router cache
+
+
+
+
 
 // when searching, Pokemons need to reset scroll count,;;;
 
