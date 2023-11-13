@@ -1,4 +1,4 @@
-import { getAbilities2, getData, getEndpointData, getEvolutionChains, getItemsFromChain } from "@/app/_utils/api";
+import { getAbilities2, getData, getEndpointData, getEvolutionChains, getItemsFromChain, testServerRequest } from "@/app/_utils/api";
 import Pokemon from "@/app/[language]/_components/pokemonData/pokemon";
 import { LanguageOption, languageOptions } from "@/app/[language]/_components/display/display-slice";
 import { getIdFromURL } from "@/app/_utils/util";
@@ -51,8 +51,13 @@ type PageProps = {
 // 	console.log(staticParams)
 
 
-
-
+// export function generateStaticParams() {
+// 	return Object.keys(languageOptions).map(lan => {
+// 		return {
+// 			language: lan
+// 		};
+// 	});
+// };
 
 
 
@@ -65,7 +70,6 @@ type PageProps = {
 
 export default async function Page({params}: PageProps) {
 	// requests: ['pokemon', 'pokemonSpecies', 'evolutionChain', 'ability', 'item'], moves
-
 
 	// the current pattern is like the docs says, all or nothing
 	// https://nextjs.org/docs/app/building-your-application/data-fetching/patterns#:~:text=are%20not%20blocked.-,Blocking,-Data%20Requests%3A
@@ -116,11 +120,6 @@ export default async function Page({params}: PageProps) {
 	// const movesToFetch = pokemonData.moves.map(entry => getIdFromURL(entry.move.url));
 	// const moves = getData('move', movesToFetch, 'name');
 
-
-
-
-
-
 	// generation
 	const generationResponse = await getEndpointData('generation');
 	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
@@ -130,6 +129,7 @@ export default async function Page({params}: PageProps) {
 	// type
 	const typeResponse = await getEndpointData('type');
 	const typeData = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
+	await testServerRequest();
 
 	return (
 		<Pokemon 

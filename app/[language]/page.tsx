@@ -135,6 +135,8 @@ type PageProps = {
 // this is an SSR route, but data fetched on the server will be cached in data cache, but is it a good practice to fetch data on the server after an user interaction? React will render on the server then reconcile and hydrate on the client, cna't we just skip rendering on the server after a user interaction, but directly reconcile and hydrate the client component?
 
 // is it possible that we get data in a unaccessable SSG route, 
+// maybe we can make this route an SSG route, fetch some common data, and use params/searchParams in the client component, then fetch data on the client?
+
 
 export default async function Page({params, searchParams}: PageProps) {
 	console.log('render starts')

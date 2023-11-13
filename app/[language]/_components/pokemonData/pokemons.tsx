@@ -35,7 +35,6 @@ export default function Pokemons({types, generations, initialPokemonData, initia
 	// const intersection =  getIntersection(searchParams, generations, types, language);
 
 	// should be handled on the server?
-	console.log('pokemons')
 
 	// const intersection = intersection.sort((a, b) => a - b);
 	const [isLoading, setIsLoading] = useState(false);
@@ -144,7 +143,10 @@ export default function Pokemons({types, generations, initialPokemonData, initia
 								onClick={() => handleClick(id)}
 							>
 							{/*  should fetch data in Pokemons or in BasicInfo?  if the data is fetched in Pokemons, multiple requests will be concurrent, if in BasicInfo, we can use suspense, which is better?*/}
-								
+
+
+								{/* Dynamic Routes: prefetch default to automatic. Only the shared layout down until the first loading.js file is prefetched and cached for 30s. This reduces the cost of fetching an entire dynamic route, and it means you can show an instant loading state for better visual feedback to users. */}
+								{/* Prefetching is not enabled in development, only in production. */}
 								{/* Link's children changes when isLoading change, why? but BasicInfo is cached it does not change. */}
 								{/* <Link href={`./${language}/pokemon/${id}`}> */}
 									{/* <div onClick={() => handleClick(id)}> */}
