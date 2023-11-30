@@ -29,6 +29,7 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 
 
 
+
 	
 
 	// const dispatch = useAppDispatch();
@@ -59,10 +60,11 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 		setSelectedTypes(st => type ? st.toString() === type ? st : type?.split(',') : st);
 	}, [query]);
 
+
 	// when type is not selected, this param still gets added to the url, why?
 
 
-	const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
+	const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
 		
 		e.preventDefault();
 		const newSearchParams: {[key: string]: string} = {};
@@ -112,9 +114,9 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 					namesAndIds={namesAndIds}
 				/>
 					<div className="advancedSearch text-center mt-3">
-						<button onClick={() => handleShowAdvanced()}>
+						<span className='showAdvanced'  onClick={() => handleShowAdvanced()}>
 							Show Advanced Search <AiOutlineCaretDown className="fa-solid fa-caret-down"></AiOutlineCaretDown>
-						</button>
+						</span>
 						<AdvancedSearch
 							setSearchParam={setSearchParam}
 							selectedTypes={selectedTypes}

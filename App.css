@@ -666,9 +666,10 @@ h1 {
 }
 
 /* advanced search */
-.advancedSearch button {
+.advancedSearch .showAdvanced {
     border: none;
     background-color: inherit;
+    cursor: pointer;
 }
 
 .advancedSearch .pokeBall {

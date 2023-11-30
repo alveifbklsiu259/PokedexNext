@@ -22,16 +22,16 @@ type PageProps = {
 // 	const speciesResponse = await getEndpointData('pokemonSpecies');
 // 	const pokemonCount = speciesResponse.count;
 
-// 	// const languages = Object.keys(languageOptions).map(lan => ({
-// 	// 	language: lan
-// 	// }));
+// 	const staticParams = Object.keys(languageOptions).map(lan => ({
+// 		language: lan,
+// 		id: null
+// 	}));
 
-// 	const staticParams: {language: string, id: string}[] = [];
+// 	// const staticParams: {language: string, id: string}[] = [];
 
-// 	const languageOptions2 = {
-// 		'en': 's',
-
-// 	}
+// 	// const languageOptions2 = {
+// 	// 	'en': 's',
+// 	// }
 
 // 	// Object.keys(languageOptions2).forEach(lan => {
 // 	// 	for (let i = 1; i <= 100; i ++) {
@@ -40,7 +40,9 @@ type PageProps = {
 // 	// });
 
 // 	return staticParams;
+// };
 
+// export const dynamicParams = true;
 
 // 	Object.keys(languageOptions).forEach(lan => {
 // 		for (let i = 1; i < pokemonCount; i ++) {
@@ -129,7 +131,7 @@ export default async function Page({params}: PageProps) {
 	// type
 	const typeResponse = await getEndpointData('type');
 	const typeData = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
-	await testServerRequest();
+	// await testServerRequest();
 
 	return (
 		<Pokemon 

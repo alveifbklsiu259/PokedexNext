@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import 'bootstrap/dist/css/bootstrap.css';
 import dynamic from "next/dynamic";
-import { Zen_Maru_Gothic } from 'next/font/google';
+// import { Zen_Maru_Gothic } from 'next/font/google';
 import '@/App.css'
 // import NavBar from "./_components/navBar";
 
@@ -10,10 +10,10 @@ import '@/App.css'
 // 	{ ssr: false }
 // );
 
-const zen_maru_gothic = Zen_Maru_Gothic({
-	weight: '400',
-	subsets: ['latin']
-});
+// const zen_maru_gothic = Zen_Maru_Gothic({
+// 	weight: '400',
+// 	subsets: ['latin']
+// });
 
 export const metadata: Metadata = {
 	title: "Pokedex",
@@ -30,7 +30,8 @@ export default async function RootLayout({children}: RootLayoutProps) {
 
 	return (
 		<html lang="en">
-			<body className={zen_maru_gothic.className}>
+			{/* <body className={zen_maru_gothic.className}> */} 
+			<body>
 				{children}
 			</body>
 		</html>

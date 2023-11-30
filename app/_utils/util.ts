@@ -2,6 +2,7 @@ import { ReadonlyURLSearchParams } from "next/navigation";
 import type { Pokemon, PokemonSpecies } from "../../typeModule";
 import { LanguageOption } from "../[language]/_components/display/display-slice";
 import type { EndPointRequest } from "./api";
+import { CachedGeneration, CachedType } from "../[language]/_components/pokemonData/pokemon-data-slice";
 
 export function getIdFromURL<T extends string | undefined>(url: T): T extends string ? number : undefined;
 export function getIdFromURL(url: string | undefined): number | undefined {
@@ -117,14 +118,187 @@ export function toEndPointString(str: EndPointRequest) {
 // 	params.set(key, value);
 // 	return params.toString();
 // };
-export const updateSearchParam = (searchParams: ReadonlyURLSearchParams, newParam: {
+export const updateSearchParam = (searchParams: ReadonlyURLSearchParams, newParams: {
 	[key: string]: string
 }): string => {
 	const params = new URLSearchParams(searchParams);
-	const keyValuePairs = Object.entries(newParam);
+	const keyValuePairs = Object.entries(newParams);
 	for (let i = 0; i < keyValuePairs.length; i++) {
 		const [key, value] = keyValuePairs[i];
-		params.set(key, value);
+		if (value === '') {
+			params.delete(key);
+		} else {
+			params.set(key, value);
+		};
 	};
 	return params.toString();
+};
+
+
+function getArrFromParam (searchParam: string | string[] | undefined): string[] {
+	if (!searchParam) {
+		return [];
+	} else if (Array.isArray(searchParam)) {
+		return searchParam.filter(param => param.trim() !== '');
+	} else {
+		return searchParam.split(',');
+	};
+};
+
+function getStringFromParam (searchParam: string | string[] | undefined): string {
+	if (!searchParam) {
+		return '';
+	} else if (Array.isArray(searchParam)) {
+		return searchParam.join();
+	} else {
+		return searchParam
+	};
+};
+
+export const getIntersection = (searchParams: {[key: string]: string | string[] | undefined} , generations: CachedGeneration, types: CachedType, language: LanguageOption): number[] => {
+	const {query, type, gen, match, sort} = searchParams;
+	const selectedTypes = getArrFromParam(type);
+	const selectedGenerations = getArrFromParam(gen);
+	let matchMethod = getStringFromParam(match);
+	matchMethod = matchMethod === '' ? 'all' : matchMethod;
+	// should handle cases that user types in unaccessible param value early.
+
+	// get range
+	let pokemonRange: {
+		name: string,
+		url: string
+	}[] = [];
+	// when searching in error page, selectedGenerations will be undefined.
+	if (selectedGenerations.length === 0) {
+		pokemonRange = Object.values(generations).flatMap(gen => gen.pokemon_species);
+	} else {
+		pokemonRange = selectedGenerations.flatMap(gen => generations[`generation_${gen}`].pokemon_species);
+	};
+
+	// handle search param
+	const trimmedText = getStringFromParam(query).trim();
+
+	let searchResult: typeof pokemonRange;
+	if (trimmedText === '') {
+		// no input or only contains white space(s)
+		searchResult = pokemonRange;
+	} else if (isNaN(Number(trimmedText))) {
+		// search by name
+		searchResult = pokemonRange.filter(pokemon => {
+			if (language === 'en') {
+				return pokemon.name.toLowerCase().includes(trimmedText.toLowerCase())
+			} else {
+				// const speciesData = pokeData.pokemonSpecies[getIdFromURL(pokemon.url)]
+				// return getNameByLanguage(pokemon.name.toLowerCase(), language, speciesData).toLocaleLowerCase().includes(trimmedText.toLowerCase());
+
+				// handle non-en
+
+			};
+		});
+	} else {
+		// search by id
+		searchResult = pokemonRange.filter(pokemon => String(getIdFromURL(pokemon.url)).padStart(4 ,'0').includes(String(trimmedText)));
+	};
+
+	// get intersection
+	let intersection = searchResult.map(pokemon => getIdFromURL(pokemon.url));
+
+	// handle types
+	if (selectedTypes.length) {
+		if (matchMethod === 'all') {
+			const matchedTypeArray = selectedTypes.reduce<number[][]>((pre, cur) => {
+				pre.push(types[cur].pokemon.map(entry => getIdFromURL(entry.pokemon.url)));
+				return pre;
+			}, []);
+			for (let i = 0; i < matchedTypeArray.length; i ++) {
+				intersection = intersection.filter(pokemon => matchedTypeArray[i].includes(pokemon));
+			};
+		} else if (matchMethod === 'part') {
+			const matchedTypeIds = selectedTypes.reduce<number[]>((pre, cur) => {
+				types[cur].pokemon.forEach(entry => pre.push(getIdFromURL(entry.pokemon.url)));
+				return pre;
+			}, []);
+			intersection = intersection.filter(id => matchedTypeIds.includes(id));
+		};
+	};
+	return intersection;
+	// const {fetchedPokemons, pokemonsToDisplay, nextRequest} = await getPokemons(pokeData.pokemon, allNamesAndIds, dispatch, intersection, dispalyData.sortBy);
+
+	// return {intersection, searchParam, selectedGenerations, selectedTypes, fetchedPokemons, nextRequest, pokemonsToDisplay};
+};
+
+type SearchParams = {
+	[key: string]: string
+}
+
+export const getIntersection2 = (searchParams: SearchParams , generations: CachedGeneration, types: CachedType, language: LanguageOption): number[] => {
+	const {query, type, gen, match} = searchParams;
+	const selectedTypes = getArrFromParam(type);
+	const selectedGenerations = getArrFromParam(gen);
+	let matchMethod = getStringFromParam(match);
+	matchMethod = matchMethod === '' ? 'all' : matchMethod;
+	// should handle cases that user types in unaccessible param value early.
+
+	// get range
+	let pokemonRange: {
+		name: string,
+		url: string
+	}[] = [];
+	// when searching in error page, selectedGenerations will be undefined.
+	if (selectedGenerations.length === 0) {
+		pokemonRange = Object.values(generations).flatMap(gen => gen.pokemon_species);
+	} else {
+		pokemonRange = selectedGenerations.flatMap(gen => generations[`generation_${gen}`].pokemon_species);
+	};
+
+	// handle search param
+	const trimmedText = getStringFromParam(query).trim();
+
+	let searchResult: typeof pokemonRange;
+	if (trimmedText === '') {
+		// no input or only contains white space(s)
+		searchResult = pokemonRange;
+	} else if (isNaN(Number(trimmedText))) {
+		// search by name
+		searchResult = pokemonRange.filter(pokemon => {
+			if (language === 'en') {
+				return pokemon.name.toLowerCase().includes(trimmedText.toLowerCase())
+			} else {
+				// const speciesData = pokeData.pokemonSpecies[getIdFromURL(pokemon.url)]
+				// return getNameByLanguage(pokemon.name.toLowerCase(), language, speciesData).toLocaleLowerCase().includes(trimmedText.toLowerCase());
+
+				// handle non-en
+
+			};
+		});
+	} else {
+		// search by id
+		searchResult = pokemonRange.filter(pokemon => String(getIdFromURL(pokemon.url)).padStart(4 ,'0').includes(String(trimmedText)));
+	};
+
+	// get intersection
+	let intersection = searchResult.map(pokemon => getIdFromURL(pokemon.url));
+
+	// handle types
+	if (selectedTypes.length) {
+		if (matchMethod === 'all') {
+			const matchedTypeArray = selectedTypes.reduce<number[][]>((pre, cur) => {
+				pre.push(types[cur].pokemon.map(entry => getIdFromURL(entry.pokemon.url)));
+				return pre;
+			}, []);
+			for (let i = 0; i < matchedTypeArray.length; i ++) {
+				intersection = intersection.filter(pokemon => matchedTypeArray[i].includes(pokemon));
+			};
+		} else if (matchMethod === 'part') {
+			const matchedTypeIds = selectedTypes.reduce<number[]>((pre, cur) => {
+				types[cur].pokemon.forEach(entry => pre.push(getIdFromURL(entry.pokemon.url)));
+				return pre;
+			}, []);
+			intersection = intersection.filter(id => matchedTypeIds.includes(id));
+		};
+	};
+	return intersection;
+	// const {fetchedPokemons, pokemonsToDisplay, nextRequest} = await getPokemons(pokeData.pokemon, allNamesAndIds, dispatch, intersection, dispalyData.sortBy);
+
+	// return {intersection, searchParam, selectedGenerations, selectedTypes, fetchedPokemons, nextRequest, pokemonsToDisplay};
 };
