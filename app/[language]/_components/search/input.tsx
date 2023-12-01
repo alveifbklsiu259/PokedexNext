@@ -5,12 +5,12 @@ import { FaXmark } from 'react-icons/fa6'
 import { CachedAllPokemonNamesAndIds } from "../pokemonData/pokemon-data-slice";
 
 type InputProps = {
-	searchParam: string,
-	setSearchParam: React.Dispatch<React.SetStateAction<string>>,
+	searchQuery: string,
+	setSearchQuery: React.Dispatch<React.SetStateAction<string>>,
 	namesAndIds: CachedAllPokemonNamesAndIds
 };
 
-const Input = forwardRef(function Input({searchParam, setSearchParam, namesAndIds}: InputProps, forwardedInputRef: React.ForwardedRef<HTMLInputElement> | undefined) {
+const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndIds}: InputProps, forwardedInputRef: React.ForwardedRef<HTMLInputElement> | undefined) {
 	const [isDataListShown, setIsDataListShown] = useState(false);
 	const [hoveredPokemon, setHoveredPokemon] = useState('');
 	const [currentFocus, setCurrentFocus] = useState(-1);
@@ -22,11 +22,11 @@ const Input = forwardRef(function Input({searchParam, setSearchParam, namesAndId
 	const inputRef = useMemo(() => forwardedInputRef ? forwardedInputRef as React.RefObject<HTMLInputElement> : inputRefForErrorPage, [forwardedInputRef, inputRefForErrorPage]);
 
 	const matchList = useMemo(() => {
-		const match = Object.keys(namesAndIds).filter(name => name.toLowerCase().includes(searchParam.toLowerCase()));
-		const sortedByStart = match.filter(name => name.startsWith(searchParam)).sort((a,b) => a.localeCompare(b));
+		const match = Object.keys(namesAndIds).filter(name => name.toLowerCase().includes(searchQuery.toLowerCase()));
+		const sortedByStart = match.filter(name => name.startsWith(searchQuery)).sort((a,b) => a.localeCompare(b));
 		const remainder = match.filter(name => !sortedByStart.includes(name)).sort((a,b) => a.localeCompare(b));
-		return searchParam !== '' ? sortedByStart.concat(remainder) : [];
-	}, [namesAndIds, searchParam]);
+		return searchQuery !== '' ? sortedByStart.concat(remainder) : [];
+	}, [namesAndIds, searchQuery]);
 
 	const activePokemon = matchList[currentFocus];
 
@@ -37,7 +37,7 @@ const Input = forwardRef(function Input({searchParam, setSearchParam, namesAndId
 	}, []);
 
 	const handleFocus = () => {
-		if (matchList.length === 1 && matchList[0] === searchParam) {
+		if (matchList.length === 1 && matchList[0] === searchQuery) {
 			setIsDataListShown(false);
 		} else if (matchList.length > 1) {
 			setIsDataListShown(true);
@@ -54,12 +54,12 @@ const Input = forwardRef(function Input({searchParam, setSearchParam, namesAndId
 
 	const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
 		setIsDataListShown(true);
-		setSearchParam(e.currentTarget.value);
+		setSearchQuery(e.currentTarget.value);
 		resetFocus(datalistRef.current!);
 	};
 
 	const handleClearInput = () => {
-		flushSync(() => {setSearchParam('')});
+		flushSync(() => {setSearchQuery('')});
 		resetFocus(datalistRef.current!);
 		// for mobile
 		setHoveredPokemon('');
@@ -111,14 +111,14 @@ const Input = forwardRef(function Input({searchParam, setSearchParam, namesAndId
 			}
 			case 'Escape' : {
 				setIsDataListShown(false);
-				setSearchParam('');
+				setSearchQuery('');
 				resetFocus(datalist);
 				break;
 			}
 			default : 
 			// most of the input changes are handled by handleInput
 		};
-	}, [currentFocus, setSearchParam, matchList.length, resetFocus]);
+	}, [currentFocus, setSearchQuery, matchList.length, resetFocus]);
 
 	return (
 		<div className="form-group position-relative searchInput">
@@ -129,13 +129,13 @@ const Input = forwardRef(function Input({searchParam, setSearchParam, namesAndId
 					id="searchInput"
 					type="text"
 					className={`form-control form-control-lg ${isDataListShown && matchList.length ? 'showDatalist' : ''}`}
-					value={searchParam}
+					value={searchQuery}
 					onFocus={handleFocus}
 					onBlur={handleBlur}
 					onInput={handleInput}
 					onKeyDown={handleKeyDown}
 				/>
-				<FaXmark className={`xmark ${!searchParam ? 'd-none' : ''}`} onClick={handleClearInput}></FaXmark>
+				<FaXmark className={`xmark ${!searchQuery ? 'd-none' : ''}`} onClick={handleClearInput}></FaXmark>
 			</div>
 			<DataList
 				matchList={matchList}
@@ -143,8 +143,8 @@ const Input = forwardRef(function Input({searchParam, setSearchParam, namesAndId
 				inputRef={inputRef}
 				isDataListShown={isDataListShown}
 				setIsDataListShown={setIsDataListShown}
-				searchParam={searchParam}
-				setSearchParam={setSearchParam}
+				searchQuery={searchQuery}
+				setSearchQuery={setSearchQuery}
 				hoveredPokemon={hoveredPokemon}
 				setHoveredPokemon={setHoveredPokemon}
 				activePokemon={activePokemon}

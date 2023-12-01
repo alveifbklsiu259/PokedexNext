@@ -122,7 +122,7 @@ export default function Pokemon({
 						</Suspense> */}
 						<div className="row justify-content-center">
 							<div className="w-50 m-3 btn btn-block btn-secondary">
-								<Link href={`/${language}`}>Explore More Pokemons</Link>
+								<Link prefetch={true} href={`/${language}`}>Explore More Pokemons</Link>
 							</div>
 						</div>
 					</div>

@@ -179,7 +179,7 @@
 
 // // does fetched results get cached in SSR route?
 'use client';
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo,memo } from 'react';
 import { CachedGeneration, CachedPokemon, CachedPokemonSpecies, CachedType } from "./pokemon-data-slice"
 import BasicInfo from "./basicInfo"
 import { LanguageOption, SortOption } from "../display/display-slice";
@@ -217,8 +217,9 @@ type PokemonsProps = {
 
 
 
-export default function Pokemons({types, generations, initialPokemonData, initialSpeciesData}: PokemonsProps) {
+const Pokemons = memo(function Pokemons({types, generations, initialPokemonData, initialSpeciesData}: PokemonsProps) {
 	console.log('pokemons renders')
+	// console.log(initialSpeciesData)
 	// should we pass searchParams down or use useSearchParams?
 
 	// useSearchParams is the cause why even though /[language] is statically rendered, the loading.tsx still runs on initial visit/refrsh
@@ -231,6 +232,7 @@ export default function Pokemons({types, generations, initialPokemonData, initia
 	const params = useParams();
 	const {language} = params;
 	
+
 	const query = searchParams.get('query') || '';
 	const type = searchParams.get('type') || '';
 	const gen = searchParams.get('gen') || '';
@@ -380,7 +382,10 @@ export default function Pokemons({types, generations, initialPokemonData, initia
 		
 		</>
 	)
-};
+});
+
+// if the memo is removed, when we change generations, types and search, the display will be stale, but using memo will fix it why?
+export default Pokemons;
 
 
 // if we land on /en, then immediately scroll to end, the getDataOnScroll will not be triggered, and if we have a console.log() when Pokemons component mounts, the log shows up a while after the page loads, is it because when the page loads, it's the static HTML rendered from the server, so the page is actually not hydrated yet, then how can we solve this problem?

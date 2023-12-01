@@ -3,21 +3,29 @@ import { CachedGeneration, CachedType, CachedPokemon, CachedPokemonSpecies, Cach
 import { LanguageOption,SortOption  } from "../display/display-slice";
 import { getIntersection, getIdFromURL, getNameByLanguage } from "@/app/_utils/util";
 import { getPokemons2, getData, getEndpointData } from "@/app/_utils/api";
+import {memo, Suspense} from 'react'
 
 type PokemonsWrapperProps = {
-	generations: CachedGeneration,
-	types: CachedType,
 	language: LanguageOption,
 	searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export default async function PokemonsWrapper({generations, types, language, searchParams}: PokemonsWrapperProps) {
+const PokemonsWrapper = (async function PokemonsWrapper({language, searchParams}: PokemonsWrapperProps) {
+	console.time('pokemonsWrapper')
+	
 	let pokemonData: CachedPokemon = {};
 	let speciesData: CachedPokemonSpecies = {};
 	const speciesResponse = await getEndpointData('pokemonSpecies');
-	const sort = searchParams.sort || 'numberAsc';
 
-	console.log('dynamic')
+	const generationResponse = await getEndpointData('generation');
+	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+
+	// types
+	const typeResponse = await getEndpointData('type');
+	const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
+
+
+	const sort = searchParams.sort || 'numberAsc';
 
 
 	let pokemonsNamesAndId = speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
@@ -43,15 +51,30 @@ export default async function PokemonsWrapper({generations, types, language, sea
 		}, {});
 	};
 
+	console.timeEnd('pokemonsWrapper')
+
 	return (
 		<>
-			<Pokemons
-				// key={JSON.stringify(searchParams)}
-				generations={generations}
-				types={types}
-				initialPokemonData={pokemonData}
-				initialSpeciesData={speciesData}
-			/>
+			<Suspense fallback={<h1>loading pokemons</h1>}>
+				<Pokemons
+					// key={JSON.stringify(searchParams)}
+					generations={generations}
+					types={types}
+					initialPokemonData={pokemonData}
+					initialSpeciesData={speciesData}
+				/>
+			</Suspense>
 		</>
 	)
-}
+});
+
+export default PokemonsWrapper
+// can we wrap a server component with memo, does it make any difference?
+
+
+// because PokemonsWrapper is dynamically rendered on the server, whenever when change route(searchParams), this will cause the PokemonWrappers to be rendered on the server again, then the client Pokemons will render on the client, this is not the only problem, even PokemonsWrapper is wrapped inside a Suspense, when it is rendered at subsequent request, the Suspense fallback will not be activated, why?
+
+/* 
+ ways to fix it:
+ 1. let suspense run when PokemonsWrapper is rendering on the server
+ */

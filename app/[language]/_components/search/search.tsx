@@ -27,14 +27,9 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 
 	const params = new URLSearchParams(searchParams);
 
-
-
-
-	
-
 	// const dispatch = useAppDispatch();
 	const [isAdvancedShown, setIsAdvancedShown] = useState(false);
-	const [searchParam, setSearchParam] = useState('');
+	const [searchQuery, setSearchQuery] = useState('');
 	const [selectedGenerations, setSelectedGenerations] = useState<string[]>([]);
 	const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
 	const [matchMethod, setMatchMethod] = useState<'all' | 'part'>('all');
@@ -55,7 +50,7 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 	// }, [onCloseModal]);
 	useLayoutEffect(() => {
 		// synchronizing state
-		setSearchParam(sp => query ? query : sp);
+		setSearchQuery(sp => query ? query : sp);
 		setSelectedGenerations(sg => generation ? generation.split(',').map(g => 'generation-'.concat(g)) : sg);
 		setSelectedTypes(st => type ? st.toString() === type ? st : type?.split(',') : st);
 	}, [query]);
@@ -66,15 +61,18 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 
 	const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
 		
+		console.time('submit')
 		e.preventDefault();
 		const newSearchParams: {[key: string]: string} = {};
 
-		newSearchParams['query'] = searchParam;
+		newSearchParams['query'] = searchQuery;
 		newSearchParams['type'] = selectedTypes.toString();
 		newSearchParams['gen'] = selectedGenerations.map(gen => gen.replace('generation-', '')).toString();
 
-
+		router.prefetch(`${pathname}?${updateSearchParam(searchParams, newSearchParams)}`)
 		router.push(`${pathname}?${updateSearchParam(searchParams, newSearchParams)}`);
+
+		console.timeEnd('submit')
 		
 		// should we just navigate to the path with url param?
 
@@ -96,7 +94,7 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 		// 		document.querySelector('.viewModeContainer')?.scrollIntoView();
 		// 	}, 10);
 		// };
-		// dispatch(searchPokemon({searchParam, selectedGenerations, selectedTypes, matchMethod}));
+		// dispatch(searchPokemon({searchQuery, selectedGenerations, selectedTypes, matchMethod}));
 	};
 	
 
@@ -108,8 +106,8 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 			<p className="lead text-center">By Name or the National Pokedex number</p>
 			<form onSubmit={handleSubmit}>
 				<Input
-					searchParam={searchParam} 
-					setSearchParam={setSearchParam}
+					searchQuery={searchQuery} 
+					setSearchQuery={setSearchQuery}
 					ref={inputRef}
 					namesAndIds={namesAndIds}
 				/>
@@ -118,7 +116,7 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 							Show Advanced Search <AiOutlineCaretDown className="fa-solid fa-caret-down"></AiOutlineCaretDown>
 						</span>
 						<AdvancedSearch
-							setSearchParam={setSearchParam}
+							setSearchQuery={setSearchQuery}
 							selectedTypes={selectedTypes}
 							setSelectedTypes={setSelectedTypes}
 							selectedGenerations={selectedGenerations}

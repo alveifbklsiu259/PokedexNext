@@ -23,13 +23,13 @@ const languageOptions = {
 	de: 'Deutsch',
 };
 
-export async function generateStaticParams() {
-	return Object.keys(languageOptions).map(lan => ({
-		// language: lan as LanguageOption
-		language: lan
-	}));
-};
-export const dynamicParams = false;
+// export async function generateStaticParams() {
+// 	return Object.keys(languageOptions).map(lan => ({
+// 		// language: lan as LanguageOption
+// 		language: lan
+// 	}));
+// };
+// export const dynamicParams = false;
 
 type PageProps = {
 	params: {language: LanguageOption},
@@ -40,18 +40,24 @@ type PageProps = {
 // try fetching data concurrently and see if it reduces time
 
 export default async function Page({params, searchParams}: PageProps) {
-	// generations
+	console.time('root')
 	const {language} = params;
 	if (!Object.keys(languageOptions).includes(language)) {
 		throw new Error('language not supported');
 	};
-	const generationResponse = await getEndpointData('generation');
-	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+	console.timeEnd('root')
 
-	const generationsKK = 123
-	// types
-	const typeResponse = await getEndpointData('type');
-	const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
+	// generations
+
+	// console.time('page')
+	// const generationResponse = await getEndpointData('generation');
+	// const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+
+	// // types
+	// const typeResponse = await getEndpointData('type');
+	// const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
+	// console.timeEnd('page')
+
 
 	// // get pokemon count, all names and ids
 	// const speciesResponse = await getEndpointData('pokemonSpecies');
@@ -79,6 +85,7 @@ export default async function Page({params, searchParams}: PageProps) {
 	// make use of material ui, make the app look like those sites built with react (react, redux, jest, create-react-app...)
 	// using algolia for searching.
 
+	// I thought if I directly render other server  component and not fetch data in this route's page, it will immediately show the suspense boundries for those server component, but no... when I navigate to the page, it's unresponsive for a bit...
 
 	return (
 		<>
@@ -88,15 +95,13 @@ export default async function Page({params, searchParams}: PageProps) {
 				namesAndIds={pokemonsNamesAndId}
 			/> */}
 			{/*  or try fetching the smae data there, see how long it takes (.timeEnd) */}
-			{/* <SearchWrapper
-				generations={generations}
-				types={types}
-				language={language}
-			/> */}
+			<Suspense fallback={<h1>Loading searchWrapper...</h1>}>
+				<SearchWrapper
+					language={language}
+				/>
+			</Suspense>
 			<Suspense fallback={<h1>Loading PokemonsWrapper...</h1>}>
 				<PokemonsWrapper
-					generations={generations}
-					types={types}
 					language={language}
 					searchParams={searchParams}
 				/>

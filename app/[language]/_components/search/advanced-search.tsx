@@ -6,7 +6,7 @@ import { CachedGeneration, CachedType } from "../pokemonData/pokemon-data-slice"
 // import { useAppDispatch } from "../../_app/hooks";
 
 type AdvancedSearchProps = {
-	setSearchParam: React.Dispatch<React.SetStateAction<string>>,
+	setSearchQuery: React.Dispatch<React.SetStateAction<string>>,
 	selectedTypes: SelectedTypes,
 	setSelectedTypes: React.Dispatch<React.SetStateAction<SelectedTypes>>,
 	selectedGenerations: string[],
@@ -19,7 +19,7 @@ type AdvancedSearchProps = {
 };
 
 const AdvancedSearch = memo<AdvancedSearchProps>(function AdvancedSearch({
-	setSearchParam,
+	setSearchQuery,
 	selectedTypes,
 	setSelectedTypes,
 	selectedGenerations,
@@ -35,7 +35,7 @@ const AdvancedSearch = memo<AdvancedSearchProps>(function AdvancedSearch({
 		// if no state update needed, return the same state to prevent re-render.
 		// setSelectedTypes(st => !st.length ? st : []);
 		// setSelectedGenerations(sg => !Object.keys(sg).length ? sg : {});
-		// setSearchParam('');
+		// setSearchQuery('');
 		// dispatch(advancedSearchReset());
 	};
 	return (

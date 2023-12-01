@@ -2,8 +2,8 @@ import { forwardRef, memo, useCallback } from "react";
 import { CachedAllPokemonNamesAndIds } from "../pokemonData/pokemon-data-slice";
 import Image from "next/image";
 
-const colorMatching = (pokemonName: string, searchParam: string | number) => {
-	const lowerCaseSearchParam = String(searchParam).toLowerCase();
+const colorMatching = (pokemonName: string, searchQuery: string | number) => {
+	const lowerCaseSearchParam = String(searchQuery).toLowerCase();
 	const splitString = pokemonName.split(lowerCaseSearchParam) as [string, string];
 	return (
 		<>
@@ -25,8 +25,8 @@ type DataListProps = {
 	inputRef: React.RefObject<HTMLInputElement>,
 	isDataListShown: boolean,
 	setIsDataListShown: React.Dispatch<React.SetStateAction<boolean>>,
-	searchParam: string,
-	setSearchParam: React.Dispatch<React.SetStateAction<string>>,
+	searchQuery: string,
+	setSearchQuery: React.Dispatch<React.SetStateAction<string>>,
 	hoveredPokemon: string,
 	setHoveredPokemon: React.Dispatch<React.SetStateAction<string>>,
 	activePokemon: string,
@@ -39,8 +39,8 @@ const DataList = forwardRef<HTMLDivElement, DataListProps>(function DataList({
 	inputRef,
 	isDataListShown,
 	setIsDataListShown,
-	searchParam,
-	setSearchParam,
+	searchQuery,
+	setSearchQuery,
 	hoveredPokemon,
 	setHoveredPokemon,
 	activePokemon,
@@ -59,10 +59,10 @@ const DataList = forwardRef<HTMLDivElement, DataListProps>(function DataList({
 		const input = inputRef.current;
 		setHoveredPokemon('');
 		resetFocus((datalistRef as React.RefObject<HTMLDivElement>).current!);
-		setSearchParam(pokemon);
+		setSearchQuery(pokemon);
 		input!.focus();
 		setIsDataListShown(false);
-	}, [setHoveredPokemon, resetFocus, inputRef, setIsDataListShown, setSearchParam, datalistRef]);
+	}, [setHoveredPokemon, resetFocus, inputRef, setIsDataListShown, setSearchQuery, datalistRef]);
 
 	// because on mobile device, there's no "hover", hover detection happens when tapping on something (without let go), so at each touch end (hover detection on mobile) we reset the hovered pokemon; when the mobile user click any item (which will not trigger hover event) we trigger click event.
 	const handleTouchEnd = useCallback((e: React.TouchEvent<HTMLDivElement>, pokemon: string, isHovered: boolean) => {
@@ -79,7 +79,7 @@ const DataList = forwardRef<HTMLDivElement, DataListProps>(function DataList({
 		<div ref={datalistRef} id='pokemonDataList' className={isDataListShown && matchList.length ? 'showDatalist' : ''}>
 			{matchList.map(pokemon => (
 				<ListItem
-					searchParam={searchParam}
+					searchQuery={searchQuery}
 					// passing hoveredPokemon/activePokemon will break memoization when hovering/focusing list item.
 					isHovered={hoveredPokemon === pokemon}
 					isActive={activePokemon === pokemon}
@@ -98,7 +98,7 @@ const DataList = forwardRef<HTMLDivElement, DataListProps>(function DataList({
 export default DataList;
 
 type ListItemProps = {
-	searchParam: string,
+	searchQuery: string,
 	isHovered: boolean,
 	isActive: boolean,
 	pokemon: string,
@@ -110,7 +110,7 @@ type ListItemProps = {
 };
 
 const ListItem = memo<ListItemProps>(function ListItem({
-	searchParam,
+	searchQuery,
 	isHovered,
 	isActive,
 	pokemon,
@@ -131,7 +131,7 @@ const ListItem = memo<ListItemProps>(function ListItem({
 			onTouchEnd={(e) => onTouchEnd(e, pokemon, isHovered)}
 			key={pokemon}
 		>
-			<span>{colorMatching(pokemon, searchParam)}</span>
+			<span>{colorMatching(pokemon, searchQuery)}</span>
 			<Image width='96' height='96' src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${namesAndIds[pokemon]}.png`} alt={pokemon}/>
 		</div>
 	)
