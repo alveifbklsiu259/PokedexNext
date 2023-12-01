@@ -9,6 +9,7 @@ import { LanguageOption, SortOption } from "./_components/display/display-slice"
 import BasicInfo from "./_components/pokemonData/basicInfo";
 import PokemonsWrapper from "./_components/pokemonData/pokemonsWrapper";
 import Search from "./_components/search/search";
+import SearchWrapper from "./_components/search/search-wrapper";
 
 // can we export non next-defined things from page/layout...?
 // I tried importing languageOptions from other files, but encounter build error(can't get staticParams)
@@ -35,65 +36,42 @@ type PageProps = {
 	searchParams: { [key: string]: string | string[] | undefined }
 };
 
+
+// try fetching data concurrently and see if it reduces time
+
 export default async function Page({params, searchParams}: PageProps) {
-	// try fetching data concurrently
 	// generations
 	const {language} = params;
 	if (!Object.keys(languageOptions).includes(language)) {
 		throw new Error('language not supported');
 	};
-	console.time(`fetchData ${language}`)
-	// const sort = searchParams.sort || 'numberAsc';
-	let pokemonData: CachedPokemon = {};
-	let speciesData: CachedPokemonSpecies = {};
-
 	const generationResponse = await getEndpointData('generation');
 	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
 
+	const generationsKK = 123
 	// types
 	const typeResponse = await getEndpointData('type');
 	const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
 
-	// get pokemon count, all names and ids
-	const speciesResponse = await getEndpointData('pokemonSpecies');
+	// // get pokemon count, all names and ids
+	// const speciesResponse = await getEndpointData('pokemonSpecies');
 
-	let pokemonsNamesAndId = speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-		pre[cur.name] = getIdFromURL(cur.url);
-		return pre;
-	}, {});
-
-	// const intersection = getIntersection(searchParams, generations, types, language);
-
-	// const {sortedIntersection, fetchedPokemons} = await getPokemons2(pokemonData, pokemonsNamesAndId ,intersection , sort as SortOption)
-
-	// pokemonData = fetchedPokemons!;
-
-	// const initialPokemonIds = [...sortedIntersection].splice(0, 24);
-
-	if (language === 'en') {
-		// speciesData = await getData('pokemonSpecies', initialPokemonIds, 'id');
-	} else {
-		// speciesData = await getData('pokemonSpecies', speciesResponse.results.map(entry => getIdFromURL(entry.url)), 'id');
-		pokemonsNamesAndId = Object.values(speciesData).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-			pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
-			return pre;
-		}, {});
-	};
-
-	await testServerRequest();
-
-	console.timeEnd(`fetchData ${language}`);
+	// let speciesData: CachedPokemonSpecies, pokemonsNamesAndId: CachedAllPokemonNamesAndIds;
+	// if (language !== 'en') {
+	// 	speciesData = await getData('pokemonSpecies', speciesResponse.results.map(entry => getIdFromURL(entry.url)), 'id');
+	// 	pokemonsNamesAndId = Object.values(speciesData).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
+	// 		pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
+	// 		return pre;
+	// 	}, {});
+	// } else {
+	// 	pokemonsNamesAndId = speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
+	// 		pre[cur.name] = getIdFromURL(cur.url);
+	// 		return pre;
+	// 	}, {});
+	// };
 
 
-	// Pokemons has to be dynamically rendered because we need to know searchParams and get different pokemon data.
-	// if a component does not depend on searchParams, we can render it in a static server route.
-	// Search required data based on params, acutally we can make this route a static route, but since Pokemons need data from searchParams which will make the route dynamic, but maybe we can add a new route /search and use searchParams + render Pokemons there, e.g. /search?query='mewtwo', this way we can statically render Search at /, and dynamically render Pokemons at /search. but how do we show the initial pokemons at / ?
-
-
-	// Search can be statically rneder at build time, how to implement it ?
-	// this seems a bit contradictory, we want to render Search at build time and also render Pokemons at request time, is it possible?
-	// but Search also use searchParams, if the route is static, Search(client) will only be rendered on the client side. But maybe we can render the layout of Search(generations, types)?
-
+	// maybe we can further divide the Search component, take a looke at the Search component, only the Input component needs allPokemonNamesAndIds, we can make other part statically rendered, and only Input dynamically rendered on the server or even just render on the client?
 
 	// why I don't want this route to be dynamically rendered? I don't want the loading content to show. (we have all the data for Search already)
 	
@@ -104,11 +82,17 @@ export default async function Page({params, searchParams}: PageProps) {
 
 	return (
 		<>
-			<Search 
+			{/* <Search 
 				generations={generations}
 				types={types}
 				namesAndIds={pokemonsNamesAndId}
-			/>
+			/> */}
+			{/*  or try fetching the smae data there, see how long it takes (.timeEnd) */}
+			{/* <SearchWrapper
+				generations={generations}
+				types={types}
+				language={language}
+			/> */}
 			<Suspense fallback={<h1>Loading PokemonsWrapper...</h1>}>
 				<PokemonsWrapper
 					generations={generations}
@@ -120,6 +104,18 @@ export default async function Page({params, searchParams}: PageProps) {
 		</>
 	)
 };
+
+
+// is there a way to make a route partly statically render and partly dynamically render? in our case, we want to statically render Search(part of it and client-side render Input) and dynamically render Pokemons.
+
+// maybe we can implement this using parallel routes
+/* 
+what we can do is:
+1. make a route statically render, then partly client side render (use useSearchParams + Suspense);
+2. make a route dynamically render (the part that use useSearchParams will also be rendered at request time instead of on the client sied.)
+
+*/ 
+
 
 
 
@@ -239,3 +235,20 @@ I mean, what's the cose of this? if we fetch data on the server, does it impact 
 	*/ 
 
 
+
+	// I'm wondering, if I have a dynamic server component that renders a client component, and the client component uses searchParams, what will the user see when then first visit the page? since use searchParams will cause the client component to be rendered on the client side.
+/* 
+no actually if the server component is dynamically rendered, then the client component will be rendered on the server in the initial render. Only when the server component is statically rendered, then the client component will be rendered on the client.
+
+If a route is dynamically rendered, useSearchParams will be available on the server during the initial server render of the Client Component. 
+ ref: https://nextjs.org/docs/app/api-reference/functions/use-search-params#dynamic-rendering
+*/
+
+
+// maybe we can just dismiss the below statement and attempt
+// Pokemons has to be dynamically rendered because we need to know searchParams and get different pokemon data.
+	// if a component does not depend on searchParams, we can render it in a static server route.
+	// Search required data based on params, acutally we can make this route a static route, but since Pokemons need data from searchParams which will make the route dynamic, but maybe we can add a new route /search and use searchParams + render Pokemons there, e.g. /search?query='mewtwo', this way we can statically render Search at /, and dynamically render Pokemons at /search. but how do we show the initial pokemons at / ?
+
+
+// what's the use of parallel routes, if it's just for rendering some content conditionally or simultaneously, we can do the same thing by importing the components in the Page or Layout, then render ourself, or even wrap Suspense, ErrorBoundry, then why do we have to use parallel routes?

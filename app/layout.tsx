@@ -26,13 +26,16 @@ type RootLayoutProps = {
 	children: React.ReactNode
 }
 
-export default async function RootLayout({children}: RootLayoutProps) {
+export default async function RootLayout(props: RootLayoutProps) {
+
+
 
 	return (
 		<html lang="en">
 			{/* <body className={zen_maru_gothic.className}> */} 
 			<body>
-				{children}
+				{/* {props.search} */}
+				{props.children}
 			</body>
 		</html>
 	);
