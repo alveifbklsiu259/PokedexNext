@@ -187,7 +187,7 @@ import { LanguageOption, SortOption } from "../display/display-slice";
 import { getData, getDataToFetch } from '@/app/_utils/api';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import Spinner from '@/app/_components/spinner';
-import { flushSync } from 'react-dom';
+import { flushSync, preconnect } from 'react-dom';
 import { getIdFromURL } from '@/app/_utils/util';
 import dynamic from 'next/dynamic';
 import { getIntersection2 } from '@/app/_utils/util';
@@ -200,8 +200,8 @@ export type TableInfoRefTypes = {
 
 
 type PokemonsProps = {
-	initialPokemonData: CachedPokemon,
-	initialSpeciesData: CachedPokemonSpecies,
+	initialPokemonData?: CachedPokemon,
+	initialSpeciesData?: CachedPokemonSpecies,
 	generations: CachedGeneration,
 	types: CachedType,
 };
@@ -217,7 +217,7 @@ type PokemonsProps = {
 
 
 
-const Pokemons = memo(function Pokemons({types, generations, initialPokemonData, initialSpeciesData}: PokemonsProps) {
+const Pokemons = memo(function Pokemons({types, generations, initialPokemonData = {}, initialSpeciesData = {}}: PokemonsProps) {
 	console.log('pokemons renders')
 	// console.log(initialSpeciesData)
 	// should we pass searchParams down or use useSearchParams?
@@ -317,6 +317,7 @@ const Pokemons = memo(function Pokemons({types, generations, initialPokemonData,
 			window.removeEventListener('scroll', getDataOnScroll);
 		}
 	}, [getDataOnScroll]);
+	
 
 	const handleClick = (id: number) => {
 		router.push(`./${language}/pokemon/${id}`)
@@ -333,6 +334,37 @@ const Pokemons = memo(function Pokemons({types, generations, initialPokemonData,
 	// scroll bug
 	// when scrollup fetch still gets triggered.
 
+	const isReady = display.every(id => cachedData.pokemon[id]);
+
+
+	useEffect(() => {
+		if (!isReady) {
+			console.log('get initialData')
+			const getInitialData = async () => {
+				const pokemonsToFetch = getDataToFetch(cachedData.pokemon, display);
+				const speciesToFetch = getDataToFetch(cachedData.species, display);
+				let fetchedPokemons: CachedPokemon | undefined;
+				let fetchedSpecies: CachedPokemonSpecies | undefined;
+				if (pokemonsToFetch) {
+					fetchedPokemons = await getData('pokemon', pokemonsToFetch, 'id');
+				}
+				;
+
+				if (speciesToFetch) {
+					fetchedSpecies = await getData('pokemonSpecies', pokemonsToFetch, 'id');
+				};
+
+				if (fetchedPokemons) {
+					setCachedData(previousCachedData => ({...previousCachedData, pokemon: {...previousCachedData.pokemon, ...fetchedPokemons} }))
+				};
+				
+				if (fetchedSpecies) {
+					setCachedData(previousCachedData => ({...previousCachedData, species: {...previousCachedData.species, ...fetchedSpecies} }))
+				};
+			};
+			getInitialData();
+		}
+	}, [display, cachedData])
 
 
 	return (
@@ -343,7 +375,7 @@ const Pokemons = memo(function Pokemons({types, generations, initialPokemonData,
 				</div> */}
 				{/* <Sort /> */}
 				<div className="row g-5">
-					{Object.values(display).map(id => {
+					{isReady ? Object.values(display).map(id => {
 						const pokemonData = cachedData.pokemon[id];
 						const imgSrc = pokemonData.sprites?.other?.['official-artwork']?.front_default;
 						return (
@@ -373,7 +405,7 @@ const Pokemons = memo(function Pokemons({types, generations, initialPokemonData,
 							</div>
 							
 						)
-					})}
+					}) : <Spinner/>}
 				</div>
 			</div>
 			{isLoading && (

@@ -68,9 +68,15 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 		newSearchParams['query'] = searchQuery;
 		newSearchParams['type'] = selectedTypes.toString();
 		newSearchParams['gen'] = selectedGenerations.map(gen => gen.replace('generation-', '')).toString();
+		// console.log(`${pathname}/search?${updateSearchParam(searchParams, newSearchParams)}`)
 
-		router.prefetch(`${pathname}?${updateSearchParam(searchParams, newSearchParams)}`)
-		router.push(`${pathname}?${updateSearchParam(searchParams, newSearchParams)}`);
+		let newPathName: string = pathname;
+		if (!pathname.includes('search')) {
+			newPathName = `${pathname}/search`
+		}
+
+		// router.prefetch(`${pathname}?${updateSearchParam(searchParams, newSearchParams)}`)
+		router.push(`${newPathName}?${updateSearchParam(searchParams, newSearchParams)}`);
 
 		console.timeEnd('submit')
 		

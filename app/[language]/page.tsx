@@ -16,20 +16,20 @@ import SearchWrapper from "./_components/search/search-wrapper";
 const languageOptions = {
 	en: 'English',
 	ja: '日本語',
-	zh_Hant: '繁體中文',
-	zh_Hans: '简体中文',
-	ko: '한국어',
-	fr: 'Français',
-	de: 'Deutsch',
+	// zh_Hant: '繁體中文',
+	// zh_Hans: '简体中文',
+	// ko: '한국어',
+	// fr: 'Français',
+	// de: 'Deutsch',
 };
 
-// export async function generateStaticParams() {
-// 	return Object.keys(languageOptions).map(lan => ({
-// 		// language: lan as LanguageOption
-// 		language: lan
-// 	}));
-// };
-// export const dynamicParams = false;
+export async function generateStaticParams() {
+	return Object.keys(languageOptions).map(lan => ({
+		// language: lan as LanguageOption
+		language: lan
+	}));
+};
+export const dynamicParams = false;
 
 type PageProps = {
 	params: {language: LanguageOption},
@@ -40,41 +40,48 @@ type PageProps = {
 // try fetching data concurrently and see if it reduces time
 
 export default async function Page({params, searchParams}: PageProps) {
-	console.time('root')
 	const {language} = params;
 	if (!Object.keys(languageOptions).includes(language)) {
 		throw new Error('language not supported');
 	};
-	console.timeEnd('root')
 
 	// generations
 
-	// console.time('page')
-	// const generationResponse = await getEndpointData('generation');
-	// const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+	console.time(`/${language}`)
+	const generationResponse = await getEndpointData('generation');
+	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
 
 	// // types
-	// const typeResponse = await getEndpointData('type');
-	// const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
+	const typeResponse = await getEndpointData('type');
+	const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
 	// console.timeEnd('page')
 
 
 	// // get pokemon count, all names and ids
-	// const speciesResponse = await getEndpointData('pokemonSpecies');
+	const speciesResponse = await getEndpointData('pokemonSpecies');
 
-	// let speciesData: CachedPokemonSpecies, pokemonsNamesAndId: CachedAllPokemonNamesAndIds;
-	// if (language !== 'en') {
-	// 	speciesData = await getData('pokemonSpecies', speciesResponse.results.map(entry => getIdFromURL(entry.url)), 'id');
-	// 	pokemonsNamesAndId = Object.values(speciesData).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-	// 		pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
-	// 		return pre;
-	// 	}, {});
-	// } else {
-	// 	pokemonsNamesAndId = speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-	// 		pre[cur.name] = getIdFromURL(cur.url);
-	// 		return pre;
-	// 	}, {});
-	// };
+	let speciesData: CachedPokemonSpecies, pokemonsNamesAndId: CachedAllPokemonNamesAndIds;
+	// let speciesData: CachedPokemonSpecies;
+	const initialPokemonIds: number[] = [];
+	for (let i = 1 ; i <= 24; i ++) {
+		initialPokemonIds.push(i);
+	};
+	const pokemonDate = await getData('pokemon', initialPokemonIds, 'id');
+	if (language !== 'en') {
+		speciesData = await getData('pokemonSpecies', speciesResponse.results.map(entry => getIdFromURL(entry.url)), 'id');
+		pokemonsNamesAndId = Object.values(speciesData).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
+			pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
+			return pre;
+		}, {});
+	} else {
+		pokemonsNamesAndId = speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
+			pre[cur.name] = getIdFromURL(cur.url);
+			return pre;
+		}, {});
+		speciesData = await getData('pokemonSpecies', initialPokemonIds, 'id');
+	};
+	console.timeEnd(`/${language}`)
+
 
 
 	// maybe we can further divide the Search component, take a looke at the Search component, only the Input component needs allPokemonNamesAndIds, we can make other part statically rendered, and only Input dynamically rendered on the server or even just render on the client?
@@ -95,20 +102,73 @@ export default async function Page({params, searchParams}: PageProps) {
 				namesAndIds={pokemonsNamesAndId}
 			/> */}
 			{/*  or try fetching the smae data there, see how long it takes (.timeEnd) */}
-			<Suspense fallback={<h1>Loading searchWrapper...</h1>}>
+			{/* <Suspense fallback={<h1>Loading searchWrapper...</h1>}>
 				<SearchWrapper
 					language={language}
 				/>
-			</Suspense>
-			<Suspense fallback={<h1>Loading PokemonsWrapper...</h1>}>
+			</Suspense> */}
+			{/* <Suspense fallback={<h1>Loading PokemonsWrapper... this loading should not appear</h1>}>
 				<PokemonsWrapper
 					language={language}
 					searchParams={searchParams}
+				/>
+			</Suspense> */}
+
+			{/* render Search here */}
+			<Suspense fallback={<h1>Loading searchWrapper...</h1>}>
+				<Search
+					generations={generations}
+					types={types}
+					namesAndIds={pokemonsNamesAndId}
+				/>
+			</Suspense>
+			<Suspense fallback={<h1>Loading Pokemons...</h1>}>
+				<Pokemons
+					initialPokemonData={pokemonDate} 
+					initialSpeciesData={speciesData}
+					generations={generations}
+					types={types}
 				/>
 			</Suspense>
 		</>
 	)
 };
+
+
+
+// make /[language] statically rendered, and /[language]/search should also be static or only render on the client side
+// but this way, since Pokemons and Search reads searchParams, they will not be rendered on teh server in the initial render, they will only be rendered on the client side. unles I'm gonna have to create a server version of Search and Pokemons, and they don't read searchParams.
+
+
+// I thought Suspense only runs when it wraps a server component and the server component is fetching data, but if a route is statically rendered on the server and it renders a client component that is only rendered on the client(use useSearchParams), then the Suspense wrap around this client component will also run on every initial load.
+
+
+// both Search and Pokemons are showing up at the same time, because of data fetching in page, both of them wait for all the data to be fetched then rendered. so if you want to render them separately, you have to fetch their data seperately(which means use SearchWrapper, PokemonsWrapper)
+
+
+/* 
+	The final structure: 
+	1. /[language] is statically render, and it renders Search(server), Pokemons(server) which both of them don't read searchParams.
+	this way the initail visit of /[language] is super quick
+	2. /[language]/search is statically rendered, and it renders Search(client), Pokemons(client), both of them use searchParams, this will make those two components only render on the client, which is bad for SEO, but this is fine, since we have /[language] rendered on the serve for SEO, and with this approach, there's no round trip between server and client on each navigation.
+	(maybe we can test /[language]/search as a client component, or dynamic component).
+	about Search and Pokemons, maybe we can use HOC?
+
+
+	further thoughts:
+	Q1-1. why don't make /[language] static, and it renders Search(server), Pokemons(server) which both of them render the respective component that use searchParams?
+	A1-1. because this will make Search(client) and Pokemons(client) only render on the client which is not so good for SEO.
+	Q1-2 how about using Suspense that renders the static structure of those components?
+	A1-2 I'm not sure if this will work, and if it works, users will see the same thing before and after the client component actually renders, but the initial one will not be responsive.
+
+	Q2. why don't make /[language] dynamic, and it renders Search(server), Pokemons(server) which both of them render the respective component that use searchParams?
+	Q3.
+
+
+
+
+*/
+
 
 
 // is there a way to make a route partly statically render and partly dynamically render? in our case, we want to statically render Search(part of it and client-side render Input) and dynamically render Pokemons.

@@ -10,7 +10,7 @@ const BASE_URL = 'https://pokeapi.co/api/v2';
 export type EndPointRequest = keyof Omit<PokemonDataTypes, 'pokemonCount' | 'allPokemonNamesAndIds'> | 'pokemonForm';
 
 export const getEndpointData = async (dataType: EndPointRequest) => {
-	const response = await fetch(`${BASE_URL}/${toEndPointString(dataType)}?limit=99999`);
+	const response = await fetch(`${BASE_URL}/${toEndPointString(dataType)}?limit=99999`, {cache: 'force-cache'});
 	const data: EndPointData.Root = await response.json();
 	return data;
 };
@@ -49,7 +49,7 @@ export async function getData(dataType: EndPointRequest, dataToFetch: (number | 
 		};
 	};
 
-	const dataResponses = await Promise.all(request.map(entry => fetch(`${BASE_URL}/${toEndPointString(dataType)}/${entry}`)));
+	const dataResponses = await Promise.all(request.map(entry => fetch(`${BASE_URL}/${toEndPointString(dataType)}/${entry}`, {cache: 'force-cache'})));
 	const finalData: Array<GetReturnedDataType<EndPointRequest, undefined>> = await Promise.all(dataResponses.map(response => response.json()));
 
 	if (resultKey) {

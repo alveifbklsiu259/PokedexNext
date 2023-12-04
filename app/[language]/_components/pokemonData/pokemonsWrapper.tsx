@@ -11,7 +11,7 @@ type PokemonsWrapperProps = {
 }
 
 const PokemonsWrapper = (async function PokemonsWrapper({language, searchParams}: PokemonsWrapperProps) {
-	console.time('pokemonsWrapper')
+	console.time('server: pokemonsWrapper')
 	
 	let pokemonData: CachedPokemon = {};
 	let speciesData: CachedPokemonSpecies = {};
@@ -51,7 +51,7 @@ const PokemonsWrapper = (async function PokemonsWrapper({language, searchParams}
 		}, {});
 	};
 
-	console.timeEnd('pokemonsWrapper')
+	console.timeEnd('server: pokemonsWrapper')
 
 	return (
 		<>
@@ -77,4 +77,10 @@ export default PokemonsWrapper
 /* 
  ways to fix it:
  1. let suspense run when PokemonsWrapper is rendering on the server
+ 2. on subsequent request, only render on the client
+	(create a new route /s/ which is client component (it can't be a static route, because we need searchParams, and using searchParams will make the route dynamic which will cause the same issue at root) that renders the same content as root except only render the client component, then we're gonna have to handle data fetching in the client component, so there's some change to make to the Search and Pokemons components, 
+	2-1 the props passed to them should be the data fetched from the server or undefined
+	2-2 those two components have to handle data fetching inside of them 
+	or maybe we can put Search in the /[language]'s layout and only refactor Pokemons.)
+
  */
