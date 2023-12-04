@@ -1,13 +1,12 @@
 'use client';
 import { useState, useLayoutEffect, useRef, memo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import AdvancedSearch from './advanced-search';
-import Input from './input';
+import AdvancedSearch from '../_components/search/advanced-search';
+import Input from '../_components/search/input';
 import Image from 'next/image';
 import { AiOutlineCaretDown } from 'react-icons/ai'
-import { useSearchParams } from 'next/navigation';
-import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from '../pokemonData/pokemon-data-slice';
-import { updateSearchParam } from '@/app/_utils/util';
+import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from '../_components/pokemonData/pokemon-data-slice';
+import { updateSearchParam, updateSearchParam2 } from '@/app/_utils/util';
 
 type SearchProps = {
 	onCloseModal?: () => void,
@@ -18,15 +17,21 @@ type SearchProps = {
 };
 
 export default function Search({generations, types, namesAndIds}: SearchProps) {
-	console.log('search rendereds')
-	const searchParams = useSearchParams();
-	const query = searchParams.get('query');
-	const generation = searchParams.get('gen');
-	const type = searchParams.get('type');
-	const match = searchParams.get('match');
+	console.log('preSearch')
+	console.log('preSearch')
+	console.log('preSearch')
+	console.log('preSearch')
+	console.log('preSearch')
+	console.log('preSearch')
+
+	// const searchParams = useSearchParams();
+	const query = '';
+	const generation = '';
+	const type = '';
+	const match = '';
 	// when using searchParams, is state still needed? maybe not? then how to set state?
 
-	const params = new URLSearchParams(searchParams);
+	// const params = new URLSearchParams(searchParams);
 
 	// const dispatch = useAppDispatch();
 	const [isAdvancedShown, setIsAdvancedShown] = useState(false);
@@ -49,12 +54,16 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 	// 		inputRef.current!.focus();
 	// 	};
 	// }, [onCloseModal]);
-	useLayoutEffect(() => {
-		// synchronizing state
-		setSearchQuery(sp => query ? query : sp);
-		setSelectedGenerations(sg => generation ? generation.split(',').map(g => 'generation-'.concat(g)) : sg);
-		setSelectedTypes(st => type ? st.toString() === type ? st : type?.split(',') : st);
-	}, [query]);
+
+    // maybe needn't to worry about synching up, because on subsequent navigation, we use Search, not PrerenderedSearch.
+
+	// useLayoutEffect(() => {
+	// 	// synchronizing state
+	// 	setSearchQuery(sp => query ? query : sp);
+
+	// 	setSelectedGenerations(sg => generation ? generation.split(',').map(g => 'generation-'.concat(g)) : sg);
+	// 	setSelectedTypes(st => type ? st.toString() === type ? st : type?.split(',') : st);
+	// }, [query]);
 
 
 	// when type is not selected, this param still gets added to the url, why?
@@ -74,10 +83,12 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 		let newPathName: string = pathname;
 		if (!pathname.includes('search')) {
 			newPathName = `${pathname}/search`
-		}
+		};
+        // what about if there's no search params, we navigate back to /[language](the statically generated route, which will be super fase);
 
-		// router.prefetch(`${pathname}?${updateSearchParam(searchParams, newSearchParams)}`)
-		router.push(`${newPathName}?${updateSearchParam(searchParams, newSearchParams)}`);
+        // we can be assured that this route will not contain any search params
+		// router.prefetch(`${newPathName}?${updateSearchParam2(newSearchParams)}`);
+		router.push(`${newPathName}?${updateSearchParam2(newSearchParams)}`);
 
 		console.timeEnd('submit')
 		

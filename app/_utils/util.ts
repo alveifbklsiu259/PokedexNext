@@ -134,6 +134,20 @@ export const updateSearchParam = (searchParams: ReadonlyURLSearchParams, newPara
 	return params.toString();
 };
 
+export const updateSearchParam2 = (newParams: {
+	[key: string]: string
+}): string => {
+
+	let newSearchParams: string = '';
+	Object.keys(newParams).forEach(params => {
+		if (newParams[params] !== '') {
+			newSearchParams += `${params}=${newParams[params]}`;
+		};
+	});
+
+	return newSearchParams;
+};
+
 
 function getArrFromParam (searchParam: string | string[] | undefined): string[] {
 	if (!searchParam) {

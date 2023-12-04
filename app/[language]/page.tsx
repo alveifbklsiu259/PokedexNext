@@ -10,6 +10,8 @@ import BasicInfo from "./_components/pokemonData/basicInfo";
 import PokemonsWrapper from "./_components/pokemonData/pokemonsWrapper";
 import Search from "./_components/search/search";
 import SearchWrapper from "./_components/search/search-wrapper";
+import SearchServer from "./_test/SearchServer";
+import PokemonsServer from "./_test/PokemonsServer";
 
 // can we export non next-defined things from page/layout...?
 // I tried importing languageOptions from other files, but encounter build error(can't get staticParams)
@@ -23,64 +25,65 @@ const languageOptions = {
 	// de: 'Deutsch',
 };
 
-export async function generateStaticParams() {
-	return Object.keys(languageOptions).map(lan => ({
-		// language: lan as LanguageOption
-		language: lan
-	}));
-};
-export const dynamicParams = false;
+// export async function generateStaticParams() {
+// 	return Object.keys(languageOptions).map(lan => ({
+// 		// language: lan as LanguageOption
+// 		language: lan
+// 	}));
+// };
+// export const dynamicParams = false;
 
 type PageProps = {
 	params: {language: LanguageOption},
-	searchParams: { [key: string]: string | string[] | undefined }
+	// searchParams: { [key: string]: string | string[] | undefined }
 };
 
 
 // try fetching data concurrently and see if it reduces time
 
-export default async function Page({params, searchParams}: PageProps) {
+export default async function Page({params}: PageProps) {
 	const {language} = params;
 	if (!Object.keys(languageOptions).includes(language)) {
 		throw new Error('language not supported');
 	};
+	console.log(`this is ${language}`)
 
 	// generations
 
-	console.time(`/${language}`)
-	const generationResponse = await getEndpointData('generation');
-	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+	// console.time(`/${language}`)
+	// const generationResponse = await getEndpointData('generation');
+	// const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
 
-	// // types
-	const typeResponse = await getEndpointData('type');
-	const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
-	// console.timeEnd('page')
+	// // // types
+	// const typeResponse = await getEndpointData('type');
+	// const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
+	// // console.timeEnd('page')
 
 
-	// // get pokemon count, all names and ids
-	const speciesResponse = await getEndpointData('pokemonSpecies');
+	// // // get pokemon count, all names and ids
+	// const speciesResponse = await getEndpointData('pokemonSpecies');
 
-	let speciesData: CachedPokemonSpecies, pokemonsNamesAndId: CachedAllPokemonNamesAndIds;
-	// let speciesData: CachedPokemonSpecies;
-	const initialPokemonIds: number[] = [];
-	for (let i = 1 ; i <= 24; i ++) {
-		initialPokemonIds.push(i);
-	};
-	const pokemonDate = await getData('pokemon', initialPokemonIds, 'id');
-	if (language !== 'en') {
-		speciesData = await getData('pokemonSpecies', speciesResponse.results.map(entry => getIdFromURL(entry.url)), 'id');
-		pokemonsNamesAndId = Object.values(speciesData).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-			pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
-			return pre;
-		}, {});
-	} else {
-		pokemonsNamesAndId = speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-			pre[cur.name] = getIdFromURL(cur.url);
-			return pre;
-		}, {});
-		speciesData = await getData('pokemonSpecies', initialPokemonIds, 'id');
-	};
-	console.timeEnd(`/${language}`)
+	// let speciesData: CachedPokemonSpecies, pokemonsNamesAndId: CachedAllPokemonNamesAndIds;
+	// // let speciesData: CachedPokemonSpecies;
+	// const initialPokemonIds: number[] = [];
+	// for (let i = 1 ; i <= 24; i ++) {
+	// 	initialPokemonIds.push(i);
+	// };
+	// const pokemonDate = await getData('pokemon', initialPokemonIds, 'id');
+	// if (language !== 'en') {
+	// 	speciesData = await getData('pokemonSpecies', speciesResponse.results.map(entry => getIdFromURL(entry.url)), 'id');
+	// 	pokemonsNamesAndId = Object.values(speciesData).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
+	// 		pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
+	// 		return pre;
+	// 	}, {});
+	// } else {
+	// 	pokemonsNamesAndId = speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
+	// 		pre[cur.name] = getIdFromURL(cur.url);
+	// 		return pre;
+	// 	}, {});
+	// 	speciesData = await getData('pokemonSpecies', initialPokemonIds, 'id');
+	// };
+	// console.timeEnd(`/${language}`)
 
 
 
@@ -115,7 +118,7 @@ export default async function Page({params, searchParams}: PageProps) {
 			</Suspense> */}
 
 			{/* render Search here */}
-			<Suspense fallback={<h1>Loading searchWrapper...</h1>}>
+			{/* <Suspense fallback={<h1>Loading searchWrapper...</h1>}>
 				<Search
 					generations={generations}
 					types={types}
@@ -129,7 +132,19 @@ export default async function Page({params, searchParams}: PageProps) {
 					generations={generations}
 					types={types}
 				/>
+			</Suspense> */}
+			{/* <Suspense fallback={<h1>Loading SearchServer...</h1>}>
+				<SearchServer
+					language={language}
+				/>
+			</Suspense> */}
+			<Suspense fallback={<h1>Loading PokemonsServer...</h1>}>
+				<PokemonsServer 
+					language={language}
+				/>
 			</Suspense>
+
+
 		</>
 	)
 };
@@ -154,17 +169,35 @@ export default async function Page({params, searchParams}: PageProps) {
 	(maybe we can test /[language]/search as a client component, or dynamic component).
 	about Search and Pokemons, maybe we can use HOC?
 
+	other possible structure is:
+	1. /[language] is dynamically rendered, /[language]/search is statically rendered
+	2. /[language] is dynamically rendered, /[language]/search is client rendered
+	3. /[language] is statically rendered, /[language]/search is statically rendered
+	4. /[language] is statically rendered, /[language]/search is client rendered
+	all in all, we need prerender for SEO(either static or dynamic will work), and a route that onlt renders on the client side when search params change which mean it can't be dynamically rendered otherwise on every requests it will be rendered on the server.
+
 
 	further thoughts:
-	Q1-1. why don't make /[language] static, and it renders Search(server), Pokemons(server) which both of them render the respective component that use searchParams?
+	Q1-1. why don't make /[language] static, and it renders Search(server), Pokemons(server) which both of them render the corresponding component that use searchParams?
 	A1-1. because this will make Search(client) and Pokemons(client) only render on the client which is not so good for SEO.
 	Q1-2 how about using Suspense that renders the static structure of those components?
 	A1-2 I'm not sure if this will work, and if it works, users will see the same thing before and after the client component actually renders, but the initial one will not be responsive.
 
-	Q2. why don't make /[language] dynamic, and it renders Search(server), Pokemons(server) which both of them render the respective component that use searchParams?
-	Q3.
+	Q2-1. why don't make /[language] dynamic, and it renders Search(server), Pokemons(server) which both of them render the respective component that use searchParams?
+	A2-1. during the initial render, all the components will be rendered on the server, then when searchParams change, Search(server), Pokemons(server) will also render on the server again, which will drag the speed, and the app will be slow.
 
 
+
+	thanks to partial rendering, navigating between the routes that share the same layout will not cause the layout to rerender even if the layout is dynamically rendered at request time. maybe we can do:
+	1. /[language]/layout.tsx render Search(server) and Pokemons(server) that render corresponding client components that use useSearchParams.
+	2. /[language]/page.tsx render null, we only want to make this route accessible.
+	3. /[language]/search/page.tsx renders null 
+	// give it a shot
+
+
+	// try template method
+
+	maybe there's another solution, which is add one more route on top of /[language] and in that route we dynamically render Search
 
 
 */
