@@ -17,10 +17,7 @@ export default function Layout({ children, params }: LayoutProps) {
 	
 	return (
 		<>
-			{/* check if this suspense works */}
-			{/* <Suspense fallback={<h1>Loading searchWrapper...</h1>}>
-				<SearchWrapper language={language} />
-			</Suspense> */}
+		{/* renders the Search with searchParams, but the fallback of the Suspense wraps around the client Search will be the one that does not use searchParams */}
 			<Suspense fallback={<h1>Loading SearchServer...</h1>}>
 				<SearchServer
 					language={language}

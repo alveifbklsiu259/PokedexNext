@@ -41,18 +41,21 @@ export default async function SearchServer({language}: SearchServerProps) {
 	console.timeEnd('SerchServer')
 
 	return (
-		// <PrerenderedSearch
-		// 	generations={generations}
-		// 	types={types}
-		// 	namesAndIds={pokemonsNamesAndId}
-		// />
-		<Suspense fallback={<h1>Loading client Search</h1>}>
+		<>
+		<Suspense fallback={
+			<PrerenderedSearch
+				generations={generations}
+				types={types}
+				namesAndIds={pokemonsNamesAndId}
+			/>
+		}>
 			<Search
 				generations={generations}
 				types={types}
 				namesAndIds={pokemonsNamesAndId}
 			/>
 		</Suspense>
+		</>
 	)
 
 

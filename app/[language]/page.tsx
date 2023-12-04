@@ -25,13 +25,13 @@ const languageOptions = {
 	// de: 'Deutsch',
 };
 
-// export async function generateStaticParams() {
-// 	return Object.keys(languageOptions).map(lan => ({
-// 		// language: lan as LanguageOption
-// 		language: lan
-// 	}));
-// };
-// export const dynamicParams = false;
+export async function generateStaticParams() {
+	return Object.keys(languageOptions).map(lan => ({
+		// language: lan as LanguageOption
+		language: lan
+	}));
+};
+export const dynamicParams = false;
 
 type PageProps = {
 	params: {language: LanguageOption},
