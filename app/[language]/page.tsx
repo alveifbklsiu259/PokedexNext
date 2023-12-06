@@ -1,12 +1,15 @@
-import { getEndpointData, getData  } from "../_utils/api";
-import { Suspense } from 'react'
+import { getEndpointData, getData } from "../_utils/api";
+import { Suspense } from "react";
 import PrerenderedPokemons from "./_test/PrerenderedPokemons";
+import InitialPokemons from "./_components/pokemonData/initialPokemons";
+import { LanguageOption } from "./_components/display/display-slice";
+import Pokemons from "./_components/pokemonData/pokemons";
 
 // can we export non next-defined things from page/layout...?
 // I tried importing languageOptions from other files, but encounter build error(can't get staticParams)
 const languageOptions = {
-	en: 'English',
-	ja: '日本語',
+	en: "English",
+	ja: "日本語",
 	// zh_Hant: '繁體中文',
 	// zh_Hans: '简体中文',
 	// ko: '한국어',
@@ -15,35 +18,70 @@ const languageOptions = {
 };
 
 export async function generateStaticParams() {
-	return Object.keys(languageOptions).map(lan => ({
-		language: lan
+	return Object.keys(languageOptions).map((lan) => ({
+		language: lan,
 	}));
-};
+}
 export const dynamicParams = false;
 
-// try fetching data concurrently and see if it reduces time
-export default async function LanguagePage() {
-	console.log('/[language].page.tsx')
+type LanguagePageProps = {
+	params: {
+		language: LanguageOption;
+	};
+};
 
-	const generationResponse = await getEndpointData('generation');
-	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+// try fetching data concurrently and see if it reduces time
+export default async function LanguagePage({ params }: LanguagePageProps) {
+	console.log("/[language].page.tsx");
+	const { language } = params;
+
+	const generationResponse = await getEndpointData("generation");
+	const generations = await getData(
+		"generation",
+		generationResponse.results.map((entry) => entry.name),
+		"name"
+	);
 
 	// types
-	const typeResponse = await getEndpointData('type');
-	const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
+	const typeResponse = await getEndpointData("type");
+	const types = await getData(
+		"type",
+		typeResponse.results.map((entry) => entry.name),
+		"name"
+	);
 
 	const initialPokemonIds: number[] = [];
-	for(let i = 1; i <= 24; i ++) {
-		initialPokemonIds.push(i)
+	for (let i = 1; i <= 24; i++) {
+		initialPokemonIds.push(i);
 	}
 
-	const pokemonData = await getData('pokemon', initialPokemonIds, 'id');
-	const speciesData = await getData('pokemonSpecies', initialPokemonIds, 'id');
+	const pokemonData = await getData("pokemon", initialPokemonIds, "id");
+	const speciesData = await getData("pokemonSpecies", initialPokemonIds, "id");
 
 	return (
 		<>
-			<Suspense fallback={<h1>Prerendered Pokemons</h1>}>
+			{/* <Suspense fallback={<h1>Prerendered Pokemons</h1>}>
 				<PrerenderedPokemons
+					generations={generations}
+					types={types}
+					initialPokemonData={pokemonData}
+					initialSpeciesData={speciesData}
+				/>
+			</Suspense> */}
+			<Suspense
+				// the skeleton that shows the first 24 pokemons
+				key={Math.random()}
+				fallback={
+					<InitialPokemons
+						language={language}
+						types={types}
+						initialPokemonData={pokemonData}
+						initialSpeciesData={speciesData}
+					/>
+				}
+			>
+				{/* since Pokemons uses searchParams, it will only be rendered on the client side. */}
+				<Pokemons
 					generations={generations}
 					types={types}
 					initialPokemonData={pokemonData}
@@ -51,27 +89,20 @@ export default async function LanguagePage() {
 				/>
 			</Suspense>
 		</>
-	)
-};
-
+	);
+}
 
 /* 
 	1. HOC
-	2. pass key to suspense
-	3. pass ref to FormBtn
+	2. make a route client, (when making a route client, and use export default async function will not cause an error why?)
 */
-
-
 
 // make /[language] statically rendered, and /[language]/search should also be static or only render on the client side
 // but this way, since Pokemons and Search reads searchParams, they will not be rendered on teh server in the initial render, they will only be rendered on the client side. unles I'm gonna have to create a server version of Search and Pokemons, and they don't read searchParams.
 
-
 // I thought Suspense only runs when it wraps a server component and the server component is fetching data, but if a route is statically rendered on the server and it renders a client component that is only rendered on the client(use useSearchParams), then the Suspense wrap around this client component will also run on every initial load.
 
-
 // both Search and Pokemons are showing up at the same time, because of data fetching in page, both of them wait for all the data to be fetched then rendered. so if you want to render them separately, you have to fetch their data seperately(which means use SearchWrapper, PokemonsWrapper)
-
 
 /* 
 	The final structure: 
@@ -114,8 +145,6 @@ export default async function LanguagePage() {
 
 */
 
-
-
 // is there a way to make a route partly statically render and partly dynamically render? in our case, we want to statically render Search(part of it and client-side render Input) and dynamically render Pokemons.
 
 // maybe we can implement this using parallel routes
@@ -124,11 +153,7 @@ what we can do is:
 1. make a route statically render, then partly client side render (use useSearchParams + Suspense);
 2. make a route dynamically render (the part that use useSearchParams will also be rendered at request time instead of on the client sied.)
 
-*/ 
-
-
-
-
+*/
 
 // when we search pokemon (in language like ja, zh, the query will be the string we type in instead of an encoded uri, should we convert it into an encoded one?)
 // when fetching a lot of data on the server, the load time of the page will be slow why?
@@ -146,22 +171,18 @@ what we can do is:
 // const initialPokemonData = await getData('pokemon', initialPokemonIds, 'id');
 // const initialSpeciesData = await getData('pokemonSpecies', display, 'id');
 
-
-
-// I fetch data on the client, but after deleting .next folder, rebuild/restart dev, those fetched data is still cached? why, where are those data cacahed? 
+// I fetch data on the client, but after deleting .next folder, rebuild/restart dev, those fetched data is still cached? why, where are those data cacahed?
 // does data fetched on the client cached on the server?  (I guess no?)
 
-// now the page is so much faster, fetching data on the client, instead of on the server then passing it down 
+// now the page is so much faster, fetching data on the client, instead of on the server then passing it down
 
 // we can actually read the params/searchParams in the server component to make it dynamically rendered, then fetch data based on params/searchParams and we're also able to render an initial skeleton based on the data we fetched.
-
 
 // should be skeleton, else the images will change after render.
 
 // nextjs + redux
 // learn swr / react query
 // read this again: https://react.dev/learn/render-and-commit#epilogue-browser-paint
-
 
 // google: infinite scroll next server, there're some videos about using server action to implement this, but not sure if it's server component or client
 // how to handle different case url? redirect?
@@ -186,7 +207,6 @@ is ISR the same as streaming?
 Streaning: Streaming enables you to progressively render UI from the server. Work is split into chunks and streamed to the client as it becomes ready. This allows the user to see parts of the page immediately, before the entire content has finished rendering.
  */
 
-
 /* what's the downside of fetching data in the client component?
 does that mean we should fetch all pokemon related data in the server?
 I wonder if this is a good approach:
@@ -196,7 +216,6 @@ I mean, what's the cose of this? if we fetch data on the server, does it impact 
 */
 
 // // Does throttling browser internet impact the load time of a SSR page, I tried, and seems like it does, why? I mean the page is rendered on the server, why does it impact it?(I tested on dev mode, is it because in this case the server is actually my browser? )
-
 
 // 2. what is Route Handler for?
 // // read: https://nextjs.org/docs/app/building-your-application/routing/route-handlers
@@ -209,25 +228,18 @@ I mean, what's the cose of this? if we fetch data on the server, does it impact 
 // // https://nextjs.org/docs/app/building-your-application/data-fetching/patterns#preloading-data
 // // the reason why it works even though the prefetched data is not bound to any variable is I think because of next.js's cached fetch(the second fetch will use the cached result).
 
-// can I do things like: 
+// can I do things like:
 // async function Page () {...}
 // export default <Suspense fallback={<Spinner/>}>{Page}</Suspense>
 // to replace using loading?? (just wonder if this pattern is possible?)
-
 
 // in a dynamic route, can I have some data being fetched at build time? for example using layout and page, get some data in layout at build time, and get other data in page at request time based on params or searchParams?
 
 // maybe the answer is: https://nextjs.org/docs/app/building-your-application/caching#data-cache-and-full-route-cache
 // the simplest way to implement it is to fetch data in root layout at build time
 
-
-
-
-
-
-
 //	weird behavior
-	/*  
+/*  
 		Is a route capable of rendering part of the content at build time and part of the content at request time? (I want the rendering happens on server)
 
 		Q: if I'm only passing the searchParams down to a child server component, does it count "using searchParams"? e.g.
@@ -242,11 +254,9 @@ I mean, what's the cose of this? if we fetch data on the server, does it impact 
 		- at request time, the static route's requests will not be made, but the content will be rendered again!!!!! (this is the weird behavior)
 		- at reuqest time, the server component that receives searchParams and uses it will be rendered and make requests.
 		so the conclusion is, passing down searchParams is considered using it, but the route can make request at build time and the route will be rendered at both build and request time. (which means the loading content will run)
-	*/ 
+	*/
 
-
-
-	// I'm wondering, if I have a dynamic server component that renders a client component, and the client component uses searchParams, what will the user see when then first visit the page? since use searchParams will cause the client component to be rendered on the client side.
+// I'm wondering, if I have a dynamic server component that renders a client component, and the client component uses searchParams, what will the user see when then first visit the page? since use searchParams will cause the client component to be rendered on the client side.
 /* 
 no actually if the server component is dynamically rendered, then the client component will be rendered on the server in the initial render. Only when the server component is statically rendered, then the client component will be rendered on the client.
 
@@ -254,16 +264,16 @@ If a route is dynamically rendered, useSearchParams will be available on the ser
  ref: https://nextjs.org/docs/app/api-reference/functions/use-search-params#dynamic-rendering
 */
 
-
 // maybe we can just dismiss the below statement and attempt
 // Pokemons has to be dynamically rendered because we need to know searchParams and get different pokemon data.
-	// if a component does not depend on searchParams, we can render it in a static server route.
-	// Search required data based on params, acutally we can make this route a static route, but since Pokemons need data from searchParams which will make the route dynamic, but maybe we can add a new route /search and use searchParams + render Pokemons there, e.g. /search?query='mewtwo', this way we can statically render Search at /, and dynamically render Pokemons at /search. but how do we show the initial pokemons at / ?
-
+// if a component does not depend on searchParams, we can render it in a static server route.
+// Search required data based on params, acutally we can make this route a static route, but since Pokemons need data from searchParams which will make the route dynamic, but maybe we can add a new route /search and use searchParams + render Pokemons there, e.g. /search?query='mewtwo', this way we can statically render Search at /, and dynamically render Pokemons at /search. but how do we show the initial pokemons at / ?
 
 // what's the use of parallel routes, if it's just for rendering some content conditionally or simultaneously, we can do the same thing by importing the components in the Page or Layout, then render ourself, or even wrap Suspense, ErrorBoundry, then why do we have to use parallel routes?
 
+// I think you can use  <Suspense key={data.id} fallback={null}> to wrap around component for selective hydration, in the case that you don't need the fallback to show when rendering the component, you can use it. (for example the components inside are statically rendered on the server) (but I'm not sure if it's good for performance, or does it make more good than harms?)
 
- // I think you can use  <Suspense key={data.id} fallback={null}> to wrap around component for selective hydration, in the case that you don't need the fallback to show when rendering the component, you can use it. (for example the components inside are statically rendered on the server) (but I'm not sure if it's good for performance, or does it make more good than harms?)
+// make use of material ui, make the app look like those sites built with react (react, redux, jest, create-react-app...), using algolia for searching.
 
-	// make use of material ui, make the app look like those sites built with react (react, redux, jest, create-react-app...), using algolia for searching.
+// check this discussion, it talks about passing data from client to server component
+// ref: https://github.com/vercel/next.js/discussions/49254

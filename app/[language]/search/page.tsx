@@ -1,9 +1,6 @@
 import { Suspense } from "react";
 import { getEndpointData, getData } from "@/app/_utils/api";
 import Pokemons from "../_components/pokemonData/pokemons";
-import { CachedAllPokemonNamesAndIds, CachedPokemonSpecies } from "../_components/pokemonData/pokemon-data-slice";
-import { LanguageOption } from "../_components/display/display-slice";
-import { getIdFromURL, getNameByLanguage } from "@/app/_utils/util";
 
 // this component is still rendered at reuqest time but only ONCE, why?
 
@@ -17,14 +14,14 @@ const languageOptions = {
 	// de: 'Deutsch',
 };
 
-// export const dynamic = 'force-static'
+export const dynamic = 'force-static'
 
-// export async function generateStaticParams() {
-// 	return Object.keys(languageOptions).map(lan => ({
-// 		// language: lan as LanguageOption
-// 		language: lan
-// 	}));
-// };
+export async function generateStaticParams() {
+	return Object.keys(languageOptions).map(lan => ({
+		// language: lan as LanguageOption
+		language: lan
+	}));
+};
 export const dynamicParams = false;
 
 export default async function Page() {
@@ -44,8 +41,6 @@ export default async function Page() {
 		typeResponse.results.map((entry) => entry.name),
 		"name"
 	);
-	// const randomKey = Math.random();
-	// console.log(randomKey)
 
 	return (
 		<>
@@ -58,3 +53,6 @@ export default async function Page() {
 		</>
 	);
 };
+
+
+// what's the point of rendering this route statically on the server? would it be better if we render this route only on the client side?
