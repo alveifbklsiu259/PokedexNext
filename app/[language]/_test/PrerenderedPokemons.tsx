@@ -218,7 +218,7 @@ type PrerenderedPokemonsProps = {
 
 
 const PrerenderedPokemons = memo(function PrerenderedPokemons({types, generations, initialPokemonData = {}, initialSpeciesData = {}}: PrerenderedPokemonsProps) {
-	console.log('pokemons renders')
+	console.log('PrerenderedPokemons')
 	// console.log(initialSpeciesData)
 	// should we pass searchParams down or use useSearchParams?
 

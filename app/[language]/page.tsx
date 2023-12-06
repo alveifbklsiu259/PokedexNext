@@ -1,17 +1,6 @@
-import { getEndpointData, getData, getPokemons2, testServerRequest } from "../_utils/api";
-// import Search from "./_components/search/search-wrapper";
-import { CachedAllPokemonNamesAndIds, CachedPokemon, CachedPokemonSpecies } from "@/app/[language]/_components/pokemonData/pokemon-data-slice";
-import { getIdFromURL, getNameByLanguage, getIntersection } from "../_utils/util";
-import Pokemons from "./_components/pokemonData/pokemons";
+import { getEndpointData, getData  } from "../_utils/api";
 import { Suspense } from 'react'
-import Spinner from "../_components/spinner";
-import { LanguageOption, SortOption } from "./_components/display/display-slice";
-import BasicInfo from "./_components/pokemonData/basicInfo";
-import PokemonsWrapper from "./_components/pokemonData/pokemonsWrapper";
-import Search from "./_components/search/search";
-import SearchWrapper from "./_components/search/search-wrapper";
-import SearchServer from "./_test/SearchServer";
-import PokemonsServer from "./_test/PokemonsServer";
+import PrerenderedPokemons from "./_test/PrerenderedPokemons";
 
 // can we export non next-defined things from page/layout...?
 // I tried importing languageOptions from other files, but encounter build error(can't get staticParams)
@@ -27,127 +16,50 @@ const languageOptions = {
 
 export async function generateStaticParams() {
 	return Object.keys(languageOptions).map(lan => ({
-		// language: lan as LanguageOption
 		language: lan
 	}));
 };
 export const dynamicParams = false;
 
-type PageProps = {
-	params: {language: LanguageOption},
-	// searchParams: { [key: string]: string | string[] | undefined }
-};
-
-
 // try fetching data concurrently and see if it reduces time
+export default async function LanguagePage() {
+	console.log('/[language].page.tsx')
 
-export default async function Page({params}: PageProps) {
-	const {language} = params;
-	if (!Object.keys(languageOptions).includes(language)) {
-		throw new Error('language not supported');
-	};
-	console.log(`this is ${language}`)
+	const generationResponse = await getEndpointData('generation');
+	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
 
-	// generations
+	// types
+	const typeResponse = await getEndpointData('type');
+	const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
 
-	// console.time(`/${language}`)
-	// const generationResponse = await getEndpointData('generation');
-	// const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+	const initialPokemonIds: number[] = [];
+	for(let i = 1; i <= 24; i ++) {
+		initialPokemonIds.push(i)
+	}
 
-	// // // types
-	// const typeResponse = await getEndpointData('type');
-	// const types = await getData('type', typeResponse.results.map(entry => entry.name), 'name');
-	// // console.timeEnd('page')
-
-
-	// // // get pokemon count, all names and ids
-	// const speciesResponse = await getEndpointData('pokemonSpecies');
-
-	// let speciesData: CachedPokemonSpecies, pokemonsNamesAndId: CachedAllPokemonNamesAndIds;
-	// // let speciesData: CachedPokemonSpecies;
-	// const initialPokemonIds: number[] = [];
-	// for (let i = 1 ; i <= 24; i ++) {
-	// 	initialPokemonIds.push(i);
-	// };
-	// const pokemonDate = await getData('pokemon', initialPokemonIds, 'id');
-	// if (language !== 'en') {
-	// 	speciesData = await getData('pokemonSpecies', speciesResponse.results.map(entry => getIdFromURL(entry.url)), 'id');
-	// 	pokemonsNamesAndId = Object.values(speciesData).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-	// 		pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
-	// 		return pre;
-	// 	}, {});
-	// } else {
-	// 	pokemonsNamesAndId = speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-	// 		pre[cur.name] = getIdFromURL(cur.url);
-	// 		return pre;
-	// 	}, {});
-	// 	speciesData = await getData('pokemonSpecies', initialPokemonIds, 'id');
-	// };
-	// console.timeEnd(`/${language}`)
-
-
-
-	// maybe we can further divide the Search component, take a looke at the Search component, only the Input component needs allPokemonNamesAndIds, we can make other part statically rendered, and only Input dynamically rendered on the server or even just render on the client?
-
-	// why I don't want this route to be dynamically rendered? I don't want the loading content to show. (we have all the data for Search already)
-	
-
-	// make use of material ui, make the app look like those sites built with react (react, redux, jest, create-react-app...)
-	// using algolia for searching.
-
-	// I thought if I directly render other server  component and not fetch data in this route's page, it will immediately show the suspense boundries for those server component, but no... when I navigate to the page, it's unresponsive for a bit...
+	const pokemonData = await getData('pokemon', initialPokemonIds, 'id');
+	const speciesData = await getData('pokemonSpecies', initialPokemonIds, 'id');
 
 	return (
 		<>
-			{/* <Search 
-				generations={generations}
-				types={types}
-				namesAndIds={pokemonsNamesAndId}
-			/> */}
-			{/*  or try fetching the smae data there, see how long it takes (.timeEnd) */}
-			{/* <Suspense fallback={<h1>Loading searchWrapper...</h1>}>
-				<SearchWrapper
-					language={language}
-				/>
-			</Suspense> */}
-			{/* <Suspense fallback={<h1>Loading PokemonsWrapper... this loading should not appear</h1>}>
-				<PokemonsWrapper
-					language={language}
-					searchParams={searchParams}
-				/>
-			</Suspense> */}
-
-			{/* render Search here */}
-			{/* <Suspense fallback={<h1>Loading searchWrapper...</h1>}>
-				<Search
+			<Suspense fallback={<h1>Prerendered Pokemons</h1>}>
+				<PrerenderedPokemons
 					generations={generations}
 					types={types}
-					namesAndIds={pokemonsNamesAndId}
-				/>
-			</Suspense>
-			<Suspense fallback={<h1>Loading Pokemons...</h1>}>
-				<Pokemons
-					initialPokemonData={pokemonDate} 
+					initialPokemonData={pokemonData}
 					initialSpeciesData={speciesData}
-					generations={generations}
-					types={types}
-				/>
-			</Suspense> */}
-			{/* <Suspense fallback={<h1>Loading SearchServer...</h1>}>
-				<SearchServer
-					language={language}
-				/>
-			</Suspense> */}
-			<Suspense fallback={<h1>Loading PokemonsServer...</h1>}>
-				<PokemonsServer 
-					language={language}
 				/>
 			</Suspense>
-
-
 		</>
 	)
 };
+
+
+/* 
+	1. HOC
+	2. pass key to suspense
+	3. pass ref to FormBtn
+*/
 
 
 
@@ -350,3 +262,8 @@ If a route is dynamically rendered, useSearchParams will be available on the ser
 
 
 // what's the use of parallel routes, if it's just for rendering some content conditionally or simultaneously, we can do the same thing by importing the components in the Page or Layout, then render ourself, or even wrap Suspense, ErrorBoundry, then why do we have to use parallel routes?
+
+
+ // I think you can use  <Suspense key={data.id} fallback={null}> to wrap around component for selective hydration, in the case that you don't need the fallback to show when rendering the component, you can use it. (for example the components inside are statically rendered on the server) (but I'm not sure if it's good for performance, or does it make more good than harms?)
+
+	// make use of material ui, make the app look like those sites built with react (react, redux, jest, create-react-app...), using algolia for searching.

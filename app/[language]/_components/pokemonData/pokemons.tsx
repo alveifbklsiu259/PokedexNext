@@ -218,7 +218,7 @@ type PokemonsProps = {
 
 
 const Pokemons = memo(function Pokemons({types, generations, initialPokemonData = {}, initialSpeciesData = {}}: PokemonsProps) {
-	console.log('pokemons renders')
+	console.log('Pokemons');
 	// console.log(initialSpeciesData)
 	// should we pass searchParams down or use useSearchParams?
 

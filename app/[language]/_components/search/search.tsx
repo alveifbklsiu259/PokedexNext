@@ -18,7 +18,7 @@ type SearchProps = {
 };
 
 export default function Search({generations, types, namesAndIds}: SearchProps) {
-	console.log('search rendereds')
+	console.log('Search')
 	const searchParams = useSearchParams();
 	const query = searchParams.get('query');
 	const generation = searchParams.get('gen');
@@ -62,7 +62,6 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 
 	const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
 		
-		console.time('submit')
 		e.preventDefault();
 		const newSearchParams: {[key: string]: string} = {};
 

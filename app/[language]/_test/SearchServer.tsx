@@ -55,6 +55,10 @@ export default async function SearchServer({language}: SearchServerProps) {
 				namesAndIds={pokemonsNamesAndId}
 			/>
 		</Suspense>
+
+
+
+
 		</>
 	)
 

@@ -1,35 +1,9 @@
-import { Suspense } from "react";
 import { getEndpointData, getData } from "@/app/_utils/api";
+import { Suspense } from "react";
 import Pokemons from "../_components/pokemonData/pokemons";
-import { CachedAllPokemonNamesAndIds, CachedPokemonSpecies } from "../_components/pokemonData/pokemon-data-slice";
-import { LanguageOption } from "../_components/display/display-slice";
-import { getIdFromURL, getNameByLanguage } from "@/app/_utils/util";
 
-// this component is still rendered at reuqest time but only ONCE, why?
 
-const languageOptions = {
-	en: 'English',
-	ja: '日本語',
-	// zh_Hant: '繁體中文',
-	// zh_Hans: '简体中文',
-	// ko: '한국어',
-	// fr: 'Français',
-	// de: 'Deutsch',
-};
-
-// export const dynamic = 'force-static'
-
-// export async function generateStaticParams() {
-// 	return Object.keys(languageOptions).map(lan => ({
-// 		// language: lan as LanguageOption
-// 		language: lan
-// 	}));
-// };
-export const dynamicParams = false;
-
-export default async function Page() {
-	console.log('/[language]/search/page.tsx')
-
+export default async function Test() {
 	const generationResponse = await getEndpointData("generation");
 	const generations = await getData(
 		"generation",
@@ -44,8 +18,6 @@ export default async function Page() {
 		typeResponse.results.map((entry) => entry.name),
 		"name"
 	);
-	// const randomKey = Math.random();
-	// console.log(randomKey)
 
 	return (
 		<>
@@ -57,4 +29,4 @@ export default async function Page() {
 			</Suspense>
 		</>
 	);
-};
+}
