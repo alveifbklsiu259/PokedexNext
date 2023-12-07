@@ -110,4 +110,11 @@ export default async function Layout({ children, params }: LayoutProps) {
 			{children}
 		</>
 	);
-}
+};
+
+
+// the expected behavior is :
+// initial land on / refresh  /[language]: since this route is statically rendered, and it renders some client component that use useSearchParams, but they're wrapped by Suspense, this means that the part that use search params will be only rendered on the client, so they're not rendered on the server, and the initial HTML will show the server rendered result + the fallback of those Suspense.
+// the result is as expected.
+
+// initial land on / refresh  /[language]/search: this route is also statically rendered on the server, and it has the smae structure as /[language], but the reuslt is different, it seems that the client parts that use search params do not get suspended, Suspenses' fallback is not triggered, but the client components are rendered immediately.

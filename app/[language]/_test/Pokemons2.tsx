@@ -180,9 +180,6 @@
 // // does fetched results get cached in SSR route?
 'use client';
 import { useEffect, useState, useMemo,memo } from 'react';
-import { CachedGeneration, CachedPokemon, CachedPokemonSpecies, CachedType } from "./pokemon-data-slice"
-import BasicInfo from "./basicInfo"
-import { LanguageOption, SortOption } from "../display/display-slice";
 // import Sort from "../display/sort";
 import { getData, getDataToFetch } from '@/app/_utils/api';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
@@ -191,6 +188,9 @@ import { flushSync, preconnect } from 'react-dom';
 import { getIdFromURL } from '@/app/_utils/util';
 import dynamic from 'next/dynamic';
 import { getIntersection2 } from '@/app/_utils/util';
+import { SortOption, LanguageOption } from '../_components/display/display-slice';
+import BasicInfo from '../_components/pokemonData/basicInfo';
+import { CachedPokemon, CachedPokemonSpecies, CachedGeneration, CachedType } from '../_components/pokemonData/pokemon-data-slice';
 
 export type TableInfoRefTypes = {
 	sortBy?: SortOption
@@ -258,7 +258,7 @@ const Pokemons = memo(function Pokemons({types, generations, initialPokemonData 
 	// reference:https://nextjs.org/docs/app/building-your-application/optimizing/lazy-loading#skipping-ssr
 	// When using React.lazy() and Suspense, Client Components will be pre-rendered (SSR) by default.
 	// also notice that when scroll down to load new pokemon data and immediately scroll to top, the Sort will disappear for a moment, I think that's because the pokemon data is fetched from the server, and below we have {ssr: false}.
-	const Sort = dynamic(() => import('../display/sort'), {ssr: false});
+	const Sort = dynamic(() => import('../_components/display/sort'), {ssr: false});
 
 	// console.log(cachedData)
 

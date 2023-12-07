@@ -56,9 +56,9 @@ const FormBtn = memo(function FormBtn({
 				.toString();
 
 			let newPathName: string = pathname;
-			// if (!pathname.includes("search")) {
-			// 	newPathName = `${pathname}/search`;
-			// }
+			if (!pathname.includes("search")) {
+				newPathName = `${pathname}/search`;
+			}
 
 			// router.prefetch(`${pathname}?${updateSearchParam(searchParams, newSearchParams)}`)
 			router.push(

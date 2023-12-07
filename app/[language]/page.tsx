@@ -4,6 +4,7 @@ import PrerenderedPokemons from "./_test/PrerenderedPokemons";
 import InitialPokemons from "./_components/pokemonData/initialPokemons";
 import { LanguageOption } from "./_components/display/display-slice";
 import Pokemons from "./_components/pokemonData/pokemons";
+import BasicInfo from "./_components/pokemonData/basicInfo";
 
 // can we export non next-defined things from page/layout...?
 // I tried importing languageOptions from other files, but encounter build error(can't get staticParams)
@@ -21,7 +22,7 @@ export async function generateStaticParams() {
 	return Object.keys(languageOptions).map((lan) => ({
 		language: lan,
 	}));
-}
+};
 export const dynamicParams = false;
 
 type LanguagePageProps = {
@@ -58,6 +59,49 @@ export default async function LanguagePage({ params }: LanguagePageProps) {
 	const pokemonData = await getData("pokemon", initialPokemonIds, "id");
 	const speciesData = await getData("pokemonSpecies", initialPokemonIds, "id");
 
+
+	const initialContent = (
+		<>
+			<div className="container">
+				{/* <div ref={viewModeRef} className="viewModeContainer">
+					<ViewMode tableInfoRef={tableInfoRef} />
+				</div> */}
+				{/* <Sort /> */}
+				<div className="row g-5">
+					{Object.values(pokemonData).map((data) => {
+						const imgSrc =
+							data.sprites?.other?.["official-artwork"]?.front_default;
+						return (
+							<div
+								key={data.id}
+								className={`col-6 col-md-4 col-lg-3 card pb-3 pokemonCard ${
+									!imgSrc ? "justify-content-end" : ""
+								}`}
+								// onClick={() => navigateToPokemon(navigateIds,['pokemon', 'pokemonSpecies', 'evolutionChain', 'ability', 'item'])}
+							>
+								{/*  should fetch data in Pokemons or in BasicInfo?  if the data is fetched in Pokemons, multiple requests will be concurrent, if in BasicInfo, we can use suspense, which is better?*/}
+
+								{/* Dynamic Routes: prefetch default to automatic. Only the shared layout down until the first loading.js file is prefetched and cached for 30s. This reduces the cost of fetching an entire dynamic route, and it means you can show an instant loading state for better visual feedback to users. */}
+								{/* Prefetching is not enabled in development, only in production. */}
+								{/* Link's children changes when isLoading change, why? but BasicInfo is cached it does not change. */}
+								{/* <Link href={`./${language}/pokemon/${id}`}> */}
+								{/* <div onClick={() => handleClick(id)}> */}
+								<BasicInfo
+									pokemonData={data}
+									language={language as LanguageOption}
+									speciesData={speciesData[data.id]}
+									types={types}
+								/>
+								{/* </div> */}
+								{/* </Link> */}
+							</div>
+						);
+					})}
+				</div>
+			</div>
+		</>
+	)
+
 	return (
 		<>
 			{/* <Suspense fallback={<h1>Prerendered Pokemons</h1>}>
@@ -69,18 +113,10 @@ export default async function LanguagePage({ params }: LanguagePageProps) {
 				/>
 			</Suspense> */}
 			<Suspense
-				// the skeleton that shows the first 24 pokemons
-				key={Math.random()}
-				fallback={
-					<InitialPokemons
-						language={language}
-						types={types}
-						initialPokemonData={pokemonData}
-						initialSpeciesData={speciesData}
-					/>
-				}
+				// the skeleton that shows the first 24 pokemons during the initial load/refresh.
+				fallback={initialContent}
 			>
-				{/* since Pokemons uses searchParams, it will only be rendered on the client side. */}
+				{/* since Pokemons uses searchParams, it will only be rendered on the client side, the initial visit of /[language] will cause the fallback to kick in. */}
 				<Pokemons
 					generations={generations}
 					types={types}
@@ -277,3 +313,7 @@ If a route is dynamically rendered, useSearchParams will be available on the ser
 
 // check this discussion, it talks about passing data from client to server component
 // ref: https://github.com/vercel/next.js/discussions/49254
+
+
+
+// use github API to make a project

@@ -19,6 +19,7 @@ export default function InitialPokemons({
 	initialPokemonData,
 	initialSpeciesData,
 }: InitialPokemonsProps) {
+	console.log('initialPokemons')
 	return (
 		<>
 			<div className="container">
