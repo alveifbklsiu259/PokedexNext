@@ -14,6 +14,7 @@ const languageOptions = {
 	// de: 'Deutsch',
 };
 
+// don't use export const dynamic = 'force-static' with components that use useSearchParams, this will cause some error..
 // export const dynamic = 'force-static'
 
 export async function generateStaticParams() {

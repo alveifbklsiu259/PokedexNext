@@ -41,10 +41,11 @@ const FormBtn = memo(function FormBtn({
 				return type ? (st.toString() === type ? st : type?.split(",")) : st
 			}
 		);
-	}, [query, generation, type]);
+	}, [query, generation, type, setSearchQuery, setSelectedGenerations, setSelectedTypes]);
 
 	useEffect(() => {
-		// React.FormEvent<HTMLFormElement>
+		const formNode = formRef.current!;
+		console.log('runs again')
 		const handleSubmit = (e: SubmitEvent) => {
 			e.preventDefault();
 			const newSearchParams: { [key: string]: string } = {};
@@ -83,12 +84,12 @@ const FormBtn = memo(function FormBtn({
 		};
 
 		// By attaching the submit event when FormBtn mounts, we don't have to read useSearchParams in Search component in which if we do, it will cause the whole tree down below to render on the client if the route is statically rendered on the server.
-		formRef.current!.addEventListener("submit", handleSubmit);
+		formNode.addEventListener("submit", handleSubmit);
 
 		return () => {
-			formRef.current!.removeEventListener("submit", handleSubmit);
+			formNode.removeEventListener("submit", handleSubmit);
 		};
-	}, [searchQuery, selectedTypes, selectedGenerations]);
+	}, [searchQuery, selectedTypes, selectedGenerations, formRef, pathname, router, searchParams]);
 
 	return (
 		<button
@@ -102,3 +103,6 @@ const FormBtn = memo(function FormBtn({
 });
 
 export default FormBtn;
+
+// when searchQuery, selectedTypes, selectedGenerations change, this component will re-renders, maybe solve this by passing ref down?
+// improve performance of this component

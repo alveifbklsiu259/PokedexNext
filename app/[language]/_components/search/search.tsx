@@ -1,47 +1,45 @@
-'use client';
-import { useState, useLayoutEffect, useRef, memo } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import AdvancedSearch from './advanced-search';
-import Input from './input';
-import Image from 'next/image';
-import { AiOutlineCaretDown } from 'react-icons/ai'
-import { useSearchParams } from 'next/navigation';
-import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from '../pokemonData/pokemon-data-slice';
-import { updateSearchParam } from '@/app/_utils/util';
+"use client";
+import Image from "next/image";
+import { Suspense, memo, useRef, useState } from "react";
+import { AiOutlineCaretDown } from "react-icons/ai";
+import type {
+	CachedAllPokemonNamesAndIds,
+	CachedGeneration,
+	CachedType,
+} from "../pokemonData/pokemon-data-slice";
+import FormBtn from "./FormBtn";
+import AdvancedSearch from "./advanced-search";
+import Input from "./input";
 
 type SearchProps = {
-	onCloseModal?: () => void,
-	viewModeRef?: React.RefObject<HTMLDivElement>,
-	generations: CachedGeneration,
-	types: CachedType,
-	namesAndIds: CachedAllPokemonNamesAndIds
+	onCloseModal?: () => void;
+	viewModeRef?: React.RefObject<HTMLDivElement>;
+	generations: CachedGeneration;
+	types: CachedType;
+	namesAndIds: CachedAllPokemonNamesAndIds;
 };
 
-export default function Search({generations, types, namesAndIds}: SearchProps) {
-	console.log('Search')
-	const searchParams = useSearchParams();
-	const query = searchParams.get('query');
-	const generation = searchParams.get('gen');
-	const type = searchParams.get('type');
-	const match = searchParams.get('match');
-	// when using searchParams, is state still needed? maybe not? then how to set state?
 
-	const params = new URLSearchParams(searchParams);
+const Search = memo(function Search({
+	generations,
+	types,
+	namesAndIds,
+}: SearchProps) {
+	console.log("new Search");
 
 	// const dispatch = useAppDispatch();
 	const [isAdvancedShown, setIsAdvancedShown] = useState(false);
-	const [searchQuery, setSearchQuery] = useState('');
+	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedGenerations, setSelectedGenerations] = useState<string[]>([]);
 	const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-	const [matchMethod, setMatchMethod] = useState<'all' | 'part'>('all');
+	const [matchMethod, setMatchMethod] = useState<"all" | "part">("all");
 	// const collapseBtnRef = useRef<HTMLButtonElement>(null);
+	const formRef = useRef<HTMLFormElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const router = useRouter();
-	const pathname = usePathname();
 
 	const handleShowAdvanced = () => {
 		setIsAdvancedShown(!isAdvancedShown);
-	}
+	};
 
 	// auto focus when modal is opened.
 	// useLayoutEffect(() => {
@@ -49,110 +47,79 @@ export default function Search({generations, types, namesAndIds}: SearchProps) {
 	// 		inputRef.current!.focus();
 	// 	};
 	// }, [onCloseModal]);
-	useLayoutEffect(() => {
-		// synchronizing state
-		setSearchQuery(sp => query ? query : sp);
-		setSelectedGenerations(sg => generation ? generation.split(',').map(g => 'generation-'.concat(g)) : sg);
-		setSelectedTypes(st => type ? st.toString() === type ? st : type?.split(',') : st);
-	}, [query]);
-
-
-	// when type is not selected, this param still gets added to the url, why?
-
-
-	const handleSubmit = (e : React.FormEvent<HTMLFormElement>) => {
-		
-		e.preventDefault();
-		const newSearchParams: {[key: string]: string} = {};
-
-		newSearchParams['query'] = searchQuery;
-		newSearchParams['type'] = selectedTypes.toString();
-		newSearchParams['gen'] = selectedGenerations.map(gen => gen.replace('generation-', '')).toString();
-		// console.log(`${pathname}/search?${updateSearchParam(searchParams, newSearchParams)}`)
-
-		let newPathName: string = pathname;
-		if (!pathname.includes('search')) {
-			newPathName = `${pathname}/search`
-		}
-
-		// router.prefetch(`${pathname}?${updateSearchParam(searchParams, newSearchParams)}`)
-		router.push(`${newPathName}?${updateSearchParam(searchParams, newSearchParams)}`);
-
-		console.timeEnd('submit')
-		
-		// should we just navigate to the path with url param?
-
-		// // for search modal.
-		// if (onCloseModal) {
-		// 	onCloseModal();
-		// };
-		
-		// if (viewModeRef?.current) {
-		// 	// search from root
-		// 	viewModeRef.current.scrollIntoView();
-		// } else {
-		// 	// search from navbar, could be at root or /pokemons/xxx.
-		// 	if (!document.querySelector('.viewModeContainer')) {
-		// 		// navigateNoUpdates('/', {state: 'resetPosition'});
-		// 		router.push('/');
-		// 	};
-		// 	setTimeout(() => {
-		// 		document.querySelector('.viewModeContainer')?.scrollIntoView();
-		// 	}, 10);
-		// };
-		// dispatch(searchPokemon({searchQuery, selectedGenerations, selectedTypes, matchMethod}));
-	};
-	
 
 	return (
 		<div className="card-body mb-4 p-4">
 			<h1 className="display-4 text-center">
-				<Image className='pokeBall' src='/pokeBall.png' alt="pokeBall" width='46' height='46' /> Search For Pokemons
+				<Image
+					className="pokeBall"
+					src="/pokeBall.png"
+					alt="pokeBall"
+					width="46"
+					height="46"
+				/>{" "}
+				Search For Pokemons
 			</h1>
 			<p className="lead text-center">By Name or the National Pokedex number</p>
-			<form onSubmit={handleSubmit}>
+			<form ref={formRef}>
 				<Input
-					searchQuery={searchQuery} 
+					searchQuery={searchQuery}
 					setSearchQuery={setSearchQuery}
 					ref={inputRef}
 					namesAndIds={namesAndIds}
 				/>
-					<div className="advancedSearch text-center mt-3">
-						<span className='showAdvanced'  onClick={() => handleShowAdvanced()}>
-							Show Advanced Search <AiOutlineCaretDown className="fa-solid fa-caret-down"></AiOutlineCaretDown>
-						</span>
-						<AdvancedSearch
-							setSearchQuery={setSearchQuery}
-							selectedTypes={selectedTypes}
-							setSelectedTypes={setSelectedTypes}
-							selectedGenerations={selectedGenerations}
-							setSelectedGenerations={setSelectedGenerations}
-							setMatchMethod={setMatchMethod}
-							generations={generations}
-							types={types}
-							isAdvancedShown={isAdvancedShown}
-							// collapseId={collapseId}
-						/>
-					</div>
-				<SubmitBtn />
+				<div className="advancedSearch text-center mt-3">
+					<span className="showAdvanced" onClick={() => handleShowAdvanced()}>
+						Show Advanced Search{" "}
+						<AiOutlineCaretDown className="fa-solid fa-caret-down"></AiOutlineCaretDown>
+					</span>
+					<AdvancedSearch
+						setSearchQuery={setSearchQuery}
+						selectedTypes={selectedTypes}
+						setSelectedTypes={setSelectedTypes}
+						selectedGenerations={selectedGenerations}
+						setSelectedGenerations={setSelectedGenerations}
+						setMatchMethod={setMatchMethod}
+						generations={generations}
+						types={types}
+						isAdvancedShown={isAdvancedShown}
+						// collapseId={collapseId}
+					/>
+				</div>
+				{/* <SubmitBtn /> */}
+				{/* FormBtn uses searchParams */}
+				<Suspense
+					fallback={
+						<button
+							disabled
+							className="btn btn-primary btn-lg btn-block w-100 my-3"
+							type="submit"
+						>
+							Search
+						</button>
+					}
+					// maybe a HOC that gets the JSX of the content?
+				>
+					<FormBtn
+						formRef={formRef}
+						searchQuery={searchQuery}
+						setSearchQuery={setSearchQuery}
+						selectedGenerations={selectedGenerations}
+						setSelectedGenerations={setSelectedGenerations}
+						selectedTypes={selectedTypes}
+						setSelectedTypes={setSelectedTypes}
+					/>
+				</Suspense>
 			</form>
 		</div>
-	)
-};
-
-const SubmitBtn = memo(function SubmitBtn() {
-	// const status = useAppSelector(selectStatus);
-	// how to determin if i can submit?
-	return (
-		<button
-			// disabled={status === 'loading' ? true : false}
-			className="btn btn-primary btn-lg btn-block w-100 my-3" 
-			type="submit"
-		>
-			Search
-		</button>
 	);
+}, (prevProps: Readonly<SearchProps>, nextProps: Readonly<SearchProps>) => {
+	// This component is rendered by a statically server-rendered route, the props passed to it should always be the same, but I don't know why the props change on every navigation.
+	// Is it because of this? "Props passed from the Server to Client Components need to be serializable by React."
+	// ref: https://react-cn.github.io/react/tips/self-closing-tag.html
+	
+	// another approach would be passing serialized data down using JSON.stringify*(data)
+	return true;
 });
 
-// when we search, the Pokemons component will render at request time, is it really better than CSR? because when i'm dev testing, it's slow.
-// pagination or infinite scrill, filter....
+export default Search;

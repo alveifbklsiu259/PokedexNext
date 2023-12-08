@@ -267,6 +267,8 @@ const Pokemons = memo(function Pokemons({types, generations, initialPokemonData 
 	// console.log(cachedData.pokemon)
 	// console.log(initialPokemonData)
 
+
+	// move it to useEffect
 	const getDataOnScroll = async () => {
 		if ((window.innerHeight + document.documentElement.scrollTop > document.documentElement.offsetHeight * 0.98) && nextRequest.length && !isLoading) {
 			const pokemonsToFetch = getDataToFetch(cachedData.pokemon, nextRequest);

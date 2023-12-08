@@ -1,7 +1,5 @@
 import { getEndpointData, getData } from "../_utils/api";
 import { Suspense } from "react";
-import PrerenderedPokemons from "./_test/PrerenderedPokemons";
-import InitialPokemons from "./_components/pokemonData/initialPokemons";
 import { LanguageOption } from "./_components/display/display-slice";
 import Pokemons from "./_components/pokemonData/pokemons";
 import BasicInfo from "./_components/pokemonData/basicInfo";
@@ -22,7 +20,7 @@ export async function generateStaticParams() {
 	return Object.keys(languageOptions).map((lan) => ({
 		language: lan,
 	}));
-};
+}
 export const dynamicParams = false;
 
 type LanguagePageProps = {
@@ -59,7 +57,6 @@ export default async function LanguagePage({ params }: LanguagePageProps) {
 	const pokemonData = await getData("pokemon", initialPokemonIds, "id");
 	const speciesData = await getData("pokemonSpecies", initialPokemonIds, "id");
 
-
 	const initialContent = (
 		<>
 			<div className="container">
@@ -77,46 +74,24 @@ export default async function LanguagePage({ params }: LanguagePageProps) {
 								className={`col-6 col-md-4 col-lg-3 card pb-3 pokemonCard ${
 									!imgSrc ? "justify-content-end" : ""
 								}`}
-								// onClick={() => navigateToPokemon(navigateIds,['pokemon', 'pokemonSpecies', 'evolutionChain', 'ability', 'item'])}
 							>
-								{/*  should fetch data in Pokemons or in BasicInfo?  if the data is fetched in Pokemons, multiple requests will be concurrent, if in BasicInfo, we can use suspense, which is better?*/}
-
-								{/* Dynamic Routes: prefetch default to automatic. Only the shared layout down until the first loading.js file is prefetched and cached for 30s. This reduces the cost of fetching an entire dynamic route, and it means you can show an instant loading state for better visual feedback to users. */}
-								{/* Prefetching is not enabled in development, only in production. */}
-								{/* Link's children changes when isLoading change, why? but BasicInfo is cached it does not change. */}
-								{/* <Link href={`./${language}/pokemon/${id}`}> */}
-								{/* <div onClick={() => handleClick(id)}> */}
 								<BasicInfo
 									pokemonData={data}
 									language={language as LanguageOption}
 									speciesData={speciesData[data.id]}
 									types={types}
 								/>
-								{/* </div> */}
-								{/* </Link> */}
 							</div>
 						);
 					})}
 				</div>
 			</div>
 		</>
-	)
+	);
 
 	return (
 		<>
-			{/* <Suspense fallback={<h1>Prerendered Pokemons</h1>}>
-				<PrerenderedPokemons
-					generations={generations}
-					types={types}
-					initialPokemonData={pokemonData}
-					initialSpeciesData={speciesData}
-				/>
-			</Suspense> */}
-			<Suspense
-				// the skeleton that shows the first 24 pokemons during the initial load/refresh.
-				fallback={initialContent}
-			>
-				{/* since Pokemons uses searchParams, it will only be rendered on the client side, the initial visit of /[language] will cause the fallback to kick in. */}
+			<Suspense fallback={initialContent}>
 				<Pokemons
 					generations={generations}
 					types={types}
@@ -314,6 +289,11 @@ If a route is dynamically rendered, useSearchParams will be available on the ser
 // check this discussion, it talks about passing data from client to server component
 // ref: https://github.com/vercel/next.js/discussions/49254
 
-
-
 // use github API to make a project
+// 1. light house
+// 2. pageSpeed insights
+// 3. web cache
+
+
+// can we wrap a server component with memo, does it make any difference, what's the point?
+// can I use suspense to make a component show disabled hovered icon when hydration is not finished?
