@@ -311,7 +311,7 @@ export const getIntersection2 = (searchParams: SearchParams , generations: Cache
 			intersection = intersection.filter(id => matchedTypeIds.includes(id));
 		};
 	};
-	return intersection;
+	return intersection.sort((a, b) => a - b);
 	// const {fetchedPokemons, pokemonsToDisplay, nextRequest} = await getPokemons(pokeData.pokemon, allNamesAndIds, dispatch, intersection, dispalyData.sortBy);
 
 	// return {intersection, searchParam, selectedGenerations, selectedTypes, fetchedPokemons, nextRequest, pokemonsToDisplay};

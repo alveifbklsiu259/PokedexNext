@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { getEndpointData, getData } from "@/app/_utils/api";
-import Pokemons from "../_components/pokemonData/pokemons";
+import Pokemons from "../../../_components/pokemonData/pokemons";
 
 // this component is still rendered at reuqest time but only ONCE, why?
 

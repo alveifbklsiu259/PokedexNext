@@ -8,7 +8,10 @@
     min-height: 100vh;
 }
 
-html,
+/* html,
+body {
+    overflow-x: hidden;
+} */
 body {
     overflow-x: hidden;
 }

@@ -1,5 +1,5 @@
 import { memo, useEffect, useLayoutEffect } from "react";
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { updateSearchParam } from "@/app/_utils/util";
 
 type FormBtnProps = {
@@ -21,7 +21,10 @@ const FormBtn = memo(function FormBtn({
 	setSelectedGenerations,
 	setSelectedTypes,
 }: FormBtnProps) {
-	const pathname = usePathname();
+	console.log('formBTN')
+	console.log('formBTN')
+	const params = useParams();
+	const {language} = params;
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const query = searchParams.get("query");
@@ -31,7 +34,7 @@ const FormBtn = memo(function FormBtn({
 
 	useLayoutEffect(() => {
 		// synchronizing state
-		setSearchQuery((sp) => (query ? query : sp));
+		setSearchQuery((sq) => (query ? query : sq));
 		setSelectedGenerations((sg) =>
 			generation
 				? generation.split(",").map((g) => "generation-".concat(g))
@@ -45,7 +48,7 @@ const FormBtn = memo(function FormBtn({
 
 	useEffect(() => {
 		const formNode = formRef.current!;
-		console.log('runs again')
+		// console.log('runs again')
 		const handleSubmit = (e: SubmitEvent) => {
 			e.preventDefault();
 			const newSearchParams: { [key: string]: string } = {};
@@ -56,15 +59,34 @@ const FormBtn = memo(function FormBtn({
 				.map((gen) => gen.replace("generation-", ""))
 				.toString();
 
-			let newPathName: string = pathname;
-			if (!pathname.includes("search")) {
-				newPathName = `${pathname}/search`;
-			}
+			let newPathname: string;
+			if (Object.values(newSearchParams).some(searchParam => searchParam !== '')) {
+				newPathname = `/${language}/pokemons/search`;
+			} else {
+				newPathname = `/${language}/pokemons`
+			};
 
-			// router.prefetch(`${pathname}?${updateSearchParam(searchParams, newSearchParams)}`)
 			router.push(
-				`${newPathName}?${updateSearchParam(searchParams, newSearchParams)}`
+				`${newPathname}?${updateSearchParam(searchParams, newSearchParams)}`
 			);
+
+			
+
+
+			// let newPathName: string = pathname;
+			// if (!pathname.includes("search") && Object.values(newSearchParams).some(searchParams => searchParams !== '')) {
+			// 	newPathName = `${pathname}/search`;
+			// } else {
+			// 	newPathName = pathname
+			// };
+
+			// console.log(newSearchParams)
+
+
+			// // router.prefetch(`${pathname}?${updateSearchParam(searchParams, newSearchParams)}`)
+			// router.push(
+			// 	`${newPathName}?${updateSearchParam(searchParams, newSearchParams)}`
+			// );
 			// should we just navigate to the path with url param?
 
 			// if (viewModeRef?.current) {
@@ -89,7 +111,7 @@ const FormBtn = memo(function FormBtn({
 		return () => {
 			formNode.removeEventListener("submit", handleSubmit);
 		};
-	}, [searchQuery, selectedTypes, selectedGenerations, formRef, pathname, router, searchParams]);
+	}, [searchQuery, selectedTypes, selectedGenerations, formRef, router, searchParams, language]);
 
 	return (
 		<button

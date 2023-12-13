@@ -7,7 +7,7 @@ import type {
 	CachedGeneration,
 	CachedType,
 } from "../pokemonData/pokemon-data-slice";
-import FormBtn from "./FormBtn";
+import FormBtn from "./formBtn";
 import AdvancedSearch from "./advanced-search";
 import Input from "./input";
 
@@ -20,12 +20,11 @@ type SearchProps = {
 };
 
 
-const Search = memo(function Search({
+const Search = function Search({
 	generations,
 	types,
 	namesAndIds,
 }: SearchProps) {
-	console.log("new Search");
 
 	// const dispatch = useAppDispatch();
 	const [isAdvancedShown, setIsAdvancedShown] = useState(false);
@@ -89,6 +88,7 @@ const Search = memo(function Search({
 				{/* <SubmitBtn /> */}
 				{/* FormBtn uses searchParams */}
 				<Suspense
+				// is there any way that we can get the JSX that the component that uses searchParams and modify it? (e.g. add disabled), instead of writing out the below code?
 					fallback={
 						<button
 							disabled
@@ -113,13 +113,6 @@ const Search = memo(function Search({
 			</form>
 		</div>
 	);
-}, (prevProps: Readonly<SearchProps>, nextProps: Readonly<SearchProps>) => {
-	// This component is rendered by a statically server-rendered route, the props passed to it should always be the same, but I don't know why the props change on every navigation.
-	// Is it because of this? "Props passed from the Server to Client Components need to be serializable by React."
-	// ref: https://react-cn.github.io/react/tips/self-closing-tag.html
-	
-	// another approach would be passing serialized data down using JSON.stringify*(data)
-	return true;
-});
+}
 
 export default Search;
