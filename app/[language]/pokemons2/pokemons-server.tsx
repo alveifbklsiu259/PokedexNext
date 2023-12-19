@@ -1,39 +1,39 @@
-import { getEndpointData, getData } from "../../../_utils/api";
-import { Suspense } from "react";
-import { LanguageOption } from "../../_components/display/display-slice";
-import Pokemons from "../../_components/pokemonData/pokemons";
-import BasicInfo from "../../_components/pokemonData/basicInfo";
-import { CachedAllPokemonNamesAndIds, CachedPokemonSpecies } from "../../_components/pokemonData/pokemon-data-slice";
-import { getIdFromURL, getNameByLanguage } from "@/app/_utils/util";
+import { getEndpointData, getData, getPokemons2 } from "@/app/_utils/api";
+import {
+	getIdFromURL,
+	getIntersection,
+	getNameByLanguage,
+} from "@/app/_utils/util";
+import {
+	LanguageOption,
+	SortOption,
+} from "../_components/display/display-slice";
+import {
+	CachedAllPokemonNamesAndIds,
+	CachedPokemon,
+	CachedPokemonSpecies,
+} from "../_components/pokemonData/pokemon-data-slice";
+import Pokemons from "./pokemons";
 
 // can we export non next-defined things from page/layout...?
 // I tried importing languageOptions from other files, but encounter build error(can't get staticParams)
-const languageOptions = {
-	en: "English",
-	ja: "日本語",
-	// zh_Hant: '繁體中文',
-	// zh_Hans: '简体中文',
-	// ko: '한국어',
-	// fr: 'Français',
-	// de: 'Deutsch',
-};
 
-export async function generateStaticParams() {
-	return Object.keys(languageOptions).map((lan) => ({
-		language: lan,
-	}));
-}
-export const dynamicParams = false;
-
-type LanguagePageProps = {
+type ServerPokemonsProps = {
 	params: {
 		language: LanguageOption;
 	};
+	searchParams: { [key: string]: string | string[] | undefined };
 };
 
 // try fetching data concurrently and see if it reduces time
-export default async function LanguagePage({ params }: LanguagePageProps) {
-	console.log("/[language].page.tsx");
+const ServerPokemons = async function ServerPokemons({
+	params,
+	searchParams,
+}: ServerPokemonsProps) {
+	console.log(searchParams);
+
+
+	console.time("Pokemons2 Page");
 	const { language } = params;
 
 	const generationResponse = await getEndpointData("generation");
@@ -54,83 +54,77 @@ export default async function LanguagePage({ params }: LanguagePageProps) {
 	// names and ids
 	const speciesResponse = await getEndpointData("pokemonSpecies");
 
-	// let allNamesAndIds: CachedAllPokemonNamesAndIds, speciesData: CachedPokemonSpecies;
-	const initialRequestIds = speciesResponse.results.slice(0, 24).map((entry) => getIdFromURL(entry.url));
-		
+	let allNamesAndIds: CachedAllPokemonNamesAndIds;
+	if (language !== "en") {
+		const speices = await getData(
+			"pokemonSpecies",
+			speciesResponse.results.map((entry) => getIdFromURL(entry.url)),
+			"id"
+		);
+		allNamesAndIds = Object.values(
+			speices
+		).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
+			pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
+			return pre;
+		}, {});
+	} else {
+		allNamesAndIds =
+			speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>(
+				(pre, cur) => {
+					pre[cur.name] = getIdFromURL(cur.url);
+					return pre;
+				},
+				{}
+			);
+	}
 
-	// if (language !== "en") {
-	// 	speciesData = await getData(
-	// 		"pokemonSpecies",
-	// 		speciesResponse.results.map((entry) => getIdFromURL(entry.url)),
-	// 		"id"
-	// 	);
-	// 	allNamesAndIds = Object.values(
-	// 		speciesData
-	// 	).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-	// 		pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
-	// 		return pre;
-	// 	}, {});
-	// } else {
-	// 	speciesData =  await getData("pokemonSpecies", initialRequestIds, "id");
-	// 	allNamesAndIds =
-	// 		speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>(
-	// 			(pre, cur) => {
-	// 				pre[cur.name] = getIdFromURL(cur.url);
-	// 				return pre;
-	// 			},
-	// 			{}
-	// 		);
-	// };
+	// have a early return based on searchPrams?
 
-	const pokemonData = await getData("pokemon", initialRequestIds, "id");
-	const speciesData = await getData('pokemonSpecies', initialRequestIds, 'id')
+	const intersection = getIntersection(
+		searchParams,
+		generations,
+		types,
+		language
+	);
+	let sort: SortOption;
+	if (Array.isArray(searchParams.sort)) {
+		throw new Error("invalid sorting param");
+	}
+	sort = (searchParams.sort as SortOption) || "numberAsc";
 
-	const initialContent = (
-		<>
-			<div className="container">
-				{/* <div ref={viewModeRef} className="viewModeContainer">
-					<ViewMode tableInfoRef={tableInfoRef} />
-				</div> */}
-				<div className="row g-5">
-					{Object.values(pokemonData).map((data) => {
-						const imgSrc =
-							data.sprites?.other?.["official-artwork"]?.front_default;
-						return (
-							<div
-								key={data.id}
-								className={`col-6 col-md-4 col-lg-3 card pb-3 pokemonCard ${
-									!imgSrc ? "justify-content-end" : ""
-								}`}
-							>
-								<BasicInfo
-									pokemonData={data}
-									language={language as LanguageOption}
-									speciesData={speciesData[data.id]}
-									types={types}
-								/>
-							</div>
-						);
-					})}
-				</div>
-			</div>
-		</>
+	// refactor getPokemons2, this is the cause for long loading
+	// const { fetchedPokemons: pokemonData, sortedRequest } = await getPokemons2({}, allNamesAndIds, intersection, sort);
+
+	let pokemonData: CachedPokemon | undefined, sortedIntersection: number[];
+	if (sort === 'numberAsc') {
+	pokemonData = await getData("pokemon", intersection.slice(0, 24), "id");
+	sortedIntersection = intersection;
+	} else {
+	   ({ fetchedPokemons: pokemonData, sortedRequest: sortedIntersection } = await getPokemons2({}, allNamesAndIds, intersection, sort));
+	};
+
+	const speciesData = await getData(
+		"pokemonSpecies",
+		sortedIntersection.slice(0, 24),
+		"id"
 	);
 
-	console.log('/pokemons/page.tsx')
+	console.timeEnd("Pokemons2 Page");
+
+	// when passing speciesData down(when language !== en, this object will be too big), this can be solved by using graphQL, manually manipulate the object...
 
 	return (
 		<>
-			<Suspense fallback={initialContent}>
-				<Pokemons
-					generations={generations}
-					types={types}
-					initialPokemonData={pokemonData}
-					initialSpeciesData={speciesData}
-				/>
-			</Suspense>
+			<Pokemons
+				types={types}
+				pokemonData={pokemonData!}
+				speciesData={speciesData}
+			/>
 		</>
 	);
-}
+};
+
+export default ServerPokemons;
 
 /* 
 	1. HOC
@@ -322,7 +316,6 @@ If a route is dynamically rendered, useSearchParams will be available on the ser
 // 1. light house
 // 2. pageSpeed insights
 // 3. web cache
-
 
 // can we wrap a server component with memo, does it make any difference, what's the point?
 // can I use suspense to make a component show disabled hovered icon when hydration is not finished?

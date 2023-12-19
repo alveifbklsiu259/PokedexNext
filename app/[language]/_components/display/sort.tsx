@@ -1,13 +1,5 @@
 "use client";
-import {
-	memo,
-	Suspense,
-	useState,
-	useLayoutEffect,
-	useCallback,
-	useMemo,
-} from "react";
-import { SortOption } from "./display-slice";
+import { memo, Suspense, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { updateSearchParam } from "@/app/_utils/util";
 import Box from "@mui/material/Box";
@@ -41,63 +33,60 @@ export const sortOptions = [
 	{ text: "Speed(low - heigh)", value: "speedAsc" },
 ] as const;
 
-// There's no need to wrap Sort in memo, it's statically rendered once on the server and doesn't take any prop.
-const Sort =function Sort() {
-	return (
-		<Box
-			sx={{
-				minWidth: 120,
-				width: "220px",
-				marginLeft: "auto",
-				marginBottom: "20px",
-			}}
-		>
-			<FormControl fullWidth>
-				<InputLabel id="sort-label">Sort</InputLabel>
-				<Suspense
-					fallback={
-						<Select
-							labelId="sort-label"
-							id="sort"
-							label="Sort"
-							defaultValue={"numberAsc"}
-							disabled
-						/>
-					}
-				>
-					{/* Dropdown never renders on the server */}
-					<Dropdown />
-				</Suspense>
-			</FormControl>
-		</Box>
-	);
-}
+// memo(Sort, () => true) is used to avoid re-render when route changes, for some reason partial rendering does not apply to client component(not sure if it's a bug or intended), but this approach fixes it.
+const Sort = memo(
+	function Sort() {
+		return (
+			<Box
+				sx={{
+					minWidth: 120,
+					width: "220px",
+					marginLeft: "auto",
+					marginBottom: "20px",
+				}}
+			>
+				<FormControl fullWidth>
+					<InputLabel id="sort-label">Sort</InputLabel>
+					<Suspense
+						fallback={
+							<Select
+								labelId="sort-label"
+								id="sort"
+								label="Sort"
+								defaultValue={"numberAsc"}
+								disabled
+							/>
+						}
+					>
+						{/* Dropdown will be rendered on the client */}
+						<Dropdown />
+					</Suspense>
+				</FormControl>
+			</Box>
+		);
+	},
+	() => true
+);
 export default Sort;
 
-// why is this component rendered on the server?
+// since Dropdown uses useSearchParams, when searchParams changes, it will re-render anyway as context change, so there's no need to wrap it in a memo.
 const Dropdown = function Dropdown() {
-	console.log("dropdown");
-	console.log("dropdown");
 	const searchParams = useSearchParams();
 	const pathname = usePathname();
 	const router = useRouter();
-	// const [sortBy, setSortBy] = useState<SortOption>("numberAsc");
 	const sortParams = searchParams.get("sort") || "numberAsc";
 
-	// synchronize state
-	// useLayoutEffect(() => {
-	// 	if (sortParams && sortParams !== sortBy) {
-	// 		setSortBy(sortParams as SortOption)
-	// 	};
-	// }, [sortParams, sortBy, setSortBy])
-
+	// see if we can use link and prefetch?
 	const handleChange = (event: SelectChangeEvent) => {
-		// setSortBy(event.target.value as SortOption);
-
 		const newSearchParams = updateSearchParam(searchParams, {
 			sort: event.target.value,
 		});
-		router.push(`${pathname}?${newSearchParams}`);
+		let newPathname: string = pathname;
+		if (!pathname.includes('search')) {
+			newPathname = `${pathname}/search`
+		};
+
+		router.push(`${newPathname}?${newSearchParams}`);
 	};
 
 	const memoItems = useMemo(

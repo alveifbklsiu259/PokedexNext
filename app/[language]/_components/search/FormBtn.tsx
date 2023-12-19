@@ -21,12 +21,10 @@ const FormBtn = memo(function FormBtn({
 	setSelectedGenerations,
 	setSelectedTypes,
 }: FormBtnProps) {
-	console.log('formBTN')
-	console.log('formBTN')
+	const searchParams = useSearchParams();
 	const params = useParams();
 	const {language} = params;
 	const router = useRouter();
-	const searchParams = useSearchParams();
 	const query = searchParams.get("query");
 	const generation = searchParams.get("gen");
 	const type = searchParams.get("type");
@@ -48,27 +46,29 @@ const FormBtn = memo(function FormBtn({
 
 	useEffect(() => {
 		const formNode = formRef.current!;
-		// console.log('runs again')
 		const handleSubmit = (e: SubmitEvent) => {
+			console.log('submit')
 			e.preventDefault();
-			const newSearchParams: { [key: string]: string } = {};
 
-			newSearchParams["query"] = searchQuery;
-			newSearchParams["type"] = selectedTypes.toString();
-			newSearchParams["gen"] = selectedGenerations
+			const newSearchParams = updateSearchParam(searchParams, {
+				query: searchQuery,
+				type: selectedTypes.toString(),
+				gen: selectedGenerations
 				.map((gen) => gen.replace("generation-", ""))
-				.toString();
+				.toString()
+			})
 
-			let newPathname: string;
-			if (Object.values(newSearchParams).some(searchParam => searchParam !== '')) {
-				newPathname = `/${language}/pokemons/search`;
-			} else {
-				newPathname = `/${language}/pokemons`
-			};
+			// let newPathname: string;
+			// if (Object.values(newSearchParams).some(searchParam => searchParam !== '')) {
+			// 	newPathname = `/${language}/pokemons/search`;
+			// } else {
+			// 	newPathname = `/${language}/pokemons`
+			// };
 
 			router.push(
-				`${newPathname}?${updateSearchParam(searchParams, newSearchParams)}`
+				`/${language}/pokemons2?${newSearchParams}`
 			);
+			console.log('roter ends')
 
 			
 

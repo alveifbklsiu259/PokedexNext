@@ -235,7 +235,7 @@ export const getIntersection = (searchParams: {[key: string]: string | string[] 
 			intersection = intersection.filter(id => matchedTypeIds.includes(id));
 		};
 	};
-	return intersection;
+	return intersection.sort((a, b) => a - b);
 	// const {fetchedPokemons, pokemonsToDisplay, nextRequest} = await getPokemons(pokeData.pokemon, allNamesAndIds, dispatch, intersection, dispalyData.sortBy);
 
 	// return {intersection, searchParam, selectedGenerations, selectedTypes, fetchedPokemons, nextRequest, pokemonsToDisplay};

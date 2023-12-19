@@ -20,7 +20,7 @@ type SearchProps = {
 };
 
 
-const Search = function Search({
+const Search = memo(function Search({
 	generations,
 	types,
 	namesAndIds,
@@ -113,6 +113,13 @@ const Search = function Search({
 			</form>
 		</div>
 	);
-}
+}, (prevProps: Readonly<SearchProps>, nextProps: Readonly<SearchProps>) => {
+	// This component is rendered by a statically server-rendered route, the props passed to it should always be the same, but I don't know why the props change on every navigation.
+	// Is it because of this? "Props passed from the Server to Client Components need to be serializable by React."
+	// ref: https://react-cn.github.io/react/tips/self-closing-tag.html
+	
+	// another approach would be passing serialized data down using JSON.stringify*(data)
+	return true;
+});
 
 export default Search;

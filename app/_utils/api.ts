@@ -184,18 +184,21 @@ export const getPokemons2 = async (cachedPokemons: CachedPokemon, allPokemonName
 	const isSortByNameOrId = (sortOption.includes('number') || sortOption.includes('name'));
 	// when sort by options other than number or name, it requires all the pokemon data in intersection to make some comparison.
 	if (!isSortByNameOrId) {
-		fetchedPokemons = await getData('pokemon', request, 'id');
-		allPokemons = {...fetchedPokemons};
+		const pokemonsToFetch = getDataToFetch(cachedPokemons, request);
+		fetchedPokemons = await getData('pokemon', pokemonsToFetch, 'id');
+		allPokemons = {...fetchedPokemons, ...cachedPokemons};
 	};
 
 	sortedRequest = sortPokemons(allPokemons, sortOption, allPokemonNamesAndIds, request).slice();
 	pokemonsToDisplay = sortedRequest.slice().splice(0, 24);
 
 	if (isSortByNameOrId) {
-		fetchedPokemons = await getData('pokemon', pokemonsToDisplay, 'id');
+		const pokemonsToFetch = getDataToFetch(allPokemons, pokemonsToDisplay);
+		fetchedPokemons = await getData('pokemon', pokemonsToFetch, 'id');
 	};
-	return {fetchedPokemons, sortedIntersection: sortedRequest};
+	return {fetchedPokemons, sortedRequest};
 };
+
 export const getPokemons = async (cachedPokemons: CachedPokemon, allPokemonNamesAndIds: CachedAllPokemonNamesAndIds, dispatch: AppDispatch, request: number[], sortOption: SortOption) => {
 	// the dataLoading dispatches in this function will not cause extra re-render in getInitialData thunk.
 	let sortedRequest: number[],
