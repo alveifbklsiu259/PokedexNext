@@ -58,15 +58,16 @@ const FormBtn = memo(function FormBtn({
 				.toString()
 			})
 
-			// let newPathname: string;
-			// if (Object.values(newSearchParams).some(searchParam => searchParam !== '')) {
-			// 	newPathname = `/${language}/pokemons/search`;
-			// } else {
-			// 	newPathname = `/${language}/pokemons`
-			// };
+			let newPathname: string;
+			if (Object.values(newSearchParams).some(searchParam => searchParam !== '')) {
+				newPathname = `/${language}/pokemons/search`;
+			} else {
+				newPathname = `/${language}/pokemons`
+			};
 
 			router.push(
-				`/${language}/pokemons2?${newSearchParams}`
+				// `/${language}/pokemons2?${newSearchParams}`
+				`${newPathname}?${newSearchParams}`
 			);
 			console.log('roter ends')
 
