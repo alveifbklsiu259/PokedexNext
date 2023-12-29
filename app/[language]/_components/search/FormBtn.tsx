@@ -69,7 +69,7 @@ const FormBtn = memo(function FormBtn({
 				// `/${language}/pokemons2?${newSearchParams}`
 				`${newPathname}?${newSearchParams}`
 			);
-			console.log('roter ends')
+			console.log('render ends')
 
 			
 

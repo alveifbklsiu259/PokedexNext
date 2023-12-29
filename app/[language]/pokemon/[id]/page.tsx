@@ -370,13 +370,15 @@ export default async function Page({ params }: PageProps) {
 				</Suspense>
 
 				<Suspense fallback={<h1>loading moves</h1>}>
-					{/* <MovesServer
+					<MovesServer
 						pokemonId={pokemonId}
 						language={language}
 						// reset Moves' states when navigating to pokemon through chains or varieties when the target pokemon's data is cached.
-						key={id}
-					/> */}
+						// key={id}
+					/>
 				</Suspense>
+
+				{/* this button can be in /pokemon/layout.tsx */}
 				<div className="row justify-content-center">
 					<div className="w-50 m-3 btn btn-block btn-secondary">
 						<Link prefetch={true} href={`/${language}`}>
@@ -399,6 +401,7 @@ const RelatedPokemon = memo<RelatedPokemonProps>(async function RelatedPokemon({
 	order,
 }) {
 	const pokemonCount = (await getEndpointData("pokemonSpecies")).count;
+
 	const pokemonData = await getData("pokemon", pokemonId);
 	const nationalNumber = getIdFromURL(pokemonData.species.url);
 
@@ -434,3 +437,20 @@ const RelatedPokemon = memo<RelatedPokemonProps>(async function RelatedPokemon({
 // 3. 404.tsx
 // 4. pokemon table
 // 5. show loading, if pokemon/x is SSG, it's fast between navigation, but if it's SSR, it lags a bit before navigating.
+
+
+
+
+// if pokemon is dynamic, there're some same data being fetched when navigating to a new /id, but since they're cached, it should be fast.
+
+// just getting chain data can be as slow as almost 800 ms,(but shared chain is fast, about 1x ms), I want this part to be streaming in which means SSG is not an option.
+/* 
+	const chainId = getIdFromURL(speciesData.evolution_chain.url);
+	const chainData = await getEvolutionChains(chainId);
+	const pokemonsInChain = [...new Set(chainData.chains.flatMap(chain => chain))];
+	const pokemons = await getData('pokemon', pokemonsInChain, 'id');
+	const species = await getData('pokemonSpecies', pokemonsInChain, 'id');
+
+*/
+
+// but I think we can still give SSG a shot, maybe we'll encounter build error?

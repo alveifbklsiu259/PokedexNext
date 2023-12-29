@@ -386,7 +386,7 @@
 // export default MovesClient;
 'use client';
 
-import React, { useState, useMemo, memo, useCallback } from "react";
+import React, { useState, useMemo, memo, useCallback, useEffect } from "react";
 import { capitalize } from "@mui/material";
 import type { TableColumn } from "react-data-table-component";
 import { CachedMachine, CachedType, CachedVersion, CachedMove, CachedGeneration, CachedPokemon, CachedMoveDamageClass } from "../../_components/pokemonData/pokemon-data-slice";
@@ -460,7 +460,7 @@ type MovesClientProps = {
 	types: CachedType,
 	versionData: CachedVersion,
 	moveData: CachedMove,
-	machines: CachedMachine,
+	// machines: CachedMachine,
 	generationData: CachedGeneration,
 	speciesData: PokemonSpecies.Root,
 	debutGeneration: string,
@@ -476,20 +476,18 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 	types,
 	versionData,
 	moveData,
-	machines,
+	// machines,
 	generationData,
 	speciesData,
 	debutGeneration,
 	chainData,
 	movesDamageClass,
 }) {
-	console.log('client')
-	const generations = useMemo(() => Object.values(generationData), [generationData]);
-	
-	const generationNames = useMemo(() => generations.map(generation => generation.name), [generations]);
+	const generationNames = useMemo(() => Object.values(generationData).map(generation => generation.name), [generationData]);
 	const generationOptions = useMemo(() => generationNames.slice(generationNames.indexOf(debutGeneration)), [generationNames, debutGeneration]);
 	const [selectedGeneration, setSelectedGeneration] = useState(debutGeneration);
 	const versions = generationData[transformToKeyName(selectedGeneration)].version_groups;
+
 	const versionOptions = useMemo(() => generationOptions.reduce<string[]>((pre, cur) => {
 		pre.push(...generationData[transformToKeyName(cur)].version_groups.map(version => version.name));
 		return pre;
@@ -573,7 +571,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 	}, [pokemonData]);
 
 	const filteredMoves = useMemo(() => filterMoves(filteredMethod, selectedVersion), [filterMoves, filteredMethod, selectedVersion]);
-	// const movesLearnedByMachine = useMemo(() => filterMoves('machine', versionOptions), [filterMoves, versionOptions]);
+	const movesLearnedByMachine = useMemo(() => filterMoves('machine', versionOptions), [filterMoves, versionOptions]);
 
 	// all moves for current pokemon.
 	// const movesToFetch = useMemo(() => pokemonData.moves.filter(entry => !moveData[transformToKeyName(entry.move.name)]).map(entry => getIdFromURL(entry.move.url)), [pokemonData, moveData]);
@@ -606,14 +604,11 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 			// get machines, chnage pokemon, get machines, check if all correct? also check redux stat change
 
 			if (!isFilteredByLevel) {
-				const machine = machines[lookupName]?.version_groups?.[transformToKeyName(selectedVersion)];
-				machineContent = (
-					// value is for sorting
-					<div data-value={machine || 'NO DATA'} className="machineData">
-						<div data-tag="allowRowEvents">{machine?.toUpperCase() || 'NO DATA'}</div>
-						<Image data-tag="allowRowEvents" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-${type}.png`} alt={`tm-${type}`} className="machine"/>
-					</div>
-				);
+				// const url = movesLearnedByMachine.find(entry => transformToKeyName(entry.move.name) === lookupName)!.move.url;
+				// the latest version may not have machine data
+				const machineEntry = moveData[lookupName].machines.find(entry => entry.version_group.name === selectedVersion);
+				let machineUrl = machineEntry ? machineEntry.machine.url : undefined;
+				machineContent = <MachineContent url={machineUrl} type={type} key={lookupName.concat(`_${selectedVersion}`)}/>
 			};
 			const displayContent = isFilteredByLevel ? levelContent : machineContent;
 			return {
@@ -706,14 +701,14 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 		// 	};
 		// 	// dispatch(machineDataLoaded(machineData));
 		// };
-	}, [moveData, machines]);
+	}, [moveData]);
 
 	// console.log(machines)
 	
 	// const isDataReady = filteredMethod === 'level-up' ? !!movesData : !!movesData && isMachineDataReady;
 	return (
 		<>
-			{/* <div className="moves text-center mt-5">
+			<div className="moves text-center mt-5">
 				<h1>Moves</h1>
 				<div>
 					{generationOptions.map(generation => (
@@ -747,9 +742,64 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 						language={language}
 					/>
 				)}
-			</div> */}
-			<h1>1256</h1>
+			</div>
 		</>
 	)
 });
 export default MovesClient;
+
+
+type MachineContentProps = {
+	url: string | undefined;
+	type: string
+}
+
+
+// if we have the machine stored in moves-client, we're gonna have to fetch all of them or the whole table will re-renders when we change gneration/version
+const MachineContent = ({url, type}: MachineContentProps) => {
+	const [isLoading, setIsLoading] = useState(true);	
+	const [data, setData] = useState<Machine.Root | null>(null);
+
+	useEffect(() => {
+		if (url && data === null) {
+			const getMachine = async() => {
+				const response = await fetch(url);
+				const machine: Machine.Root = await response.json();
+				setData(machine);
+				setIsLoading(false)
+			};
+			getMachine();
+		} else if (url === undefined) {
+			setIsLoading(false)
+		};
+	}, [url, data, setData]);
+
+	let content;
+	
+	if (isLoading) {
+		content = (
+			<Image
+				src="/spinner.gif"
+				alt="Loading..."
+				width={30}
+				height={30}
+			/>
+		)
+	} else if(!isLoading && data === null) {
+		content = <span>No Data</span>
+	} else {
+		const machine = data!.item.name;
+		content = (
+			<div data-value={machine} className="machineData">
+				<div data-tag="allowRowEvents">{machine?.toUpperCase()}</div>
+				<Image width={30} height={30} data-tag="allowRowEvents" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-${type}.png`} alt={`tm-${type}`} className="machine"/>
+			</div>
+		)
+	}
+
+	return (
+		<>
+			{content}
+		</>
+	)
+}

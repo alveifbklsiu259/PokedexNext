@@ -597,6 +597,7 @@ h1 {
 
 .machineData {
     display: flex;
+    justify-content: center;
 }
 
 .machineData>div {
@@ -649,7 +650,7 @@ h1 {
 
 .moves .machine {
     width: 30px;
-    object-fit: none;
+    /* object-fit: none; */
 }
 
 /* sort */
@@ -893,7 +894,7 @@ h1 {
     border: 1px solid #464646;
 }
 
-.varieties a {
+.varieties a, .varieties ul li button {
     border: none;
     background-color: #fff;
     padding: 8px 16px;
@@ -902,6 +903,8 @@ h1 {
     /* white-space: nowrap; */
     min-width: 100px;
 }
+
+
 
 /* navbar */
 

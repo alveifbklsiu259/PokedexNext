@@ -174,8 +174,6 @@ const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDet
 			</ul>
 		);
 
-        console.log(mainText)
-
 		content = (
 			// <>
 			// 	<div className="evolutionDetails">

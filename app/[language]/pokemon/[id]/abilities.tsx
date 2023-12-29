@@ -12,6 +12,7 @@ type AbilitiesProps = {
 const Abilities = memo<AbilitiesProps>(
 	async function Abilities({ language, pokemonId }) {
 		const pokemonData = await getData("pokemon", pokemonId);
+
 		const abilities = await getAbilities2(pokemonData);
 
 		return (
