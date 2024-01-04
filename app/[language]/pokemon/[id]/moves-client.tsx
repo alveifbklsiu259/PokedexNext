@@ -494,6 +494,8 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 	}, []), [generationOptions, generationData]);
 	const [selectedVersion, setSelectedVersion] = useState(versions[0].name);
 	const [filteredMethod, setFilteredMethod] = useState<'level-up' | 'machine'>('level-up');
+	const [machines, setMachines] = useState<CachedMachine | null>(null);
+	const [isMachinesLoading, setIsMachinesLoading] = useState(false);
 
 	const getVersionName = useCallback((version: string) => {
 		if (language !== 'en') {
@@ -603,17 +605,39 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 			let machineContent: undefined | React.JSX.Element;
 			// get machines, chnage pokemon, get machines, check if all correct? also check redux stat change
 
+			// if (!isFilteredByLevel) {
+			// 	// const url = movesLearnedByMachine.find(entry => transformToKeyName(entry.move.name) === lookupName)!.move.url;
+			// 	// the latest version may not have machine data
+			// 	const machineEntry = moveData[lookupName].machines.find(entry => entry.version_group.name === selectedVersion);
+			// 	let machineUrl = machineEntry ? machineEntry.machine.url : undefined;
+			// 	machineContent = <MachineContent url={machineUrl} type={type} key={lookupName.concat(`_${selectedVersion}`)}/>
+			// };
 			if (!isFilteredByLevel) {
-				// const url = movesLearnedByMachine.find(entry => transformToKeyName(entry.move.name) === lookupName)!.move.url;
-				// the latest version may not have machine data
-				const machineEntry = moveData[lookupName].machines.find(entry => entry.version_group.name === selectedVersion);
-				let machineUrl = machineEntry ? machineEntry.machine.url : undefined;
-				machineContent = <MachineContent url={machineUrl} type={type} key={lookupName.concat(`_${selectedVersion}`)}/>
-			};
+				if (isMachinesLoading) {
+					machineContent = (
+						<div data-value={'loading'}>
+							<Image
+								src="/spinner.gif"
+								alt="Loading..."
+								width={30}
+								height={30}
+							/>
+						</div>
+					)
+				} else if (machines) {
+					const machine = machines[lookupName].version_groups?.[transformToKeyName(selectedVersion)] || 'No Data';
+					machineContent = (
+						<div data-value={machine} className="machineData">
+							<div data-tag="allowRowEvents">{machine.toUpperCase()}</div>
+							<Image width={30} height={30} data-tag="allowRowEvents" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-${type}.png`} alt={`tm-${type}`} className="machine"/>
+						</div>
+					)
+				}
+			}
 			const displayContent = isFilteredByLevel ? levelContent : machineContent;
 			return {
 				// id is used as an key for React Data Table.
-				id: moveName,
+				id: isFilteredByLevel ? moveName : moveName.concat(machineContent!.props['data-value']),
 				[isFilteredByLevel ? 'level' : 'machine']: displayContent,
 				move: moveName,
 				type: typeContent,
@@ -648,7 +672,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 	};
 
 	const columnData = useMemo(() => columnDataCreator(filteredMethod), [filteredMethod]);
-	const movesData = movesDataCreator(filteredMoves)
+	const movesData = movesDataCreator(filteredMoves);
 
 	const changeGeneration = (generation: string) => {
 		const nextVersion = generationData[transformToKeyName(generation)].version_groups[0].name;
@@ -664,47 +688,46 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 
 	const changefilteredMethod = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFilteredMethod(e.target.checked ? 'machine' : 'level-up');
-		// if (e.target.checked && !isMachineDataReady) {
-		// 	const machinesToFetch: string[] = [];
-		// 	let fetchedMachines: Machine.Root[] | undefined;
-		// 	const machineData: CachedMachine = {};
+		
+		if (e.target.checked && machines === null) {
+			const machinesToFetch: string[] = [];
+			let fetchedMachines: Machine.Root[] | undefined;
+			const machineData: CachedMachine = {};
 
-		// 	movesLearnedByMachine.forEach(entry => {
-		// 		const keyName = transformToKeyName(entry.move.name);
-		// 		if (!machines[keyName]) {
-		// 			machinesToFetch.push(...moveData[keyName].machines.map(entry => entry.machine.url));
-		// 		};
-		// 	})
+			movesLearnedByMachine.forEach(entry => {
+				const keyName = transformToKeyName(entry.move.name);
+				machinesToFetch.push(...moveData[keyName].machines.map(entry => entry.machine.url));
+			})
 
-		// 	if (machinesToFetch.length) {
-		// 		const dataResponses = await Promise.all(machinesToFetch.map(url => fetch(url)));
-		// 		const datas = dataResponses.map(response => response.json());
-		// 		fetchedMachines = await Promise.all(datas);
+			setIsMachinesLoading(true)
+			const dataResponses = await Promise.all(machinesToFetch.map(url => fetch(url)));
+			const datas = dataResponses.map(response => response.json());
+			fetchedMachines = await Promise.all(datas);
 
-		// 		fetchedMachines.forEach(machine => {
-		// 			const keyName = transformToKeyName(machine.move.name);
-		// 			if (!machineData[keyName]) {
-		// 				machineData[keyName] = {version_groups: {}};
-		// 			};
-		// 			machineData[keyName].version_groups = {
-		// 				...machineData[keyName].version_groups,
-		// 				[transformToKeyName(machine.version_group.name)]: machine.item.name
-		// 			};
-		// 		});
-		// 		// some machine data is lacking in the API, but we still have to cache them to correctly check whether machine data ready or not.
-		// 		movesLearnedByMachine.forEach(machine => {
-		// 			const keyName = transformToKeyName(machine.move.name);
-		// 			if (!machineData[keyName]) {
-		// 				machineData[keyName] = {version_groups: {}};
-		// 			};
-		// 		});
-		// 	};
-		// 	// dispatch(machineDataLoaded(machineData));
-		// };
-	}, [moveData]);
+			fetchedMachines.forEach(machine => {
+				const keyName = transformToKeyName(machine.move.name);
+				if (!machineData[keyName]) {
+					machineData[keyName] = {version_groups: {}};
+				};
+				machineData[keyName].version_groups = {
+					...machineData[keyName].version_groups,
+					[transformToKeyName(machine.version_group.name)]: machine.item.name
+				};
+			});
+			// some machine data is lacking in the API, but we still have to cache them to correctly check whether machine data ready or not.
+			movesLearnedByMachine.forEach(machine => {
+				const keyName = transformToKeyName(machine.move.name);
+				if (!machineData[keyName]) {
+					machineData[keyName] = {version_groups: {}};
+				};
+			});
+			setMachines(machineData)
+			setIsMachinesLoading(false)
+			
+			// dispatch(machineDataLoaded(machineData));
+		};
+	}, [setFilteredMethod, moveData, machines, setMachines, setIsMachinesLoading]);
 
-	// console.log(machines)
-	
 	// const isDataReady = filteredMethod === 'level-up' ? !!movesData : !!movesData && isMachineDataReady;
 	return (
 		<>
@@ -756,50 +779,50 @@ type MachineContentProps = {
 
 
 // if we have the machine stored in moves-client, we're gonna have to fetch all of them or the whole table will re-renders when we change gneration/version
-const MachineContent = ({url, type}: MachineContentProps) => {
-	const [isLoading, setIsLoading] = useState(true);	
-	const [data, setData] = useState<Machine.Root | null>(null);
+// const MachineContent = ({url, type}: MachineContentProps) => {
+// 	const [isLoading, setIsLoading] = useState(true);	
+// 	const [data, setData] = useState<Machine.Root | null>(null);
 
-	useEffect(() => {
-		if (url && data === null) {
-			const getMachine = async() => {
-				const response = await fetch(url);
-				const machine: Machine.Root = await response.json();
-				setData(machine);
-				setIsLoading(false)
-			};
-			getMachine();
-		} else if (url === undefined) {
-			setIsLoading(false)
-		};
-	}, [url, data, setData]);
+// 	useEffect(() => {
+// 		if (url && data === null) {
+// 			const getMachine = async() => {
+// 				const response = await fetch(url);
+// 				const machine: Machine.Root = await response.json();
+// 				setData(machine);
+// 				setIsLoading(false)
+// 			};
+// 			getMachine();
+// 		} else if (url === undefined) {
+// 			setIsLoading(false)
+// 		};
+// 	}, [url, data, setData]);
 
-	let content;
+// 	let content;
 	
-	if (isLoading) {
-		content = (
-			<Image
-				src="/spinner.gif"
-				alt="Loading..."
-				width={30}
-				height={30}
-			/>
-		)
-	} else if(!isLoading && data === null) {
-		content = <span>No Data</span>
-	} else {
-		const machine = data!.item.name;
-		content = (
-			<div data-value={machine} className="machineData">
-				<div data-tag="allowRowEvents">{machine?.toUpperCase()}</div>
-				<Image width={30} height={30} data-tag="allowRowEvents" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-${type}.png`} alt={`tm-${type}`} className="machine"/>
-			</div>
-		)
-	}
+// 	if (isLoading) {
+// 		content = (
+// 			<Image
+// 				src="/spinner.gif"
+// 				alt="Loading..."
+// 				width={30}
+// 				height={30}
+// 			/>
+// 		)
+// 	} else if(!isLoading && data === null) {
+// 		content = <span>No Data</span>
+// 	} else {
+// 		const machine = data!.item.name;
+// 		content = (
+// 			<div data-value={machine} className="machineData">
+// 				<div data-tag="allowRowEvents">{machine?.toUpperCase()}</div>
+// 				<Image width={30} height={30} data-tag="allowRowEvents" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-${type}.png`} alt={`tm-${type}`} className="machine"/>
+// 			</div>
+// 		)
+// 	}
 
-	return (
-		<>
-			{content}
-		</>
-	)
-}
+// 	return (
+// 		<>
+// 			{content}
+// 		</>
+// 	)
+// }

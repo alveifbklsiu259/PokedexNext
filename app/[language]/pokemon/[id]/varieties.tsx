@@ -21,7 +21,7 @@ const Varieties = memo<VarietiesProps>(async function Varieties({
 	return (
 		<>
 			{speciesData.varieties.length > 1 && (
-				<div className="col-12 varieties" style={{ marginTop: "7%" }}>
+				<div className="col-12 varieties">
 					<ul>
 						{speciesData.varieties.map((variety) => (
 							<React.Fragment key={variety.pokemon.name}>
@@ -35,6 +35,7 @@ const Varieties = memo<VarietiesProps>(async function Varieties({
 										href={`/${language}/pokemon/${getIdFromURL(
 											variety.pokemon.url
 										)}`}
+										prefetch={true}
 									>
 										{/* {getFormName(speciesData, language, pokemons[getIdFromURL(variety.pokemon.url)])} */}
 										{variety.pokemon.name}
@@ -49,3 +50,6 @@ const Varieties = memo<VarietiesProps>(async function Varieties({
 	);
 });
 export default Varieties;
+
+
+// I was thinking about having varieties and evolution chain in a layout, so when changing form, theses two components will not re-render, but I'm currenly navigating to a new [id] when change form, to implement the said requirement, maybe we should use searchParams, but I also want to test if I can statically generate pokemon/[id], so maybe implement it later

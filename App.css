@@ -239,6 +239,11 @@ h1 {
     color: #000;
 }
 
+/* pokemon */
+.mainContainer {
+    margin-top: 170px
+}
+
 /* basicInfo */
 
 .basicInfo {
@@ -579,7 +584,6 @@ h1 {
 }
 
 /* moves */
-
 
 .moves .generationBtn {
     min-width: 50px;
@@ -948,14 +952,38 @@ h1 {
     height: 75px;
 }
 
-.skeleton__img__basicInfo {
+/* .skeleton__img__basicInfo {
     max-width: 350px;
     max-height: 350px;
-}
+} */
 
 .skeleton__text__type {
     min-width: 80px;
     max-width: 100px;
+}
+
+.skeleton__img__basicInfoContainer {
+    height: 0;
+    overflow: hidden;
+    /* IE 11 does not support math functions */
+    padding-top: min(350px, 100%);
+    width: 100%;
+    max-width: 350px;
+    margin: auto;
+    position: relative;
+    align-self: normal;
+}
+
+.skeleton__img__basicInfo {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    height: 100% !important;
+}
+
+.skeleton__text__centered {
+    margin: auto
 }
 
 
@@ -1018,4 +1046,9 @@ h1 {
     .marginWithVarieties {
         margin-top: 0
     }
+
+    .mainContainer {
+        margin-top: 210px
+    }
+
 }

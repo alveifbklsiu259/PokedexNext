@@ -173,6 +173,7 @@ import Stats from "./stats";
 import MovesServer from "./moves-server";
 import EvolutionChains from "./evolution-chains";
 import { Skeleton, Typography } from "@mui/material";
+import { BasicInfoSkeleton, DetailSkeleton, EvolutionChainSkeleton, RelatedPokemonSkeleton, StatsSkeleton } from "@/app/_components/skeleton";
 
 type PageProps = {
 	params: {
@@ -271,9 +272,12 @@ export default async function Page({ params }: PageProps) {
 	// // const movesToFetch = pokemonData.moves.map(entry => getIdFromURL(entry.move.url));
 	// // const moves = getData('move', movesToFetch, 'name');
 
-	// // generation
-	// const generationResponse = await getEndpointData('generation');
-	// const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+	// generation
+	console.time('generations')
+	const generationResponse = await getEndpointData('generation');
+	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+	await new Promise(res => setTimeout(() => res('success'), 2000))
+	console.timeEnd('generations')
 
 	// // type
 	// const typeResponse = await getEndpointData('type');
@@ -282,85 +286,43 @@ export default async function Page({ params }: PageProps) {
 
 	const pokemonId = Number(id);
 
-	const relatedPokemonPlaceholder = (order: "previous" | "next") => (
-		<div className={`navigation ${order}`}>
-			<Skeleton variant="text" width={50} />
-			<Skeleton
-				variant="circular"
-				width={75}
-				height={75}
-				className="skeleton__img__related"
-			/>
-			{/* <Image width="475" height="475" src={``} alt="placeholder" /> */}
-		</div>
-	);
-
 	// check if all the memo in the server components needed?
 
 	return (
 		<>
-			<Suspense fallback={relatedPokemonPlaceholder("previous")}>
+			<Suspense fallback={<RelatedPokemonSkeleton order="previous"/>}>
 				<RelatedPokemon pokemonId={pokemonId} order="previous" />
 			</Suspense>
-			<Suspense fallback={relatedPokemonPlaceholder("next")}>
+			<Suspense fallback={<RelatedPokemonSkeleton order="next"/>}>
 				<RelatedPokemon pokemonId={pokemonId} order="next" />
 			</Suspense>
 
-			<div className="row justify-content-center">
-				<Suspense fallback={<h1>rendering varieties</h1>}>
+			<div className="row justify-content-center mainContainer">
+				{/* <Suspense fallback={null}>
 					<Varieties language={language} pokemonId={pokemonId} />
 				</Suspense>
 
 				<div className="basicInfoContainer row col-8 col-sm-6 justify-content-center">
 					<Suspense
 						fallback={
-							// <h1>loading basic</h1>
-							<>
-								<Skeleton
-									width={350}
-									height={350}
-									animation="wave"
-									variant="rectangular"
-									className="skeleton__img__basicInfo"
-								/>
-								<Skeleton
-									animation="wave"
-									variant="text"
-									width={55}
-									sx={{ fontSize: "1rem" }}
-								/>
-								<Skeleton animation="wave" sx={{ fontSize: "2em" }} />
-								<div className="types row justify-content-center">
-									<Skeleton
-										width={80}
-										height={20}
-										className="skeleton__text__type"
-									/>
-									<Skeleton
-										width={80}
-										height={20}
-										className="skeleton__text__type"
-									/>
-								</div>
-							</>
+							<BasicInfoSkeleton/>
 						}
 					>
 						<BasicInfo language={language} pokemonId={pokemonId} />
 					</Suspense>
 				</div>
 				<div className="detail row text-center col-12 col-sm-6">
-					<Suspense fallback={<h1>loading details</h1>}>
+					<Suspense fallback={<DetailSkeleton/>}>
 						<Detail
 							language={language}
-							// abilityData={abilityData}
 							pokemonId={pokemonId}
 						/>
 					</Suspense>
 				</div>
-				<Suspense fallback={<h1>loading stats</h1>}>
+				<Suspense fallback={<StatsSkeleton />}>
 					<Stats language={language} pokemonId={pokemonId} />
-				</Suspense>
-				<Suspense fallback={<h1>loading evolutionChain</h1>}>
+				</Suspense> */}
+				<Suspense fallback={<EvolutionChainSkeleton />}>
 					<EvolutionChains
 						language={language}
 						pokemonId={pokemonId}
@@ -381,7 +343,7 @@ export default async function Page({ params }: PageProps) {
 				{/* this button can be in /pokemon/layout.tsx */}
 				<div className="row justify-content-center">
 					<div className="w-50 m-3 btn btn-block btn-secondary">
-						<Link prefetch={true} href={`/${language}`}>
+						<Link prefetch={true} href={`/${language}/pokemons`}>
 							Explore More Pokemons
 						</Link>
 					</div>
@@ -454,3 +416,6 @@ const RelatedPokemon = memo<RelatedPokemonProps>(async function RelatedPokemon({
 */
 
 // but I think we can still give SSG a shot, maybe we'll encounter build error?
+
+
+// say if /pokemon/xxx is dynamic, and it fetches generations, types... some commonly used data, when the first time we land on /pokemon/xxx, since it's the first time to fetch, they're not cached, it should take a while, but what if we fetch those data(like the prefetch approach in the Next docs) in a static route(say root layout), will this make the first time landing on /pokemon/xxx faster?

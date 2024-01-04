@@ -5,6 +5,7 @@ import { LanguageOption } from "../../_components/display/display-slice";
 import { getIdFromURL, transformToKeyName } from "@/app/_utils/util";
 import { Machine, Pokemon, PokemonForm } from "@/typeModule";
 import { CachedMachine } from "../../_components/pokemonData/pokemon-data-slice";
+import { Stack, Typography, Switch } from "@mui/material";
 
 type MovesServerProps = {
 	pokemonId: number;
@@ -60,37 +61,17 @@ const MovesServer = memo<MovesServerProps>(async function MovesServer({
 		pokemonForm = await getData('pokemonForm', getIdFromURL(pokemonData.forms[0].url));
 		// if (pokemonData.formData && pokemonData.formData.is_battle_only === false) {
 		if (pokemonForm.is_battle_only === false) {
-			debutGeneration = Object.values(generations).find(generation => generation.version_groups.some(version => version.name === pokemonData.formData!.version_group.name))!.name;
+			debutGeneration = Object.values(generations).find(generation => generation.version_groups.some(version => version.name === pokemonForm!.version_group.name))!.name;
 		} else {
 			// use the default form's pokemon data.
 			pokemonData = await getData('pokemon', getIdFromURL(pokemonData.species.url));
 		};
 	};
 
-
 	// console.time('moves')
 	// all moves for current pokemon (leaned by machine, level-up...)
 	const moves = await getData('move', pokemonData.moves.map(entry => getIdFromURL(entry.move.url)), 'name');
 	// console.timeEnd('moves')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
-
 
 	// get machine on teh client
 	
@@ -163,18 +144,22 @@ const MovesServer = memo<MovesServerProps>(async function MovesServer({
 
 
 
-	return <MovesClient 
-		language={language}
-		pokemonData={pokemonData}
-		speciesData={speciesData}
-		types={types}
-		versionData={versions}
-		moveData={moves}
-		generationData={generations}
-		debutGeneration={debutGeneration}
-		chainData={chainData}
-		movesDamageClass={moveDamageClass}
-	/>;
+	return (
+		<>
+			<MovesClient 
+				language={language}
+				pokemonData={pokemonData}
+				speciesData={speciesData}
+				types={types}
+				versionData={versions}
+				moveData={moves}
+				generationData={generations}
+				debutGeneration={debutGeneration}
+				chainData={chainData}
+				movesDamageClass={moveDamageClass}
+			/>;
+		</>
+	)
 });
 
 export default MovesServer;

@@ -5,6 +5,8 @@ import { FaMars, FaVenus } from "react-icons/fa";
 import { BsQuestionLg } from "react-icons/bs";
 import { getData } from "@/app/_utils/api";
 import Abilities from "./abilities";
+import { Skeleton } from "@mui/material";
+import { AbilitiesSkeleton } from "@/app/_components/skeleton";
 
 function getGender(gender_rate: number) {
 	switch (gender_rate) {
@@ -61,7 +63,7 @@ const Detail = memo<DetailProps>(async function Detail({
 			</p>
 			<div className="col-6 abilities p-0">
 				Abilities <br />
-				<Suspense fallback={<h1>loading abilities</h1>}>
+				<Suspense fallback={<AbilitiesSkeleton />}>
 					<Abilities language={language} pokemonId={pokemonId} />
 				</Suspense>
 			</div>

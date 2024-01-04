@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import dynamic from "next/dynamic";
 // import { Zen_Maru_Gothic } from 'next/font/google';
 import '@/App.css'
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter'; 
 // import NavBar from "./_components/navBar";
 
 // const DynamicBootstrap = dynamic(
@@ -35,8 +36,18 @@ export default async function RootLayout(props: RootLayoutProps) {
 			{/* <body className={zen_maru_gothic.className}> */} 
 			<body>
 				{/* {props.search} */}
-				{props.children}
+				
+				<AppRouterCacheProvider>
+					{props.children}
+				</AppRouterCacheProvider>
 			</body>
 		</html>
 	);
 };
+
+
+// using provider will probably not affect the rendering of the components, only the children will still be rendered on the server, but the component that read the context (usexxx hook) will be rendered on the client.
+
+// configure documnet file?
+// https://nextjs.org/docs/getting-started/installation#the-pages-directory-optional
+// https://mui.com/material-ui/guides/nextjs/#typescript

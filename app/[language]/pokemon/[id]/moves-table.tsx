@@ -72,6 +72,7 @@ export default function MovesTable({columnData, movesData, selectedVersion, chan
 	const expandableRowsComponentProps = useMemo(()=> ({previousSelectedVersion, language}), [previousSelectedVersion, language]);
 
 	// if the current data is the same as the previous one, use the previous one to prevent re-render. (caching movesData would probably not work for this since selectedGeneration/selectedVersion changes so often), also use the previous selected version(selected verion is only used for move descriptions which don't change often even between different generation).
+	
 	if (getSerializedIds(previousData) !== getSerializedIds(movesData)) {
 		setPreviousData(movesData);
 		setPreviousSelectedVersion(selectedVersion);

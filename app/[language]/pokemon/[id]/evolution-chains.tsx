@@ -28,15 +28,13 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
     const pokemonData = await getData('pokemon', pokemonId);
     const speciesId = getIdFromURL(pokemonData.species.url);
     const speciesData = await getData('pokemonSpecies', speciesId)
-	console.time('chain')
 
-	// // evolution chain
+	// evolution chain
 	const chainId = getIdFromURL(speciesData.evolution_chain.url);
 	const chainData = await getEvolutionChains(chainId);
 	const pokemonsInChain = [...new Set(chainData.chains.flatMap(chain => chain))];
 	const pokemons = await getData('pokemon', pokemonsInChain, 'id');
 	const species = await getData('pokemonSpecies', pokemonsInChain, 'id');
-	console.timeEnd('chain')
 
 
     // generation

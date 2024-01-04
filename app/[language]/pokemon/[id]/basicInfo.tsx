@@ -5,6 +5,9 @@ import { LanguageOption } from '../../_components/display/display-slice';
 import Image from 'next/image';
 import { CachedType } from '../../_components/pokemonData/pokemon-data-slice';
 import { getData, getEndpointData } from '@/app/_utils/api';
+import { Switch } from '@mui/material';
+// import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 
 type BasicInfoProps = {
 	language: LanguageOption,
