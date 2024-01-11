@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, Suspense } from "react";
 import MovesClient from "./moves-client";
 import { getData, getEndpointData, getEvolutionChains } from "@/app/_utils/api";
 import { LanguageOption } from "../../_components/display/display-slice";
@@ -6,6 +6,7 @@ import { getIdFromURL, transformToKeyName } from "@/app/_utils/util";
 import { Machine, Pokemon, PokemonForm } from "@/typeModule";
 import { CachedMachine } from "../../_components/pokemonData/pokemon-data-slice";
 import { Stack, Typography, Switch } from "@mui/material";
+import MyComponent from "./testTable";
 
 type MovesServerProps = {
 	pokemonId: number;
@@ -134,16 +135,6 @@ const MovesServer = memo<MovesServerProps>(async function MovesServer({
 	// 	};
 	// });
 
-
-
-
-
-
-
-
-
-
-
 	return (
 		<>
 			<MovesClient 
@@ -157,7 +148,8 @@ const MovesServer = memo<MovesServerProps>(async function MovesServer({
 				debutGeneration={debutGeneration}
 				chainData={chainData}
 				movesDamageClass={moveDamageClass}
-			/>;
+			/>
+			{/* <MyComponent /> */}
 		</>
 	)
 });

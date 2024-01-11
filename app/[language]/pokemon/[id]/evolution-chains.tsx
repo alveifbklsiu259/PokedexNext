@@ -1,15 +1,12 @@
 import React, { memo, Suspense } from "react";
 import BasicInfo from "./basicInfo";
-// import EvolutionDetails from "./evolutionDetails";
-import { CachedGeneration, CachedItem, CachedPokemon, CachedPokemonSpecies, CachedType } from "../../_components/pokemonData/pokemon-data-slice";
 import { getIdFromURL } from "@/app/_utils/util";
-import { EvolutionChain, Pokemon } from "@/typeModule";
+import { Pokemon } from "@/typeModule";
 import { LanguageOption } from "../../_components/display/display-slice";
 import { getData, getEndpointData, getEvolutionChains } from "@/app/_utils/api";
 import Link from "next/link";
 import EvolutionDetails from "./evolution-details";
 
-type NonDefaultFormPokemonData = Required<Pokemon.Root>;
 
 type EvolutionChainsProps = {
 	language: LanguageOption,
@@ -33,19 +30,31 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 	const chainId = getIdFromURL(speciesData.evolution_chain.url);
 	const chainData = await getEvolutionChains(chainId);
 	const pokemonsInChain = [...new Set(chainData.chains.flatMap(chain => chain))];
-	const pokemons = await getData('pokemon', pokemonsInChain, 'id');
 	const species = await getData('pokemonSpecies', pokemonsInChain, 'id');
 
+	const pokemonsToFetch: number[] = [];
+	Object.values(species).forEach(speciesData => {
+		speciesData.varieties.forEach(variety => {
+			pokemonsToFetch.push(getIdFromURL(variety.pokemon.url))
+		});
+	});
+	const pokemons = await getData('pokemon', pokemonsToFetch, 'id');
+
+	const formsToFetch: number[] = [];
+	Object.values(pokemons).forEach(pokemon => {
+		if (!pokemon.is_default) {
+			formsToFetch.push(getIdFromURL(pokemon.forms[0].url));
+		};
+	});
+	const forms = await getData('pokemonForm', formsToFetch, 'id');
 
     // generation
 	const generationResponse = await getEndpointData('generation');
 	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
 
-
 	// const navigateToPokemon = useNavigateToPokemon();
 	let evolutionChains = chainData.chains;
 	// const pokemonsInChain = [...new Set(evolutionChains.flat())];
-
 	/* 
 	since the API doesn't provide evolution relationship between non-default-form, and there isn't really a specific pattern to check their relationship, here's how I'll implement and reason about their relationship:
 	Note: a pokemon may have multiple evolution chains, a pokemon may have multiple non-battle-forms.
@@ -58,18 +67,36 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 	Note: The result chains may contain incorrect chain (i.e. 999)
 	*/
 
+	// let formData: {
+	// 	[name: number]: PokemonForm.Root
+	// } | undefined;
+
+	// const formsToFetch = Object.values(species).reduce<number[]>((pre, cur) => {
+	// 	if (cur.varieties.length > 1) {
+	// 		pre.push()
+	// 	}
+	// 	return pre
+	// }, [])
+	// console.log(Object.values(species).map(e => e.varieties.length))
+	// console.log(pokemonsInChain)
+	
+
 	if (pokemonsInChain.length > 1) {
 		// nbf stands for non-battle-form.
 		const nbfs = pokemonsInChain.reduce<{
-			[id: number]: NonDefaultFormPokemonData[]
+			[id: number]: Pokemon.Root[]
 		}>((pre, cur) => {
-			let match: NonDefaultFormPokemonData[] = [];
+			let match: Pokemon.Root[] = [];
 			species[cur].varieties
 				.forEach(variety => {
-					const pokemonData = pokemons[getIdFromURL(variety.pokemon.url)];
-					if (pokemonData?.formData?.is_battle_only === false) {
-						match.push(pokemonData as NonDefaultFormPokemonData);
-					};
+					if (!variety.is_default) {
+						const pokemonData = pokemons[getIdFromURL(variety.pokemon.url)]
+						const formData = forms[getIdFromURL(pokemonData.forms[0].url)];
+						// console.log(formData)
+						if (formData.is_battle_only === false) {
+							match.push(pokemonData);
+						};
+					}
 				});
 			pre[cur] = match;
 			return pre;
@@ -83,11 +110,12 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 			return Object.values(generations).find(generation => generation.version_groups.some(version => version.name === versionName))!.name;
 		};
 
+
 		// find common data between nbfs and pokemons without nbfs.
 		const getCommonData = (chain: number[]) => {
 			const pokeIdsWithoutNbf = chain.filter(id => !nbfs[id].length);
 			const pokeIdsWithNbf = chain.filter(id => nbfs[id].length);
-			const nbfIds = chain.map(id => nbfs[id].map(nbf => nbf.id)).flat();
+			const nbfIds = chain.flatMap(id => nbfs[id].map(nbf => nbf.id));
 
 			const commonData = {
 				commonGeneration: '',
@@ -97,7 +125,8 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 			
 			const gens: string[] = [];
 			[...pokeIdsWithoutNbf, ...nbfIds].forEach((id, index, ids) => {
-				const versionName = pokemons[id].formData?.version_group?.name;
+				const formId = getIdFromURL(pokemons[id].forms[0].url);
+				const versionName = forms[formId]?.version_group?.name;
 				const generation = versionName ? getGenerationByVersion(versionName) : species[id].generation.name;
 				if (!gens.includes(generation)) {
 					gens.push(generation);
@@ -115,7 +144,8 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 			if (pokeIdsWithNbf.length >= 2) {
 				const formNames: string[] = [];
 				nbfIds.forEach(id => {
-					const formName = pokemons[id].formData!.form_name;
+					const formId = getIdFromURL(pokemons[id].forms[0].url);
+					const formName = forms[formId].form_name;
 					if (!formNames.includes(formName)) {
 						formNames.push(formName);
 					} else {
@@ -142,9 +172,10 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 		};
 		evolutionChains = evolutionChains.reduce<number[][]>((newChains, currentChain) => {
 			const {commonName, commonGeneration, idsInCommon} = getCommonData(currentChain);
-			const commonTest = (form: NonDefaultFormPokemonData) => {
-				const isFormMatch = form.formData.form_name === commonName;
-				const isGenerationMatch = getGenerationByVersion(form.formData.version_group.name) === commonGeneration;
+			const commonTest = (form: Pokemon.Root) => {
+				const formData = forms[getIdFromURL(form.forms[0].url)]
+				const isFormMatch = formData.form_name === commonName;
+				const isGenerationMatch = getGenerationByVersion(formData.version_group.name) === commonGeneration;
 				return commonName ? (isFormMatch && isGenerationMatch) : (isFormMatch || isGenerationMatch);
 			};
 

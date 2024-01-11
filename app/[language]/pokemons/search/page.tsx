@@ -118,6 +118,7 @@ import { Suspense } from "react";
 import type { LanguageOption } from "../../_components/display/display-slice";
 import { Skeleton } from "@mui/material";
 import { PokemonsSkeleton } from "@/app/_components/skeleton";
+import PokmeonsPortal from "./pokemonsPortal";
 
 type PageProps = {
 	params: {
@@ -130,12 +131,11 @@ export default async function Page({ params, searchParams }: PageProps) {
 
 
 
-
 	return (
 		<>
 			<Suspense
 				key={JSON.stringify(searchParams)}
-				fallback={<PokemonsSkeleton/>}
+				fallback={<PokemonsSkeleton />}
 			>
 				<DynamicPokemons params={params} searchParams={searchParams} />
 			</Suspense>

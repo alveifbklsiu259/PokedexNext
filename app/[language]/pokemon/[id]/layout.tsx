@@ -3,6 +3,6 @@ type Layout = {
 };
 
 export default async function RootLayout(props: Layout) {
-    console.log('layout')
+    // console.log('layout')
 	return <>{props.children}</>;
 }

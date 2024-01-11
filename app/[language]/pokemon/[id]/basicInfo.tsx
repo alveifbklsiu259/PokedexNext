@@ -1,13 +1,9 @@
-import { Pokemon, PokemonSpecies } from '@/typeModule';
+import { Pokemon, PokemonForm, PokemonSpecies } from '@/typeModule';
 import { memo } from 'react';
-import { getFormName, getIdFromURL, getNameByLanguage } from '@/app/_utils/util';
+import { getFormName2, getIdFromURL, getNameByLanguage } from '@/app/_utils/util';
 import { LanguageOption } from '../../_components/display/display-slice';
 import Image from 'next/image';
-import { CachedType } from '../../_components/pokemonData/pokemon-data-slice';
 import { getData, getEndpointData } from '@/app/_utils/api';
-import { Switch } from '@mui/material';
-// import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 
 type BasicInfoProps = {
 	language: LanguageOption,
@@ -18,6 +14,13 @@ const BasicInfo = memo<BasicInfoProps>(async function BasicInfo({language, pokem
     const pokemonData = await getData('pokemon', pokemonId);
     const speciesId = getIdFromURL(pokemonData.species.url);
     const speciesData = await getData('pokemonSpecies', speciesId);
+
+	let formData: PokemonForm.Root | undefined;
+	if (!pokemonData.is_default) {
+		formData = await getData('pokemonForm', getIdFromURL(pokemonData.forms[0].url));
+	};
+
+
     const typeResponse = await getEndpointData("type");
 	const types = await getData(
 		"type",
@@ -26,7 +29,8 @@ const BasicInfo = memo<BasicInfoProps>(async function BasicInfo({language, pokem
 	);
     
     const nationalNumber = getIdFromURL(pokemonData.species.url);
-	const formName = getFormName(speciesData, language, pokemonData);
+	const formName = getFormName2(speciesData, language, pokemonData, formData);
+
 	let newName: undefined | React.JSX.Element;
 	if (formName.includes('(')) {
 		const pokemonName = formName.split('(')[0];
@@ -44,14 +48,37 @@ const BasicInfo = memo<BasicInfoProps>(async function BasicInfo({language, pokem
 	if (imgSrc && imgSrc.includes('https://raw.githubusercontent.com/PokeAPI/sprites/master/https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/')) {
 		imgSrc = imgSrc.replace('https://raw.githubusercontent.com/PokeAPI/sprites/master/', '');
 	};
-	// console.log(imgSrc)
+	// let blurDataURL: string = '';
+	// try {
+
+	// 	const buffer = await fetch(imgSrc).then(async (res) =>
+	// 	  Buffer.from(await res.arrayBuffer())
+	// 	);
+	   
+	// 	// const { base64 } = await getPlaiceholder(buffer);
+	// 	blurDataURL = (await getPlaiceholder(buffer)).base64;
+		
+	   
+	//   } catch (err) {
+	// 	err;
+	//   }
+
 	// reference: https://github.com/vercel/next.js/discussions/29545
 	// reference: https://stackoverflow.com/questions/73570140/typeerror-cannot-read-properties-of-null-reading-default-in-next-js
 
 	return (
 		<div className={`basicInfo d-flex flex-column align-items-center text-center p-0 h-100 ${!imgSrc ? 'justify-content-end' : ''} `}>
 			{/* width/heigh attributes are important for ScrollRestoration */}
-			{imgSrc ? <Image width='475' height='475' className="poke-img mx-auto p-0" src={imgSrc} alt={formName} priority /> : <div style={{height: 'auto', width: 'auto'}}></div>}
+			{imgSrc ? <Image
+				width='475' 
+				height='475' 
+				className="poke-img mx-auto p-0" 
+				src={imgSrc} 
+				alt={formName} 
+				// placeholder='blur'
+				// blurDataURL={blurDataURL}
+				// priority
+			/> : <div style={{height: 'auto', width: 'auto'}}></div>}
 			<span className="id p-0">#{String(nationalNumber).padStart(4 ,'0')}</span>
 			<h2 className="p-0 text-capitalize pokemonName">{newName || formName}</h2>
 			<div className="types row justify-content-center">
@@ -69,3 +96,7 @@ const BasicInfo = memo<BasicInfoProps>(async function BasicInfo({language, pokem
 });
 
 export default BasicInfo;
+
+
+// SSG page probably doesn't need blurred placeholder for Image ??
+// what about paliceholder for CSR? placieholder only works for SSR

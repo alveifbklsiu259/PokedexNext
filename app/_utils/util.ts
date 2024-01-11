@@ -1,5 +1,5 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
-import type { Pokemon, PokemonSpecies } from "../../typeModule";
+import type { Pokemon, PokemonForm, PokemonSpecies } from "../../typeModule";
 import { LanguageOption } from "../[language]/_components/display/display-slice";
 import type { EndPointRequest } from "./api";
 import { CachedGeneration, CachedType } from "../[language]/_components/pokemonData/pokemon-data-slice";
@@ -45,6 +45,25 @@ export const getFormName = (speciesData: PokemonSpecies.Root | undefined, langua
 	if (!pokemonData.is_default) {
 		if (pokemonData.formData) {
 			formName = getNameByLanguage(pokemonData.formData.form_name, language, pokemonData.formData);
+		} else {
+			formName = pokemonData.name;
+		};
+		
+		if (formName.toLowerCase().includes(pokemonName.toLowerCase())) {
+			pokemonName = formName;
+		} else {
+			pokemonName = pokemonName.concat(`(${formName})`);
+		};
+	};
+	return pokemonName;
+};
+export const getFormName2 = (speciesData: PokemonSpecies.Root | undefined, language: LanguageOption, pokemonData: Pokemon.Root, formData: PokemonForm.Root | undefined) => {
+	let pokemonName = getNameByLanguage(pokemonData.name, language, speciesData);
+	let formName: string;
+
+	if (!pokemonData.is_default) {
+		if (formData) {
+			formName = getNameByLanguage(formData.form_name, language, formData);
 		} else {
 			formName = pokemonData.name;
 		};

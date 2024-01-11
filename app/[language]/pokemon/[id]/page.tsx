@@ -173,7 +173,7 @@ import Stats from "./stats";
 import MovesServer from "./moves-server";
 import EvolutionChains from "./evolution-chains";
 import { Skeleton, Typography } from "@mui/material";
-import { BasicInfoSkeleton, DetailSkeleton, EvolutionChainSkeleton, RelatedPokemonSkeleton, StatsSkeleton } from "@/app/_components/skeleton";
+import { BasicInfoSkeleton, DetailSkeleton, EvolutionChainSkeleton, MovesSkeleton, RelatedPokemonSkeleton, StatsSkeleton } from "@/app/_components/skeleton";
 
 type PageProps = {
 	params: {
@@ -273,11 +273,11 @@ export default async function Page({ params }: PageProps) {
 	// // const moves = getData('move', movesToFetch, 'name');
 
 	// generation
-	console.time('generations')
-	const generationResponse = await getEndpointData('generation');
-	const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
-	await new Promise(res => setTimeout(() => res('success'), 2000))
-	console.timeEnd('generations')
+	// console.time('generations')
+	// const generationResponse = await getEndpointData('generation');
+	// const generations = await getData('generation', generationResponse.results.map(entry => entry.name), 'name');
+	// // await new Promise(res => setTimeout(() => res('success'), 2000))
+	// console.timeEnd('generations')
 
 	// // type
 	// const typeResponse = await getEndpointData('type');
@@ -298,7 +298,7 @@ export default async function Page({ params }: PageProps) {
 			</Suspense>
 
 			<div className="row justify-content-center mainContainer">
-				{/* <Suspense fallback={null}>
+				<Suspense fallback={null}>
 					<Varieties language={language} pokemonId={pokemonId} />
 				</Suspense>
 
@@ -321,7 +321,7 @@ export default async function Page({ params }: PageProps) {
 				</div>
 				<Suspense fallback={<StatsSkeleton />}>
 					<Stats language={language} pokemonId={pokemonId} />
-				</Suspense> */}
+				</Suspense>
 				<Suspense fallback={<EvolutionChainSkeleton />}>
 					<EvolutionChains
 						language={language}
@@ -331,7 +331,7 @@ export default async function Page({ params }: PageProps) {
 					/>
 				</Suspense>
 
-				<Suspense fallback={<h1>loading moves</h1>}>
+				<Suspense fallback={<MovesSkeleton/>}>
 					<MovesServer
 						pokemonId={pokemonId}
 						language={language}

@@ -10,6 +10,7 @@ type FormBtnProps = {
 	setSelectedGenerations: React.Dispatch<React.SetStateAction<string[]>>;
 	selectedTypes: string[];
 	setSelectedTypes: React.Dispatch<React.SetStateAction<string[]>>;
+	onCloseModal? : () => void
 };
 
 const FormBtn = memo(function FormBtn({
@@ -20,6 +21,7 @@ const FormBtn = memo(function FormBtn({
 	setSearchQuery,
 	setSelectedGenerations,
 	setSelectedTypes,
+	onCloseModal
 }: FormBtnProps) {
 	const searchParams = useSearchParams();
 	const params = useParams();
@@ -47,7 +49,6 @@ const FormBtn = memo(function FormBtn({
 	useEffect(() => {
 		const formNode = formRef.current!;
 		const handleSubmit = (e: SubmitEvent) => {
-			console.log('submit')
 			e.preventDefault();
 
 			const newSearchParams = updateSearchParam(searchParams, {
@@ -65,11 +66,15 @@ const FormBtn = memo(function FormBtn({
 				newPathname = `/${language}/pokemons`
 			};
 
-			router.push(
+			if (onCloseModal) {
+				onCloseModal();
+			};
+
+			// what should I use, replace or push?
+			router.replace(
 				// `/${language}/pokemons2?${newSearchParams}`
 				`${newPathname}?${newSearchParams}`
 			);
-			console.log('render ends')
 
 			
 

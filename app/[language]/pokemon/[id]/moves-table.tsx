@@ -1,3 +1,4 @@
+'use client'
 import { memo, useState, useMemo } from "react";
 import DataTable, { type TableColumn, type ExpanderComponentProps } from "react-data-table-component";
 import { Switch, Stack, Typography, capitalize } from "@mui/material";
@@ -97,5 +98,25 @@ export default function MovesTable({columnData, movesData, selectedVersion, chan
 		/>
 	)
 };
+
+export function DataTableSkeleton() {
+	return (
+		<DataTable
+			data={[]}
+			columns={[]}
+			progressPending={true}
+			title={`Moves Learn by Level-up`}
+			subHeader
+			subHeaderComponent={
+				<Stack direction="row" spacing={1} alignItems="center">
+					<Typography>Level</Typography>
+					<Switch disabled={true} />
+					<Typography>Machine</Typography>
+				</Stack>
+			}
+		/>
+	)
+}
+
 
 // there's some TS problem with expandableRowsComponent, reference: https://react-data-table-component.netlify.app/?path=/docs/expandable-basic--basic#typescript

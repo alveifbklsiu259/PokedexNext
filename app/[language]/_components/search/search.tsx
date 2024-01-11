@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { Suspense, memo, useRef, useState } from "react";
+import { Suspense, memo, useLayoutEffect, useRef, useState } from "react";
 import { AiOutlineCaretDown } from "react-icons/ai";
 import type {
 	CachedAllPokemonNamesAndIds,
@@ -24,8 +24,8 @@ const Search = memo(function Search({
 	generations,
 	types,
 	namesAndIds,
+	onCloseModal
 }: SearchProps) {
-
 	// const dispatch = useAppDispatch();
 	const [isAdvancedShown, setIsAdvancedShown] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -41,11 +41,11 @@ const Search = memo(function Search({
 	};
 
 	// auto focus when modal is opened.
-	// useLayoutEffect(() => {
-	// 	if (onCloseModal) {
-	// 		inputRef.current!.focus();
-	// 	};
-	// }, [onCloseModal]);
+	useLayoutEffect(() => {
+		if (onCloseModal) {
+			inputRef.current!.focus();
+		};
+	}, [onCloseModal]);
 
 	return (
 		<div className="card-body mb-4 p-4">
@@ -108,6 +108,7 @@ const Search = memo(function Search({
 						setSelectedGenerations={setSelectedGenerations}
 						selectedTypes={selectedTypes}
 						setSelectedTypes={setSelectedTypes}
+						onCloseModal={onCloseModal}
 					/>
 				</Suspense>
 			</form>

@@ -26,6 +26,8 @@ type LanguagePageProps = {
 };
 export default function LanguagePage({ params }: LanguagePageProps) {
 	const { language } = params;
+
+	// this can be replace by creating a 404 or error .tsx file ?
 	if (Object.keys(languageOptions).includes(language)) {
 		redirect(`./${language}/pokemons`);
 	} else {

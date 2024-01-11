@@ -42,7 +42,7 @@ type LanguagePageProps = {
 
 // try fetching data concurrently and see if it reduces time
 export default async function LanguagePage({ params }: LanguagePageProps) {
-	console.log("/[language].page.tsx");
+	// console.log("/[language].page.tsx");
 	const { language } = params;
 
 	const generationResponse = await getEndpointData("generation");
@@ -133,7 +133,7 @@ export default async function LanguagePage({ params }: LanguagePageProps) {
 	// 	</>
 	// );
 
-	console.log("/pokemons/page.tsx");
+	// console.log("/pokemons/page.tsx");
 
 	return (
 		<>
@@ -348,3 +348,8 @@ If a route is dynamically rendered, useSearchParams will be available on the ser
 
 // can we wrap a server component with memo, does it make any difference, what's the point?
 // can I use suspense to make a component show disabled hovered icon when hydration is not finished?
+
+
+
+//  implement turbolink,
+//  grayed out pokemons, instead of using skeleton

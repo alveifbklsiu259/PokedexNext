@@ -28,7 +28,6 @@ export namespace Pokemon {
 		stats: Stat[];
 		types: Type[];
 		weight: number;
-		formData?: PokemonForm.Root;
 	}
 
 	export interface Ability {

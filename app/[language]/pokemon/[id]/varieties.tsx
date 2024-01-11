@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { LanguageOption } from "../../_components/display/display-slice";
-import { getFormName, getIdFromURL } from "@/app/_utils/util";
-import { Pokemon, PokemonSpecies } from "@/typeModule";
+import { getFormName, getFormName2, getIdFromURL } from "@/app/_utils/util";
+import { Pokemon, PokemonForm, PokemonSpecies } from "@/typeModule";
 import Link from "next/link";
 import { getData } from "@/app/_utils/api";
 
@@ -18,31 +18,42 @@ const Varieties = memo<VarietiesProps>(async function Varieties({
 	const speciesId = getIdFromURL(pokemonData.species.url);
 	const speciesData = await getData("pokemonSpecies", speciesId);
 
+	const pokemons = await getData('pokemon', speciesData.varieties.map(variety => getIdFromURL(variety.pokemon.url)),'id');
+	const formsToFetch: number[] = [];
+	Object.values(pokemons).forEach(pokemon => pokemon.forms.forEach(form => formsToFetch.push(getIdFromURL(form.url))));
+	const forms = await getData('pokemonForm', formsToFetch, 'id');
+	const newForms = Object.values(forms).reduce<{
+		[id: number]: PokemonForm.Root
+	}>((pre, cur) => {
+		pre[getIdFromURL(cur.pokemon.url)] = cur;
+		return pre
+	}, {});
+
 	return (
 		<>
 			{speciesData.varieties.length > 1 && (
 				<div className="col-12 varieties">
 					<ul>
-						{speciesData.varieties.map((variety) => (
-							<React.Fragment key={variety.pokemon.name}>
-								<li
-									className={
-										pokemonData.name === variety.pokemon.name ? "active" : ""
-									}
-								>
-									<Link
-										className="text-capitalize"
-										href={`/${language}/pokemon/${getIdFromURL(
-											variety.pokemon.url
-										)}`}
-										prefetch={true}
+						{speciesData.varieties.map((variety) => {
+							const varietyId = getIdFromURL(variety.pokemon.url);
+							return (
+								<React.Fragment key={variety.pokemon.name}>
+									<li
+										className={
+											pokemonData.name === variety.pokemon.name ? "active" : ""
+										}
 									>
-										{/* {getFormName(speciesData, language, pokemons[getIdFromURL(variety.pokemon.url)])} */}
-										{variety.pokemon.name}
-									</Link>
-								</li>
-							</React.Fragment>
-						))}
+										<Link
+											className="text-capitalize"
+											href={`/${language}/pokemon/${varietyId}`}
+											prefetch={true}
+										>
+											{getFormName2(speciesData, language, pokemons[varietyId], newForms[varietyId])}
+										</Link>
+									</li>
+								</React.Fragment>
+							)
+						})}
 					</ul>
 				</div>
 			)}

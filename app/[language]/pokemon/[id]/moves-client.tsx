@@ -761,6 +761,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 						changefilteredMethod={changefilteredMethod} 
 						filteredMethod={filteredMethod} 
 						selectedVersion={selectedVersion}
+						//  remove this prop
 						isDataReady={true}
 						language={language}
 					/>

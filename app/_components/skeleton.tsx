@@ -1,15 +1,19 @@
-import { Skeleton } from "@mui/material";
+import { Skeleton, Stack, Switch, Typography } from "@mui/material";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { Stat } from "../_utils/api";
 import Spinner from "./spinner";
+import DataTable from "react-data-table-component";
+import { DataTableSkeleton } from "../[language]/pokemon/[id]/moves-table";
 
 type RelatedPokemonSkeletonProps = {
-    order: 'previous' | 'next'
-}
+	order: "previous" | "next";
+};
 
-export const RelatedPokemonSkeleton = ({order}: RelatedPokemonSkeletonProps) => {
+export const RelatedPokemonSkeleton = ({
+	order,
+}: RelatedPokemonSkeletonProps) => {
 	return (
-        <div className={`navigation ${order}`}>
+		<div className={`navigation ${order}`}>
 			<Skeleton variant="text" width={50} />
 			<Skeleton
 				variant="circular"
@@ -40,6 +44,7 @@ export const PokemonsSkeleton = () => {
 		</div>
 	);
 };
+
 
 // reference: https://stackoverflow.com/questions/59461615/a-good-way-to-handle-material-ui-skeleton-scaling-within-a-variable-height-grid
 // note that variant="text" does not take height attribute, to adjust the height of a text suspense, change the font-size
@@ -172,4 +177,43 @@ export const EvolutionChainSkeleton = () => {
 	);
 };
 
+export const MovesSkeleton = () => {
+	return (
+		<>
+			<div className="moves text-center mt-5">
+				<h1>Moves</h1>
+				<div>
+					{[...Array(9).keys()].map((num) => (
+						<button
+							key={num}
+							className={`generationBtn btn btn-outline-secondary m-1`}
+						>
+							<Skeleton variant="rectangular" height={24} width={24} />
+						</button>
+					))}
+				</div>
+				<div className="col-12 varieties">
+					<ul>
+						{[...Array(2).keys()].map((num) => (
+							<li key={num} className={num === 0 ? "active" : ""}>
+								<button disabled={true} className="text-capitalize">
+									<Skeleton variant="rectangular" width={68} height={24} />
+								</button>
+							</li>
+						))}
+					</ul>
+				</div>
+				<DataTableSkeleton/>
+			</div>
+		</>
+	);
+};
+
 // The HTML of skeleton is pretty duplicated, maybe create skeleton using HOC?
+
+
+// what happen if the fallback component for a SSR Suspense is a client component? what if it uses state, Effect, does it rendered on the server?
+
+
+// what is styled-jsx
+//https://github.com/vercel/styled-jsx
