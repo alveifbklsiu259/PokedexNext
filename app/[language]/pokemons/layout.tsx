@@ -1,5 +1,5 @@
-import { getData, getEndpointData } from "../../_utils/api";
-import { getIdFromURL, getNameByLanguage } from "../../_utils/util";
+import { getData, getEndpointData } from "../../../lib/api";
+import { getIdFromURL, getNameByLanguage } from "../../../lib/util";
 import { LanguageOption } from "../_components/display/display-slice";
 import Sort from "../_components/display/sort";
 import {

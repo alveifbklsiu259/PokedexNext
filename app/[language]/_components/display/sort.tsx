@@ -1,7 +1,7 @@
 "use client";
 import { memo, Suspense, useMemo } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { updateSearchParam } from "@/app/_utils/util";
+import { updateSearchParam } from "@/lib/util";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";

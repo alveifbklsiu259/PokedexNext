@@ -1,6 +1,6 @@
 import { memo, useEffect, useLayoutEffect } from "react";
 import { useSearchParams, useRouter, useParams } from "next/navigation";
-import { updateSearchParam } from "@/app/_utils/util";
+import { updateSearchParam } from "@/lib/util";
 
 type FormBtnProps = {
 	formRef: React.RefObject<HTMLFormElement>;
@@ -10,7 +10,9 @@ type FormBtnProps = {
 	setSelectedGenerations: React.Dispatch<React.SetStateAction<string[]>>;
 	selectedTypes: string[];
 	setSelectedTypes: React.Dispatch<React.SetStateAction<string[]>>;
-	onCloseModal? : () => void
+	onCloseModal? : () => void;
+	setTypeMatch: React.Dispatch<React.SetStateAction<'part' | 'all'>>;
+	typeMatch: string
 };
 
 const FormBtn = memo(function FormBtn({
@@ -21,7 +23,9 @@ const FormBtn = memo(function FormBtn({
 	setSearchQuery,
 	setSelectedGenerations,
 	setSelectedTypes,
-	onCloseModal
+	onCloseModal,
+	typeMatch,
+	setTypeMatch
 }: FormBtnProps) {
 	const searchParams = useSearchParams();
 	const params = useParams();
@@ -30,10 +34,10 @@ const FormBtn = memo(function FormBtn({
 	const query = searchParams.get("query");
 	const generation = searchParams.get("gen");
 	const type = searchParams.get("type");
-	const match = searchParams.get("match");
+	const match = (searchParams.get("match") || 'part') as 'part' | 'all';
 
+	// synchronizing state
 	useLayoutEffect(() => {
-		// synchronizing state
 		setSearchQuery((sq) => (query ? query : sq));
 		setSelectedGenerations((sg) =>
 			generation
@@ -44,8 +48,12 @@ const FormBtn = memo(function FormBtn({
 				return type ? (st.toString() === type ? st : type?.split(",")) : st
 			}
 		);
-	}, [query, generation, type, setSearchQuery, setSelectedGenerations, setSelectedTypes]);
+		if (match === 'part') {
+			setTypeMatch(match)
+		}
+	}, [query, generation, type, setSearchQuery, setSelectedGenerations, setSelectedTypes, match, setTypeMatch]);
 
+	// attatching event listener to the form. Since the event needs searchParams, if we try to attatch the event in Search component(where the form element is, that would cause it to only rendered on the client)
 	useEffect(() => {
 		const formNode = formRef.current!;
 		const handleSubmit = (e: SubmitEvent) => {
@@ -56,8 +64,9 @@ const FormBtn = memo(function FormBtn({
 				type: selectedTypes.toString(),
 				gen: selectedGenerations
 				.map((gen) => gen.replace("generation-", ""))
-				.toString()
-			})
+				.toString(),
+				match: typeMatch
+			});
 
 			let newPathname: string;
 			if (Object.values(newSearchParams).some(searchParam => searchParam !== '')) {
@@ -108,7 +117,7 @@ const FormBtn = memo(function FormBtn({
 			// 		document.querySelector('.viewModeContainer')?.scrollIntoView();
 			// 	}, 10);
 			// };
-			// dispatch(searchPokemon({searchQuery, selectedGenerations, selectedTypes, matchMethod}));
+			// dispatch(searchPokemon({searchQuery, selectedGenerations, selectedTypes, typeMatch}));
 		};
 
 		// By attaching the submit event when FormBtn mounts, we don't have to read useSearchParams in Search component in which if we do, it will cause the whole tree down below to render on the client if the route is statically rendered on the server.
@@ -117,7 +126,7 @@ const FormBtn = memo(function FormBtn({
 		return () => {
 			formNode.removeEventListener("submit", handleSubmit);
 		};
-	}, [searchQuery, selectedTypes, selectedGenerations, formRef, router, searchParams, language]);
+	}, [searchQuery, selectedTypes, selectedGenerations, formRef, router, searchParams, language, typeMatch]);
 
 	return (
 		<button
@@ -134,3 +143,6 @@ export default FormBtn;
 
 // when searchQuery, selectedTypes, selectedGenerations change, this component will re-renders, maybe solve this by passing ref down?
 // improve performance of this component
+
+
+// remove state setter function from Effect dependenct array

@@ -2,8 +2,8 @@
 import Modal from "@/app/_components/modal";
 import { memo, useState } from "react";
 import { AiFillQuestionCircle } from "react-icons/ai";
-import { Ability } from "@/typeModule";
-import { getNameByLanguage, getTextByLanguage } from "@/app/_utils/util";
+import { Ability } from "@/lib/definitions";
+import { getNameByLanguage, getTextByLanguage } from "@/lib/util";
 import { LanguageOption } from "../../_components/display/display-slice";
 
 type AbilityInfoBtnProps = {

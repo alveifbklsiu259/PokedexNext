@@ -1,9 +1,9 @@
 import React, { memo } from "react";
 import { LanguageOption } from "../../_components/display/display-slice";
-import { getFormName, getFormName2, getIdFromURL } from "@/app/_utils/util";
-import { Pokemon, PokemonForm, PokemonSpecies } from "@/typeModule";
+import { getFormName, getFormName2, getIdFromURL } from "@/lib/util";
+import { Pokemon, PokemonForm, PokemonSpecies } from "@/lib/definitions";
 import Link from "next/link";
-import { getData } from "@/app/_utils/api";
+import { getData } from "@/lib/api";
 
 type VarietiesProps = {
 	language: LanguageOption;

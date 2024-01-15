@@ -1,12 +1,12 @@
 'use client'
 import { createSlice, isAnyOf, type PayloadAction } from "@reduxjs/toolkit";
-import type { AppDispatch, RootState } from "@/app/_app/store";
-import { getIdFromURL } from "@/app/_utils/util";
-import { getEndpointData, getPokemons, getData, getRequiredData, GetReturnedDataType } from "@/app/_utils/api";
+import type { AppDispatch, RootState } from "@/_app/store";
+import { getIdFromURL } from "@/lib/util";
+import { getEndpointData, getPokemons, getData, getRequiredData, GetReturnedDataType } from "@/lib/api";
 import { changeViewMode, changeLanguage, sortPokemons, scrolling, type LanguageOption } from "../display/display-slice";
 import { searchPokemon } from "../search/search-slice";
-import type { Pokemon, PokemonSpecies, Type, Move, Stat, MoveDamageClass, Version, Generation, Item, EvolutionChain, Ability } from "@/typeModule";
-import { createAppAsyncThunk } from "@/app/_app/hooks";
+import type { Pokemon, PokemonSpecies, Type, Move, Stat, MoveDamageClass, Version, Generation, Item, EvolutionChain, Ability } from "@/lib/definitions";
+import { createAppAsyncThunk } from "@/_app/hooks";
 
 export type CachedPokemon = {
 	[id: string | number]: Pokemon.Root

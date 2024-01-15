@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { LanguageOption } from '../display/display-slice';
-import { getFormName, getIdFromURL } from '@/app/_utils/util';
-import { Pokemon, PokemonSpecies } from '@/typeModule';
+import { getFormName, getIdFromURL } from '@/lib/util';
+import { Pokemon, PokemonSpecies } from '@/lib/definitions';
 import Link from 'next/link';
 
 type VarietiesProps = {

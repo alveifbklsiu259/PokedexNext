@@ -1,12 +1,12 @@
 import { memo } from "react";
 import { LanguageOption } from "../../_components/display/display-slice";
-import { transformToKeyName, getNameByLanguage } from "@/app/_utils/util";
-import { EvolutionChainResponse } from "@/typeModule";
+import { transformToKeyName, getNameByLanguage } from "@/lib/util";
+import { EvolutionChainResponse } from "@/lib/definitions";
 import { FaMars, FaVenus } from 'react-icons/fa';
 import { AiOutlineCheck } from 'react-icons/ai';
 import Image from "next/image";
 import ChainDetailsBtn from "./chain-detail-btn";
-import { getData, getEvolutionChains, getItemsFromChain } from "@/app/_utils/api";
+import { getData, getEvolutionChains, getItemsFromChain } from "@/lib/api";
 
 const textsForOtherRequirements = {
 	gender: 'Gender',

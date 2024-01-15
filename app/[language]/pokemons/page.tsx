@@ -1,8 +1,9 @@
-import { getEndpointData, getData } from "../../_utils/api";
+import { getEndpointData, getData } from "../../../lib/api";
 import { Suspense } from "react";
 import { LanguageOption } from "../_components/display/display-slice";
 // import Pokemons from "../_components/pokemonData/pokemons";
 import BasicInfo from "../_components/pokemonData/basicInfo";
+import { languageOptions } from "../page";
 import {
 	CachedAllPokemonNamesAndIds,
 	CachedPokemonSpecies,
@@ -11,21 +12,21 @@ import {
 	getIdFromURL,
 	getIntersection2,
 	getNameByLanguage,
-} from "@/app/_utils/util";
+} from "@/lib/util";
 import Pokemons from "./pokemons";
 
 
 // can we export non next-defined things from page/layout...?
 // I tried importing languageOptions from other files, but encounter build error(can't get staticParams)
-const languageOptions = {
-	en: "English",
-	ja: "日本語",
-	// zh_Hant: '繁體中文',
-	// zh_Hans: '简体中文',
-	// ko: '한국어',
-	// fr: 'Français',
-	// de: 'Deutsch',
-};
+// const languageOptions = {
+// 	en: "English",
+// 	ja: "日本語",
+// 	// zh_Hant: '繁體中文',
+// 	// zh_Hans: '简体中文',
+// 	// ko: '한국어',
+// 	// fr: 'Français',
+// 	// de: 'Deutsch',
+// };
 
 export async function generateStaticParams() {
 	return Object.keys(languageOptions).map((lan) => ({

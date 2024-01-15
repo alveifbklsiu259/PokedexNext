@@ -1,6 +1,6 @@
 import type{ CachedGeneration, CachedType, CachedAllPokemonNamesAndIds } from "@/app/[language]/_components/pokemonData/pokemon-data-slice";
-import { getEndpointData, getData } from "../_utils/api";
-import { getIdFromURL } from "../_utils/util";
+import { getEndpointData, getData } from "../../lib/api";
+import { getIdFromURL } from "../../lib/util";
 
 export async function GET() {
 	let generationData: CachedGeneration, typeData: CachedType, pokemonsNamesAndId: CachedAllPokemonNamesAndIds = {};

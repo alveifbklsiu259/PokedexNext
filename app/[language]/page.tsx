@@ -1,8 +1,6 @@
-import { redirect } from "next/navigation";
-import { LanguageOption } from "./_components/display/display-slice";
+import { notFound, redirect } from "next/navigation";
 
-// see if we can import it from other file.
-const languageOptions = {
+export const languageOptions = {
 	en: "English",
 	ja: "日本語",
 	// zh_Hant: '繁體中文',
@@ -11,6 +9,8 @@ const languageOptions = {
 	// fr: 'Français',
 	// de: 'Deutsch',
 };
+
+export type LanguageOption = keyof typeof languageOptions;
 
 export async function generateStaticParams() {
 	return Object.keys(languageOptions).map((lan) => ({
@@ -27,11 +27,10 @@ type LanguagePageProps = {
 export default function LanguagePage({ params }: LanguagePageProps) {
 	const { language } = params;
 
-	// this can be replace by creating a 404 or error .tsx file ?
 	if (Object.keys(languageOptions).includes(language)) {
 		redirect(`./${language}/pokemons`);
 	} else {
-		throw new Error('Language not supported');
+		notFound();
 	}
 }
 
@@ -50,3 +49,9 @@ export default function LanguagePage({ params }: LanguagePageProps) {
 // if we have a root layout that renders navbar (root route is statically rendered), and a nested dynamic route, this dynamic route will also show the nav bar from the root layoute, when initial load the dynamic route(through url), does the navbar show? or we'll see the loading content in root loading.tsx? (make a thorough test, (according to my simple test, the statically generated layout will not show immediately, instead the loading content will show, so it seems like we're rendering the layout at request time even though it is statically generated at build time))
 
 // when changing language /en/pokemons/search?query=xxx --> /ja/pokemons/search?query=xxx, the loading.tsx in [language] shows, why? but if you go from /en/pokemons/ --> /ja/pokemons, you still see the static part(layout)
+
+
+// can we have a not-found in each route? according to the test, only the root not-found will be shown??
+
+
+// i18n, middleware, theme(dark mode)

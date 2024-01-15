@@ -7,7 +7,7 @@ import type {
 } from "../_components/pokemonData/pokemon-data-slice";
 import BasicInfo from "../_components/pokemonData/basicInfo";
 import type { LanguageOption } from "../_components/display/display-slice";
-import { getData, getDataToFetch } from "@/app/_utils/api";
+import { getData, getDataToFetch } from "@/lib/api";
 import { useParams, useRouter } from "next/navigation";
 import Spinner from "@/app/_components/spinner";
 import { flushSync } from "react-dom";

@@ -4,7 +4,7 @@ import DataTable, { type TableColumn, type ExpanderComponentProps } from "react-
 import { Switch, Stack, Typography, capitalize } from "@mui/material";
 import { LanguageOption, selectLanguage } from "../../_components/display/display-slice";
 import Spinner from "@/app/_components/spinner";
-import { getTextByLanguage } from "@/app/_utils/util";
+import { getTextByLanguage } from "@/lib/util";
 import type { ColData, MovesData } from "./moves-client";
 
 const getSerializedIds = (movesData: MovesData[]) => JSON.stringify(Object.values(movesData).map(move => move.id));

@@ -1,9 +1,9 @@
 import React, { memo, Suspense } from "react";
 import BasicInfo from "./basicInfo";
-import { getIdFromURL } from "@/app/_utils/util";
-import { Pokemon } from "@/typeModule";
+import { getIdFromURL } from "@/lib/util";
+import { Pokemon } from "@/lib/definitions";
 import { LanguageOption } from "../../_components/display/display-slice";
-import { getData, getEndpointData, getEvolutionChains } from "@/app/_utils/api";
+import { getData, getEndpointData, getEvolutionChains } from "@/lib/api";
 import Link from "next/link";
 import EvolutionDetails from "./evolution-details";
 

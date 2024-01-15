@@ -1,9 +1,9 @@
 import { memo } from "react";
 import { LanguageOption } from "../../_components/display/display-slice";
 import { CachedStat } from "../../_components/pokemonData/pokemon-data-slice";
-import { getNameByLanguage, transformToKeyName } from "@/app/_utils/util";
-import { Pokemon } from "@/typeModule";
-import { getData, getEndpointData } from "@/app/_utils/api";
+import { getNameByLanguage, transformToKeyName } from "@/lib/util";
+import { Pokemon } from "@/lib/definitions";
+import { getData, getEndpointData } from "@/lib/api";
 
 type StatsProps = {
 	language: LanguageOption;

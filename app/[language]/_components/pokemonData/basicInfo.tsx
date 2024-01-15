@@ -1,6 +1,6 @@
-import { Pokemon, PokemonSpecies } from '@/typeModule';
+import { Pokemon, PokemonSpecies } from '@/lib/definitions';
 import { memo } from 'react';
-import { getFormName, getIdFromURL, getNameByLanguage } from '@/app/_utils/util';
+import { getFormName, getIdFromURL, getNameByLanguage } from '@/lib/util';
 import { LanguageOption } from '../display/display-slice';
 import Image from 'next/image';
 import { CachedType } from './pokemon-data-slice';

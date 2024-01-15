@@ -1,6 +1,6 @@
 import { Skeleton, Stack, Switch, Typography } from "@mui/material";
 import { AiFillQuestionCircle } from "react-icons/ai";
-import { Stat } from "../_utils/api";
+import { Stat } from "../../lib/api";
 import Spinner from "./spinner";
 import DataTable from "react-data-table-component";
 import { DataTableSkeleton } from "../[language]/pokemon/[id]/moves-table";

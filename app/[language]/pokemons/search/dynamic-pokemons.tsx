@@ -1,9 +1,9 @@
-import { getEndpointData, getData, getPokemons2 } from "@/app/_utils/api";
+import { getEndpointData, getData, getPokemons2 } from "@/lib/api";
 import {
 	getIdFromURL,
 	getIntersection,
 	getNameByLanguage,
-} from "@/app/_utils/util";
+} from "@/lib/util";
 import {
 	LanguageOption,
 	SortOption,

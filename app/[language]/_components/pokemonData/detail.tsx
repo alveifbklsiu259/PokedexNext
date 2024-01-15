@@ -1,10 +1,10 @@
 import React, { memo } from "react";
 import { LanguageOption } from "../display/display-slice";
 // import Abilities from "./abilities";
-import { getTextByLanguage } from "@/app/_utils/util";
+import { getTextByLanguage } from "@/lib/util";
 import { FaMars, FaVenus } from 'react-icons/fa';
 import { BsQuestionLg } from 'react-icons/bs';
-import { Pokemon, PokemonSpecies } from "@/typeModule";
+import { Pokemon, PokemonSpecies } from "@/lib/definitions";
 import { CachedAbility } from "./pokemon-data-slice";
 
 function getGender(gender_rate: number) {

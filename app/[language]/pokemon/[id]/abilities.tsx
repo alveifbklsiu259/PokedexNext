@@ -1,7 +1,7 @@
 import { memo } from "react";
-import { getAbilities2, getData } from "@/app/_utils/api";
+import { getAbilities2, getData } from "@/lib/api";
 import AbilityInfoBtn from "./ability-info-btn";
-import { getNameByLanguage, transformToKeyName } from "@/app/_utils/util";
+import { getNameByLanguage, transformToKeyName } from "@/lib/util";
 import { LanguageOption } from "../../_components/display/display-slice";
 
 type AbilitiesProps = {

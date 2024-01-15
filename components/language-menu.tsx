@@ -5,7 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 import {
 	LanguageOption,
 	languageOptions,
-} from "./_components/display/display-slice";
+} from "../app/[language]/_components/display/display-slice";
 import { FaLanguage } from "react-icons/fa6";
 import {
 	useParams,
@@ -13,6 +13,8 @@ import {
 	useRouter,
 	useSearchParams,
 } from "next/navigation";
+
+
 
 type AnchorElTypes = null | HTMLButtonElement;
 

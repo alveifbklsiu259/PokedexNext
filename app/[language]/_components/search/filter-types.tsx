@@ -1,6 +1,6 @@
 import { memo, useCallback } from 'react';
 import { Switch, Stack, Typography, FormControlLabel } from '@mui/material';
-import { getNameByLanguage } from '@/app/_utils/util';
+import { getNameByLanguage } from '@/lib/util';
 import type { SelectedTypes } from './search-slice';
 import Image from 'next/image';
 import { CachedType } from '../pokemonData/pokemon-data-slice';
@@ -10,11 +10,12 @@ import { LanguageOption } from '../display/display-slice';
 type FilterTypesProps = {
 	selectedTypes: SelectedTypes
 	setSelectedTypes: React.Dispatch<React.SetStateAction<SelectedTypes>>,
-	setMatchMethod: React.Dispatch<React.SetStateAction<"all" | "part">>,
+	setTypeMatch: React.Dispatch<React.SetStateAction<"all" | "part">>,
+	typeMatch: string,
 	types: CachedType
 };
 
-const FilterTypes = memo<FilterTypesProps>(function FilterTypes ({selectedTypes, setSelectedTypes, setMatchMethod, types}) {
+const FilterTypes = memo<FilterTypesProps>(function FilterTypes ({selectedTypes, setSelectedTypes, setTypeMatch,typeMatch, types}) {
 
 	const handleSelectType = useCallback((type: string) => {
 		setSelectedTypes(st => {
@@ -32,7 +33,7 @@ const FilterTypes = memo<FilterTypesProps>(function FilterTypes ({selectedTypes,
 		<ul className="typesFilter col-12 col-sm-6 row justify-content-center gap-3">
 			<div>
 				<h3 ><Image width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" /> Types</h3>
-				<MatchMethod setMatchMethod={setMatchMethod} />
+				<MatchMethod setTypeMatch={setTypeMatch} typeMatch={typeMatch} />
 			</div>
 			{Object.keys(types).filter(type => type !== 'unknown' && type !== 'shadow').map(type => (
 				<Type 
@@ -69,15 +70,18 @@ const Type = memo<TypeProps>(function Type({type, isTypeSelected, onSelectType, 
 });
 
 type MatchMethodProps = {
-	setMatchMethod: React.Dispatch<React.SetStateAction<"all" | "part">>
+	setTypeMatch: React.Dispatch<React.SetStateAction<"all" | "part">>,
+	typeMatch: string
 }
 
-const MatchMethod = memo<MatchMethodProps>(function MatchMethod({setMatchMethod}) {
+const MatchMethod = memo<MatchMethodProps>(function MatchMethod({setTypeMatch, typeMatch}) {
+
+	// we can use useSearchParams to read typeMatch, but that would cause this component to be only client side rendered.
 	const handleClick = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if(e.target.checked) {
-			setMatchMethod('part');
+			setTypeMatch('part');
 		} else {
-			setMatchMethod('all');
+			setTypeMatch('all');
 		};
 	};
 
@@ -88,6 +92,7 @@ const MatchMethod = memo<MatchMethodProps>(function MatchMethod({setMatchMethod}
 				control={<Switch color="primary" onChange={handleClick} />}
 				label="Match"
 				labelPlacement="bottom"
+				checked={typeMatch === 'part'}
 			/>
 			<Typography>Part</Typography>
 		</Stack>
@@ -95,3 +100,6 @@ const MatchMethod = memo<MatchMethodProps>(function MatchMethod({setMatchMethod}
 });
 
 export default FilterTypes;
+
+
+// should I pass matchMethod down to this comp or read searchParams?

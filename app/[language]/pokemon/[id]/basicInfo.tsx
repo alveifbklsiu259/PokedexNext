@@ -1,9 +1,9 @@
-import { Pokemon, PokemonForm, PokemonSpecies } from '@/typeModule';
+import { Pokemon, PokemonForm, PokemonSpecies } from '@/lib/definitions';
 import { memo } from 'react';
-import { getFormName2, getIdFromURL, getNameByLanguage } from '@/app/_utils/util';
+import { getFormName2, getIdFromURL, getNameByLanguage } from '@/lib/util';
 import { LanguageOption } from '../../_components/display/display-slice';
 import Image from 'next/image';
-import { getData, getEndpointData } from '@/app/_utils/api';
+import { getData, getEndpointData } from '@/lib/api';
 
 type BasicInfoProps = {
 	language: LanguageOption,

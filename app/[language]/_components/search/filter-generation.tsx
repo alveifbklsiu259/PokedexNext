@@ -1,5 +1,5 @@
 import { memo, useCallback } from 'react';
-import type { Generation as GenerationType } from '@/typeModule';
+import type { Generation as GenerationType } from '@/lib/definitions';
 import Image from 'next/image';
 import { CachedGeneration } from '../pokemonData/pokemon-data-slice';
 

@@ -6,7 +6,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { RootState, AppDispatch } from "./store";
 import { type LanguageOption, selectLanguage, dataLoading } from "@/app/[language]/_components/display/display-slice";
 import { type GetRequiredData, CachedPokemon, getRequiredDataThunk } from "@/app/[language]/_components/pokemonData/pokemon-data-slice";
-import { getRequiredData, getData } from '../_utils/api';
+import { getRequiredData, getData } from '../lib/api';
 
 
 export const useAppDispatch: () => AppDispatch = useDispatch;

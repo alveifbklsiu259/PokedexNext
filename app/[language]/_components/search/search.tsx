@@ -31,7 +31,7 @@ const Search = memo(function Search({
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedGenerations, setSelectedGenerations] = useState<string[]>([]);
 	const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-	const [matchMethod, setMatchMethod] = useState<"all" | "part">("all");
+	const [typeMatch, setTypeMatch] = useState<"all" | "part">("all");
 	// const collapseBtnRef = useRef<HTMLButtonElement>(null);
 	const formRef = useRef<HTMLFormElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -78,7 +78,8 @@ const Search = memo(function Search({
 						setSelectedTypes={setSelectedTypes}
 						selectedGenerations={selectedGenerations}
 						setSelectedGenerations={setSelectedGenerations}
-						setMatchMethod={setMatchMethod}
+						setTypeMatch={setTypeMatch}
+						typeMatch={typeMatch}
 						generations={generations}
 						types={types}
 						isAdvancedShown={isAdvancedShown}
@@ -109,6 +110,8 @@ const Search = memo(function Search({
 						selectedTypes={selectedTypes}
 						setSelectedTypes={setSelectedTypes}
 						onCloseModal={onCloseModal}
+						setTypeMatch={setTypeMatch}
+						typeMatch={typeMatch}
 					/>
 				</Suspense>
 			</form>

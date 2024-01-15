@@ -156,13 +156,13 @@ import {
 	getEvolutionChains,
 	getItemsFromChain,
 	testServerRequest,
-} from "@/app/_utils/api";
+} from "@/lib/api";
 import Pokemon from "@/app/[language]/_components/pokemonData/pokemon";
 import {
 	LanguageOption,
 	languageOptions,
 } from "@/app/[language]/_components/display/display-slice";
-import { getIdFromURL } from "@/app/_utils/util";
+import { getIdFromURL } from "@/lib/util";
 import Link from "next/link";
 import { Suspense, memo } from "react";
 import Image from "next/image";

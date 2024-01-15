@@ -10,8 +10,8 @@ import EvolutionChains from "../../_components/pokemonData/evolution-chains";
 import Varieties from "../../_components/pokemonData/varieties";
 import Link from "next/link";
 import Image from "next/image";
-import { EvolutionChain, Pokemon, PokemonSpecies } from "@/typeModule";
-import { getIdFromURL } from "@/app/_utils/util";
+import { EvolutionChain, Pokemon, PokemonSpecies } from "@/lib/definitions";
+import { getIdFromURL } from "@/lib/util";
 // import MovesWarpper from "./movesWrapper";
 import Spinner from "@/app/_components/spinner";
 

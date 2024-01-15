@@ -1,9 +1,9 @@
 'use client'
 import { createSlice } from "@reduxjs/toolkit";
-import { createAppAsyncThunk } from "@/app/_app/hooks";
-import type { RootState } from "@/app/_app/store";
-import { getPokemons } from "@/app/_utils/api";
-import { getIdFromURL, getNameByLanguage } from "@/app/_utils/util";
+import { createAppAsyncThunk } from "@/_app/hooks";
+import type { RootState } from "@/_app/store";
+import { getPokemons } from "@/lib/api";
+import { getIdFromURL, getNameByLanguage } from "@/lib/util";
 
 export type SelectedGenerations = {
 	[name: string]: {

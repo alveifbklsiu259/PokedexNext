@@ -184,11 +184,11 @@ import type {
 } from "./pokemon-data-slice";
 import BasicInfo from "./basicInfo";
 import type { LanguageOption, SortOption } from "../display/display-slice";
-import { getData, getDataToFetch, getPokemons2 } from "@/app/_utils/api";
+import { getData, getDataToFetch, getPokemons2 } from "@/lib/api";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import Spinner from "@/app/_components/spinner";
 import { flushSync } from "react-dom";
-import { getIntersection2 } from "@/app/_utils/util";
+import { getIntersection2 } from "@/lib/util";
 
 export type TableInfoRefTypes = {
 	sortBy?: SortOption;

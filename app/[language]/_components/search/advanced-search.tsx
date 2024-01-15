@@ -11,7 +11,8 @@ type AdvancedSearchProps = {
 	setSelectedTypes: React.Dispatch<React.SetStateAction<SelectedTypes>>,
 	selectedGenerations: string[],
 	setSelectedGenerations: React.Dispatch<React.SetStateAction<string[]>>,
-	setMatchMethod: React.Dispatch<React.SetStateAction<"all" | "part">>,
+	setTypeMatch: React.Dispatch<React.SetStateAction<"all" | "part">>,
+	typeMatch: string,
 	generations: CachedGeneration,
 	types: CachedType,
 	isAdvancedShown: boolean
@@ -24,7 +25,8 @@ const AdvancedSearch = memo<AdvancedSearchProps>(function AdvancedSearch({
 	setSelectedTypes,
 	selectedGenerations,
 	setSelectedGenerations,
-	setMatchMethod,
+	setTypeMatch,
+	typeMatch,
 	generations,
 	types,
 	isAdvancedShown
@@ -33,10 +35,9 @@ const AdvancedSearch = memo<AdvancedSearchProps>(function AdvancedSearch({
 	// const dispatch = useAppDispatch();
 	const handleReset = () => {
 		// if no state update needed, return the same state to prevent re-render.
-		// setSelectedTypes(st => !st.length ? st : []);
-		// setSelectedGenerations(sg => !Object.keys(sg).length ? sg : {});
-		// setSearchQuery('');
-		// dispatch(advancedSearchReset());
+		setSelectedTypes(st => !st.length ? st : []);
+		setSelectedGenerations(sg => !sg.length ? sg : []);
+		setSearchQuery('');
 	};
 	return (
 		<div className={`advancedSearchContent ${!isAdvancedShown ? 'hide' : ''}`}>
@@ -49,7 +50,8 @@ const AdvancedSearch = memo<AdvancedSearchProps>(function AdvancedSearch({
 				<FilterTypes
 					selectedTypes={selectedTypes}
 					setSelectedTypes={setSelectedTypes}
-					setMatchMethod={setMatchMethod}
+					setTypeMatch={setTypeMatch}
+					typeMatch={typeMatch}
 					types={types}
 				/>
 				<button

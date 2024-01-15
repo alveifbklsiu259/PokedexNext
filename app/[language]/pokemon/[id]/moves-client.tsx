@@ -391,10 +391,10 @@ import { capitalize } from "@mui/material";
 import type { TableColumn } from "react-data-table-component";
 import { CachedMachine, CachedType, CachedVersion, CachedMove, CachedGeneration, CachedPokemon, CachedMoveDamageClass } from "../../_components/pokemonData/pokemon-data-slice";
 import { LanguageOption } from "../../_components/display/display-slice";
-import { transformToKeyName, getIdFromURL, getNameByLanguage } from "@/app/_utils/util";
+import { transformToKeyName, getIdFromURL, getNameByLanguage } from "@/lib/util";
 import MovesTable from "./moves-table";
 import Image from "next/image";
-import { PokemonSpecies, Pokemon, Machine, Move, EvolutionChain } from "@/typeModule";
+import { PokemonSpecies, Pokemon, Machine, Move, EvolutionChain } from "@/lib/definitions";
 
 export type ColData = {
 	level?: number | React.JSX.Element,

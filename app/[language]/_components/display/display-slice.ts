@@ -1,11 +1,11 @@
 'use client'
 import { PayloadAction, createSlice, isAnyOf } from "@reduxjs/toolkit";
-import { getIdFromURL, getNameByLanguage } from "@/app/_utils/util"
-import { getAllSpecies, getRequiredData, getPokemons } from "@/app/_utils/api";
+import { getIdFromURL, getNameByLanguage } from "@/lib/util"
+import { getAllSpecies, getRequiredData, getPokemons } from "@/lib/api";
 import { GetRequiredData, getInitialData, getPokemonsOnScroll, getRequiredDataThunk, type CachedAllPokemonNamesAndIds } from "../pokemonData/pokemon-data-slice";
 import { searchPokemon } from "../search/search-slice";
-import type { RootState } from "@/app/_app/store"; 
-import { createAppAsyncThunk } from "@/app/_app/hooks";
+import type { RootState } from "@/_app/store"; 
+import { createAppAsyncThunk } from "@/_app/hooks";
 import { sortOptions } from "./sort";
 import { TableInfoRefTypes } from "../pokemonData/pokemons";
 
@@ -13,11 +13,11 @@ export type SortOption = typeof sortOptions[number]['value'];
 export const languageOptions = {
 	en: 'English',
 	ja: '日本語',
-	zh_Hant: '繁體中文',
-	zh_Hans: '简体中文',
-	ko: '한국어',
-	fr: 'Français',
-	de: 'Deutsch',
+	// zh_Hant: '繁體中文',
+	// zh_Hans: '简体中文',
+	// ko: '한국어',
+	// fr: 'Français',
+	// de: 'Deutsch',
 };
 
 export type LanguageOption = keyof typeof languageOptions;

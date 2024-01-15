@@ -1,9 +1,9 @@
 import React, { Suspense, memo } from "react";
 import { LanguageOption } from "../../_components/display/display-slice";
-import { getIdFromURL, getTextByLanguage } from "@/app/_utils/util";
+import { getIdFromURL, getTextByLanguage } from "@/lib/util";
 import { FaMars, FaVenus } from "react-icons/fa";
 import { BsQuestionLg } from "react-icons/bs";
-import { getData } from "@/app/_utils/api";
+import { getData } from "@/lib/api";
 import Abilities from "./abilities";
 import { Skeleton } from "@mui/material";
 import { AbilitiesSkeleton } from "@/app/_components/skeleton";
