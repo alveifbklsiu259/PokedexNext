@@ -1,6 +1,7 @@
-import ServerPokemons from "./pokemons-server";
 import { Suspense } from "react";
-import type { LanguageOption } from "../_components/display/display-slice";
+import PokemonsServer from "@/components/pokemons/pokemons-server";
+import { PokemonsSkeleton } from "@/components/skeletons";
+import type { LanguageOption } from "@/slices/display-slice";
 
 type PageProps = {
 	params: {
@@ -10,14 +11,16 @@ type PageProps = {
 };
 
 export default async function Page({ params, searchParams }: PageProps) {
+	console.log('pokemons2 page')
+
 	return (
 		<>
-			<Suspense
-				key={JSON.stringify(searchParams)}
-				fallback={<h1>loading ServerPokemons...</h1>}
-			>
-				<ServerPokemons params={params} searchParams={searchParams} />
-			</Suspense>
-		</>
+		<Suspense
+			key={JSON.stringify(searchParams)}
+			fallback={<PokemonsSkeleton />}
+		>
+			<PokemonsServer params={params} searchParams={searchParams} />
+		</Suspense>
+	</>
 	);
 }

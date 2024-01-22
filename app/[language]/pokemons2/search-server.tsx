@@ -1,18 +1,18 @@
-import { getData, getEndpointData } from "../../../lib/api";
-import { getIdFromURL, getNameByLanguage } from "../../../lib/util";
-import { LanguageOption } from "../_components/display/display-slice";
+import { getData, getEndpointData } from "@/lib/api";
+import { getIdFromURL, getNameByLanguage } from "@/lib/util";
+import { LanguageOption } from "@/slices/display-slice";
 import {
 	CachedAllPokemonNamesAndIds,
 	CachedPokemonSpecies,
-} from "../_components/pokemonData/pokemon-data-slice";
-import Search from "../_components/search/search";
+} from "@/slices/pokemon-data-slice";
+import Search from "@/components/pokemons/search";
 
 type SearchServerProps = {
 	language: LanguageOption;
 };
 
 export default async function SearchServer({ language }: SearchServerProps) {
-	console.time('search')
+	console.time('search server')
 	const generationResponse = await getEndpointData("generation");
 	const generations = await getData(
 		"generation",
@@ -56,14 +56,10 @@ export default async function SearchServer({ language }: SearchServerProps) {
 				{}
 			);
 	}
-	console.timeEnd('search')
-
-
-	// we may not have to memo Search or Sort because subsequent navigation (searchParams change) will not cause layout to render again. (This statement is partly correct, since Search and Sort are client components, partial rendering does not apply to them(according to my test))
+	console.timeEnd('search server')
 
 	return (
 		<>
-			{/* This route is statically rendered, on subsequent navigation, the props will not be the same, why? (initial load's props !== navigation1's props, navigation1's props !== navigation2's props, i.e. each navigation will cause the props to change, and cause re-render.) */}
 			<Search
 				generations={generations}
 				types={types}

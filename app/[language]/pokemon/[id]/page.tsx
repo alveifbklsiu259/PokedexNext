@@ -149,31 +149,20 @@
 // // 3. 404.tsx
 // // 4. pokemon table
 // // 5. show loading, if pokemon/x is SSG, it's fast between navigation, but if it's SSR, it lags a bit before navigating.
-import {
-	getAbilities2,
-	getData,
-	getEndpointData,
-	getEvolutionChains,
-	getItemsFromChain,
-	testServerRequest,
-} from "@/lib/api";
-import Pokemon from "@/app/[language]/_components/pokemonData/pokemon";
-import {
-	LanguageOption,
-	languageOptions,
-} from "@/app/[language]/_components/display/display-slice";
-import { getIdFromURL } from "@/lib/util";
+
+import { Suspense} from "react";
 import Link from "next/link";
-import { Suspense, memo } from "react";
-import Image from "next/image";
-import Varieties from "./varieties";
-import BasicInfo from "./basicInfo";
-import Detail from "./detail";
-import Stats from "./stats";
-import MovesServer from "./moves-server";
-import EvolutionChains from "./evolution-chains";
-import { Skeleton, Typography } from "@mui/material";
-import { BasicInfoSkeleton, DetailSkeleton, EvolutionChainSkeleton, MovesSkeleton, RelatedPokemonSkeleton, StatsSkeleton } from "@/app/_components/skeleton";
+import { LanguageOption } from "../../page";
+import Varieties from "@/components/pokemon/varieties";
+import BasicInfoServer from "@/components/pokemon/basic-info-server";
+import Detail from "@/components/pokemon/detail";
+import Stats from "@/components/pokemon/stats";
+import MovesServer from "@/components/pokemon/moves-server";
+import EvolutionChains from "@/components/pokemon/evolution-chains";
+import { BasicInfoSkeleton, DetailSkeleton, EvolutionChainSkeleton, MovesSkeleton, RelatedPokemonSkeleton, StatsSkeleton } from "@/components/skeletons";
+import RelatedPokemon from "@/components/pokemon/related-pokemon";
+import dynamic from "next/dynamic";
+// import ScrollToTop from "@/components/scroll-to-top";
 
 type PageProps = {
 	params: {
@@ -232,6 +221,8 @@ type PageProps = {
 // 	// have to handle non-default-form
 // 	return staticParams;
 // };
+
+const ScrollToTop = dynamic(() => import("@/components/scroll-to-top"), {ssr: false});
 
 export default async function Page({ params }: PageProps) {
 	const { language, id } = params;
@@ -308,7 +299,7 @@ export default async function Page({ params }: PageProps) {
 							<BasicInfoSkeleton/>
 						}
 					>
-						<BasicInfo language={language} pokemonId={pokemonId} />
+						<BasicInfoServer language={language} pokemonId={pokemonId} />
 					</Suspense>
 				</div>
 				<div className="detail row text-center col-12 col-sm-6">
@@ -330,7 +321,6 @@ export default async function Page({ params }: PageProps) {
 						// items={itemData}
 					/>
 				</Suspense>
-
 				<Suspense fallback={<MovesSkeleton/>}>
 					<MovesServer
 						pokemonId={pokemonId}
@@ -349,46 +339,11 @@ export default async function Page({ params }: PageProps) {
 					</div>
 				</div>
 			</div>
+			<ScrollToTop />
 		</>
 	);
 }
 
-type RelatedPokemonProps = {
-	pokemonId: number;
-	order: "previous" | "next";
-};
-
-const RelatedPokemon = memo<RelatedPokemonProps>(async function RelatedPokemon({
-	pokemonId,
-	order,
-}) {
-	const pokemonCount = (await getEndpointData("pokemonSpecies")).count;
-
-	const pokemonData = await getData("pokemon", pokemonId);
-	const nationalNumber = getIdFromURL(pokemonData.species.url);
-
-	let relatedId;
-	if (order === "next") {
-		relatedId = nationalNumber === pokemonCount ? 1 : nationalNumber + 1;
-	} else {
-		relatedId = nationalNumber === 1 ? pokemonCount : nationalNumber - 1;
-	}
-
-	return (
-		// should read the params then add it to the path
-		<Link prefetch={true} href={`./${relatedId}`}>
-			<div className={`navigation ${order}`}>
-				<span>{String(relatedId).padStart(4, "0")}</span>
-				<Image
-					width="475"
-					height="475"
-					src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${relatedId}.png`}
-					alt={String(relatedId)}
-				/>
-			</div>
-		</Link>
-	);
-});
 
 // if using context, all the listeners will be client components..., if not, prop drilling...
 // but come to think of it, currently most of the components under /pokemon/xxx are Server component, maybe we can just fetch data in those component instead of passing them down as props.
@@ -419,3 +374,6 @@ const RelatedPokemon = memo<RelatedPokemonProps>(async function RelatedPokemon({
 
 
 // say if /pokemon/xxx is dynamic, and it fetches generations, types... some commonly used data, when the first time we land on /pokemon/xxx, since it's the first time to fetch, they're not cached, it should take a while, but what if we fetch those data(like the prefetch approach in the Next docs) in a static route(say root layout), will this make the first time landing on /pokemon/xxx faster?
+
+
+	// try fetching data concurrently in each server component

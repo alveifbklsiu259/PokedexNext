@@ -29,6 +29,8 @@ type RootLayoutProps = {
 
 export default async function RootLayout(props: RootLayoutProps) {
 
+	// prefetch data at build time
+	// const responses = await Promise.all([...Array(1000).keys()].map(num => fetch(`https://pokeapi.co/api/v2/pokemon/${num + 1}`, {cache: 'force-cache'})));
 
 
 	return (

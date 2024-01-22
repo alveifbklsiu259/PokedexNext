@@ -1,4 +1,4 @@
-import type{ CachedGeneration, CachedType, CachedAllPokemonNamesAndIds } from "@/app/[language]/_components/pokemonData/pokemon-data-slice";
+import type{ CachedGeneration, CachedType, CachedAllPokemonNamesAndIds } from "@/slices/pokemon-data-slice";
 import { getEndpointData, getData } from "../../lib/api";
 import { getIdFromURL } from "../../lib/util";
 

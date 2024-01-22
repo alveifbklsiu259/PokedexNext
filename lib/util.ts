@@ -2,7 +2,7 @@ import { ReadonlyURLSearchParams } from "next/navigation";
 import type { Pokemon, PokemonForm, PokemonSpecies } from "./definitions";
 import { LanguageOption } from "@/app/[language]/page";
 import type { EndPointRequest } from "./api";
-import { CachedGeneration, CachedType } from "../app/[language]/_components/pokemonData/pokemon-data-slice";
+import { CachedGeneration, CachedType } from "../slices/pokemon-data-slice";
 
 export function getIdFromURL<T extends string | undefined>(url: T): T extends string ? number : undefined;
 export function getIdFromURL(url: string | undefined): number | undefined {

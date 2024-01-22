@@ -5,7 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 import {
 	LanguageOption,
 	languageOptions,
-} from "../app/[language]/_components/display/display-slice";
+} from "../slices/display-slice";
 import { FaLanguage } from "react-icons/fa6";
 import {
 	useParams,

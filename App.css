@@ -241,7 +241,7 @@ h1 {
 
 /* pokemon */
 .mainContainer {
-    margin-top: 170px
+    margin-top: 95px
 }
 
 /* basicInfo */
@@ -574,6 +574,11 @@ h1 {
     list-style-image: url('./public/ball.svg');
 }
 
+.evolutionDetailsModal ul li::marker {
+    font-size: 25px;
+    line-height: 1;
+}
+
 .evolutionDetails .fa-circle-info {
     color: #818486;
     cursor: pointer;
@@ -581,6 +586,11 @@ h1 {
 
 .evolutionDetails .fa-circle-info:hover {
     color: #000
+}
+
+.evolutionChains ul li .spinner {
+    width: 130px;
+    margin: 0
 }
 
 /* moves */
@@ -602,6 +612,7 @@ h1 {
 .machineData {
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .machineData>div {
@@ -1048,7 +1059,7 @@ h1 {
     }
 
     .mainContainer {
-        margin-top: 210px
+        margin-top: 140px
     }
 
 }

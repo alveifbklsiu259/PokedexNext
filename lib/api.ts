@@ -1,9 +1,9 @@
 import { getIdFromURL, transformToKeyName, transformToDash, toEndPointString } from "./util";
-import { PokemonDataTypes } from "../app/[language]/_components/pokemonData/pokemon-data-slice";
-import type { LanguageOption, SortOption } from "../app/[language]/_components/display/display-slice";
+import { PokemonDataTypes } from "../slices/pokemon-data-slice";
+import type { LanguageOption, SortOption } from "../slices/display-slice";
 import type { AppDispatch, RootState } from '../app/_app/store';
 import type { Pokemon, EndPointData, PokemonForm, GetStringOrNumberKey, EvolutionChain, EvolutionChainResponse, NonNullableArray } from './definitions';
-import { CachedPokemon, CachedAbility, CachedAllPokemonNamesAndIds, CachedPokemonSpecies, GetRequiredData } from "../app/[language]/_components/pokemonData/pokemon-data-slice";
+import { CachedPokemon, CachedAbility, CachedAllPokemonNamesAndIds, CachedPokemonSpecies, GetRequiredData } from "../slices/pokemon-data-slice";
 
 const BASE_URL = 'https://pokeapi.co/api/v2';
 
@@ -98,7 +98,87 @@ type GetSortField<T extends SortOption> = T extends `${infer A}Asc` ? A : SortOp
 type SortField = GetSortField<SortOption>;
 export type Stat = Exclude<SortField, "number" | "height" | "name" | "weight" >
 
-const sortPokemons = (allPokemons: CachedPokemon, sortOption: SortOption, allPokemonNamesAndIds: CachedAllPokemonNamesAndIds, request: number[]) => {
+// const sortPokemons = (allPokemons: CachedPokemon, sortOption: SortOption, allPokemonNamesAndIds: CachedAllPokemonNamesAndIds, request: number[]) => {
+// 	const sortPokemonsByName = () => {
+// 		let sortedNames: string[];
+// 		const sort = sortOption.includes('Asc') ? 'asc' : 'desc';
+// 		if (sort === 'asc') {
+// 			sortedNames = Object.keys(allPokemonNamesAndIds).sort((a, b) => a.localeCompare(b));
+// 		} else {
+// 			sortedNames = Object.keys(allPokemonNamesAndIds).sort((a, b) => b.localeCompare(a));
+// 		};
+// 		return sortedNames.map(name => allPokemonNamesAndIds[name])
+// 			.filter(id => request.includes(id));
+// 	};
+
+// 	const sortPokemonsByWeightOrHeight = (sortBy: 'weight' | 'height') => {
+// 		let sortedPokemons: Pokemon.Root[];
+// 		const sort = sortOption.includes('Asc') ? 'asc' : 'desc';
+// 		if (sort === 'asc') {
+// 			sortedPokemons = Object.values(allPokemons).sort((a, b) => a[sortBy] - b[sortBy]);
+// 		} else {
+// 			sortedPokemons = Object.values(allPokemons).sort((a, b) => b[sortBy] - a[sortBy]);
+// 		};
+// 		return sortedPokemons.map(pokemon => pokemon.id)
+// 			.filter(id => request.includes(id));
+// 	};
+
+// 	const sortPokemonsByStat = (stat: Stat) => {
+// 		let sortedPokemons: Pokemon.Root[];
+// 		const getBaseStat = (pokemon: Pokemon.Root) => {
+// 			if (stat === 'total') {
+// 				const total = pokemon.stats.reduce((pre, cur) => pre + cur.base_stat, 0);
+// 				return total;
+// 			} else {
+// 				const statVal = pokemon.stats.find(entry => entry.stat.name === stat)!.base_stat;
+// 				return statVal;
+// 			};
+// 		};
+// 		const sort = sortOption.includes('Asc') ? 'asc' : 'desc';
+// 		if (sort === 'asc') {
+// 			sortedPokemons = Object.values(allPokemons).sort((a, b) => getBaseStat(a) - getBaseStat(b));
+// 		} else {
+// 			sortedPokemons = Object.values(allPokemons).sort((a, b) => getBaseStat(b) - getBaseStat(a));
+// 		};
+// 		return sortedPokemons.map(pokemon => pokemon.id)
+// 			.filter(id => request.includes(id));
+// 	};
+
+// 	switch(sortOption) {
+// 		case 'numberAsc' : {
+// 			return [...request].sort((a, b) => a - b);
+// 		}
+// 		case 'numberDesc' : {
+// 			return [...request].sort((a, b) => b - a);
+// 		}
+// 		case 'nameAsc' : 
+// 		case 'nameDesc' : {
+// 			return sortPokemonsByName();
+// 		}
+// 		case 'heightAsc' : 
+// 		case 'heightDesc' : {
+// 			return sortPokemonsByWeightOrHeight('height');
+// 		}
+// 		case 'weightAsc' :
+// 		case 'weightDesc' : {
+// 			return sortPokemonsByWeightOrHeight('weight');
+// 		}
+// 		default : {
+// 			let stat: Stat;
+// 			if (sortOption.includes('Asc')) {
+// 				stat = sortOption.slice(0, sortOption.indexOf('Asc')) as Stat;
+// 			} else {
+// 				stat = sortOption.slice(0, sortOption.indexOf('Desc')) as Stat;
+// 			};
+// 			return sortPokemonsByStat(stat);
+// 		};
+// 	};
+// };
+
+
+// refactor sortPokemons, allPokemons and allPokemonNamesAndIds are not required when it's not sorted by name or id.
+
+export const sortPokemons = (allPokemons: CachedPokemon, sortOption: SortOption, allPokemonNamesAndIds: CachedAllPokemonNamesAndIds, request: number[]) => {
 	const sortPokemonsByName = () => {
 		let sortedNames: string[];
 		const sort = sortOption.includes('Asc') ? 'asc' : 'desc';
@@ -174,6 +254,8 @@ const sortPokemons = (allPokemons: CachedPokemon, sortOption: SortOption, allPok
 		};
 	};
 };
+
+
 
 export const getPokemons2 = async (cachedPokemons: CachedPokemon, allPokemonNamesAndIds: CachedAllPokemonNamesAndIds, request: number[], sortOption: SortOption) => {
 	

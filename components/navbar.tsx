@@ -8,15 +8,15 @@ import Slide from "@mui/material/Slide";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import { useParams, useRouter } from "next/navigation";
 import LanguageMenu from "./language-menu";
-import Modal from "@/app/_components/modal";
-import Search from "../app/[language]/_components/search/search";
+import Search from "./pokemons/search";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import {
 	CachedAllPokemonNamesAndIds,
 	CachedGeneration,
 	CachedType,
-} from "../app/[language]/_components/pokemonData/pokemon-data-slice";
+} from "../slices/pokemon-data-slice";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 
 type HideOnScrollProps = {
 	children: ReactElement;
@@ -37,6 +37,8 @@ type NavBarProps = {
 	types: CachedType;
 	namesAndIds: CachedAllPokemonNamesAndIds;
 };
+
+const Modal = dynamic(() => import("@/components/modal"));
 
 export default function NavBar({
 	generations,

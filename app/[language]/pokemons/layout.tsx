@@ -1,24 +1,19 @@
-import { getData, getEndpointData } from "../../../lib/api";
-import { getIdFromURL, getNameByLanguage } from "../../../lib/util";
-import { LanguageOption } from "../_components/display/display-slice";
-import Sort from "../_components/display/sort";
+import { getData, getEndpointData } from "@/lib/api";
+import { getIdFromURL, getNameByLanguage } from "@/lib/util";
+import { LanguageOption } from "../page";
+import Sort from "@/components/pokemons/sort";
 import {
 	CachedAllPokemonNamesAndIds,
 	CachedPokemonSpecies,
-} from "../_components/pokemonData/pokemon-data-slice";
-import Search from "../_components/search/search";
+} from "@/slices/pokemon-data-slice";
+import Search from "@/components/pokemons/search";
 
 type LayoutProps = {
 	children: React.ReactNode;
 	params: { language: LanguageOption };
 };
 
-
-// how is this layout rendered? dynamic or static?
-
 export default async function Layout({ children, params }: LayoutProps) {
-	// console.log("/[language].layout.tsx");
-
 	const { language } = params;
 	const generationResponse = await getEndpointData("generation");
 	const generations = await getData(
@@ -96,3 +91,11 @@ export default async function Layout({ children, params }: LayoutProps) {
 
 
 //   see commit:769df10a
+
+
+// learn transition --> transition between different routes(route1 --> route2) and within same route (route1 --> route1 or route1 --> route1?q=123)
+// learn next + Framer Motion
+// startTransition / useTransition
+// can transition be used in CSR? (pure React APP)
+// what I want is showing stale data when navigation if the destination suspends <Suspense> runs
+// can we use Suspense with transition

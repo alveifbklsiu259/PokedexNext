@@ -5,7 +5,7 @@ import { LanguageOption } from "./page";
 import {
 	CachedAllPokemonNamesAndIds,
 	CachedPokemonSpecies,
-} from "./_components/pokemonData/pokemon-data-slice";
+} from "@/slices/pokemon-data-slice";
 import NavBar from "@/components/navbar";
 
 type LayoutProps = {
@@ -58,6 +58,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 				{}
 			);
 	}
+
 
 	return (
 		<>

@@ -1,32 +1,7 @@
-import { getEndpointData, getData } from "../../../lib/api";
-import { Suspense } from "react";
-import { LanguageOption } from "../_components/display/display-slice";
-// import Pokemons from "../_components/pokemonData/pokemons";
-import BasicInfo from "../_components/pokemonData/basicInfo";
-import { languageOptions } from "../page";
-import {
-	CachedAllPokemonNamesAndIds,
-	CachedPokemonSpecies,
-} from "../_components/pokemonData/pokemon-data-slice";
-import {
-	getIdFromURL,
-	getIntersection2,
-	getNameByLanguage,
-} from "@/lib/util";
-import Pokemons from "./pokemons";
-
-
-// can we export non next-defined things from page/layout...?
-// I tried importing languageOptions from other files, but encounter build error(can't get staticParams)
-// const languageOptions = {
-// 	en: "English",
-// 	ja: "日本語",
-// 	// zh_Hant: '繁體中文',
-// 	// zh_Hans: '简体中文',
-// 	// ko: '한국어',
-// 	// fr: 'Français',
-// 	// de: 'Deutsch',
-// };
+import { getEndpointData, getData } from "@/lib/api";
+import { LanguageOption, languageOptions } from "../page";
+import { getIntersection2 } from "@/lib/util";
+import Pokemons from "@/components/pokemons/pokemons";
 
 export async function generateStaticParams() {
 	return Object.keys(languageOptions).map((lan) => ({
@@ -43,7 +18,6 @@ type LanguagePageProps = {
 
 // try fetching data concurrently and see if it reduces time
 export default async function LanguagePage({ params }: LanguagePageProps) {
-	// console.log("/[language].page.tsx");
 	const { language } = params;
 
 	const generationResponse = await getEndpointData("generation");
@@ -60,39 +34,7 @@ export default async function LanguagePage({ params }: LanguagePageProps) {
 		typeResponse.results.map((entry) => entry.name),
 		"name"
 	);
-
-	// names and ids
-	const speciesResponse = await getEndpointData("pokemonSpecies");
-
-	// let allNamesAndIds: CachedAllPokemonNamesAndIds, speciesData: CachedPokemonSpecies;
-	const initialRequestIds = speciesResponse.results
-		.slice(0, 24)
-		.map((entry) => getIdFromURL(entry.url));
-
-	// if (language !== "en") {
-	// 	speciesData = await getData(
-	// 		"pokemonSpecies",
-	// 		speciesResponse.results.map((entry) => getIdFromURL(entry.url)),
-	// 		"id"
-	// 	);
-	// 	allNamesAndIds = Object.values(
-	// 		speciesData
-	// 	).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-	// 		pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
-	// 		return pre;
-	// 	}, {});
-	// } else {
-	// 	speciesData =  await getData("pokemonSpecies", initialRequestIds, "id");
-	// 	allNamesAndIds =
-	// 		speciesResponse.results.reduce<CachedAllPokemonNamesAndIds>(
-	// 			(pre, cur) => {
-	// 				pre[cur.name] = getIdFromURL(cur.url);
-	// 				return pre;
-	// 			},
-	// 			{}
-	// 		);
-	// };
-
+	const initialRequestIds = [...Array(24).keys()].map(num => num + 1);
 	const pokemonData = await getData("pokemon", initialRequestIds, "id");
 	const speciesData = await getData("pokemonSpecies", initialRequestIds, "id");
 
@@ -103,39 +45,6 @@ export default async function LanguagePage({ params }: LanguagePageProps) {
 		language as LanguageOption
 	);
 
-	// const initialContent = (
-	// 	<>
-	// 		<div className="container">
-	// 			{/* <div ref={viewModeRef} className="viewModeContainer">
-	// 				<ViewMode tableInfoRef={tableInfoRef} />
-	// 			</div> */}
-	// 			<div className="row g-5">
-	// 				{Object.values(pokemonData).map((data) => {
-	// 					const imgSrc =
-	// 						data.sprites?.other?.["official-artwork"]?.front_default;
-	// 					return (
-	// 						<div
-	// 							key={data.id}
-	// 							className={`col-6 col-md-4 col-lg-3 card pb-3 pokemonCard ${
-	// 								!imgSrc ? "justify-content-end" : ""
-	// 							}`}
-	// 						>
-	// 							<BasicInfo
-	// 								pokemonData={data}
-	// 								language={language as LanguageOption}
-	// 								speciesData={speciesData[data.id]}
-	// 								types={types}
-	// 							/>
-	// 						</div>
-	// 					);
-	// 				})}
-	// 			</div>
-	// 		</div>
-	// 	</>
-	// );
-
-	// console.log("/pokemons/page.tsx");
-
 	return (
 		<>
 			<Pokemons
@@ -144,14 +53,6 @@ export default async function LanguagePage({ params }: LanguagePageProps) {
 				pokemonData={pokemonData}
 				speciesData={speciesData}
 			/>
-			{/* <Suspense fallback={initialContent}>
-				<Pokemons
-					generations={generations}
-					types={types}
-					initialPokemonData={pokemonData}
-					initialSpeciesData={speciesData}
-				/>
-			</Suspense> */}
 		</>
 	);
 }
@@ -349,8 +250,6 @@ If a route is dynamically rendered, useSearchParams will be available on the ser
 
 // can we wrap a server component with memo, does it make any difference, what's the point?
 // can I use suspense to make a component show disabled hovered icon when hydration is not finished?
-
-
 
 //  implement turbolink,
 //  grayed out pokemons, instead of using skeleton
