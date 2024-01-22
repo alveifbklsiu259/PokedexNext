@@ -444,19 +444,20 @@ h1 {
 }
 
 .progressAnimation {
-	animation-name: barAnimation;
-	animation-iteration-count: 1;
-	animation-timing-function: ease-in;
-	animation-duration: 1s;
+    animation-name: barAnimation;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 1s;
 }
 
 @keyframes barAnimation {
-	0% {
-		width: 0;
-	}
-	100% {
-		width: 100%
-	}
+    0% {
+        width: 0;
+    }
+
+    100% {
+        width: 100%
+    }
 }
 
 /* evolution chain */
@@ -909,7 +910,8 @@ h1 {
     border: 1px solid #464646;
 }
 
-.varieties a, .varieties ul li button {
+.varieties a,
+.varieties ul li button {
     border: none;
     background-color: #fff;
     padding: 8px 16px;
@@ -997,6 +999,17 @@ h1 {
     margin: auto
 }
 
+.pending {
+    opacity: 0.7;
+    /* Delay the pending UI by 0.2s so it doesn't show if we render fast enough. */
+    transition: opacity 0.2s 0.2s linear;
+}
+
+.done {
+    opacity: 1;
+    transition: opacity 0s 0s linear;
+}
+
 
 @media(min-width: 576px) {
 
@@ -1049,6 +1062,7 @@ h1 {
         width: 96px;
         height: 96px;
     }
+
     .skeleton__img__related {
         width: 96px !important;
         height: 96px !important;

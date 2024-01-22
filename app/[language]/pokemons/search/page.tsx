@@ -11,15 +11,26 @@ type PageProps = {
 };
 
 export default async function Page({ params, searchParams }: PageProps) {
-	console.log(JSON.stringify(searchParams));
-	return (
-		<>
+	let content;
+	
+	// I only want to show the skeleton when user lands on /[lan]/pokemons/search without any searchParams, when searching with query, type... we'll use transition to indicate that the searching is in progress.
+	if (!Object.keys(searchParams).length) {
+		content = (
 			<Suspense
-				key={JSON.stringify(searchParams)}
+				// key={JSON.stringify(searchParams)}
 				fallback={<PokemonsSkeleton />}
 			>
 				<PokemonsServer params={params} searchParams={searchParams} />
 			</Suspense>
+		)
+	} else {
+		content = <PokemonsServer params={params} searchParams={searchParams} />
+	}
+	
+	
+	return (
+		<>
+			{content}
 		</>
 	);
 }

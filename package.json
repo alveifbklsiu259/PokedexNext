@@ -16,6 +16,7 @@
 		"@mui/material-nextjs": "^5.15.0",
 		"@plaiceholder/next": "^3.0.0",
 		"@reduxjs/toolkit": "^1.9.7",
+		"aos": "^2.3.4",
 		"bootstrap": "^5.3.2",
 		"next": "^14.0.4",
 		"react": "^18",
@@ -27,6 +28,7 @@
 		"styled-components": "^5.3.11"
 	},
 	"devDependencies": {
+		"@types/aos": "^3.0.7",
 		"@types/node": "^20",
 		"@types/react": "^18",
 		"@types/react-dom": "^18",

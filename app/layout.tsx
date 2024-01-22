@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 // import { Zen_Maru_Gothic } from 'next/font/google';
 import '@/App.css'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter'; 
+import TransitionProvider from "@/components/transition-context";
+import AOSInitializer from "@/components/aos-initializer";
 // import NavBar from "./_components/navBar";
 
 // const DynamicBootstrap = dynamic(
@@ -29,7 +31,7 @@ type RootLayoutProps = {
 
 export default async function RootLayout(props: RootLayoutProps) {
 
-	// prefetch data at build time
+	// prefetch data at build time, if we don't do this, sorting pokemons through weight/height... will cause routing unresponsive for a while (select --> nothing happens --> a while later --> url changes --> suspense fallback shows)
 	// const responses = await Promise.all([...Array(1000).keys()].map(num => fetch(`https://pokeapi.co/api/v2/pokemon/${num + 1}`, {cache: 'force-cache'})));
 
 
@@ -38,10 +40,12 @@ export default async function RootLayout(props: RootLayoutProps) {
 			{/* <body className={zen_maru_gothic.className}> */} 
 			<body>
 				{/* {props.search} */}
-				
-				<AppRouterCacheProvider>
-					{props.children}
-				</AppRouterCacheProvider>
+				<AOSInitializer/>
+				<TransitionProvider>
+					<AppRouterCacheProvider>
+						{props.children}
+					</AppRouterCacheProvider>
+				</TransitionProvider>
 			</body>
 		</html>
 	);

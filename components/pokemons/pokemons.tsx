@@ -11,6 +11,7 @@ import type { LanguageOption } from "@/slices/display-slice";
 import BasicInfo from "../basicInfo";
 import { getData, getDataToFetch } from "@/lib/api";
 import Spinner from "@/components/spinner";
+import { useCustomTransition } from "../transition-context";
 
 type PokemonsProps = {
 	pokemonData: CachedPokemon;
@@ -19,13 +20,14 @@ type PokemonsProps = {
 	sortedIntersection: number[];
 };
 
-const Pokemons = memo(
+const Pokemons = /*memo(*/
 	function Pokemons({
 		types,
 		pokemonData,
 		speciesData,
 		sortedIntersection,
 	}: PokemonsProps) {
+		const [isPending, startTransition] = useCustomTransition();
 		const params = useParams();
 		const router = useRouter();
 		const { language } = params;
@@ -125,7 +127,7 @@ const Pokemons = memo(
 		} else {
 			content = (
 				<>
-					{Object.values(display).map((id) => {
+					{Object.values(display).map((id, index) => {
 						const pokemonData = cachedData.pokemon[id];
 						const imgSrc =
 							pokemonData.sprites?.other?.["official-artwork"]?.front_default;
@@ -135,6 +137,8 @@ const Pokemons = memo(
 								className={`col-6 col-md-4 col-lg-3 card pb-3 pokemonCard ${
 									!imgSrc ? "justify-content-end" : ""
 								}`}
+								data-aos={index < 4 ? "flip-left" : ''}
+								data-aos-delay={index < 4 && `${index}00`}
 								onClick={() => handleClick(id)}
 							>
 								<BasicInfo
@@ -153,13 +157,13 @@ const Pokemons = memo(
 
 		return (
 			<>
-				<div className="container">
+				<div className={`container ${isPending ? 'pending' : 'done'}`}>
 					<div className="row g-5">{content}</div>
 				</div>
 			</>
 		);
-	},
+	}/*,
 	() => true
-);
+);*/
 
 export default Pokemons;

@@ -137,6 +137,7 @@ const PokemonsServer = async function PokemonsServer({
 	return (
 		<>
 			<Pokemons
+				key={JSON.stringify(searchParams)}
 				types={types}
 				pokemonData={pokemonData!}
 				speciesData={speciesData}

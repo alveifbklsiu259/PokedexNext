@@ -1,11 +1,12 @@
 'use client'
-import { memo, Suspense, useMemo } from "react";
+import { memo, Suspense, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { FormControl, MenuItem } from "@mui/material";
 import { updateSearchParam } from "@/lib/util";
-import { useSearchParams, usePathname, useRouter } from "next/navigation";
+import { useSearchParams, usePathname, useRouter, useParams } from "next/navigation";
+import { useCustomTransition } from "../transition-context";
 
 export const sortOptions = [
 	{ text: "Number(low - high)", value: "numberAsc" },
@@ -71,23 +72,24 @@ export default Sort;
 
 
 const Dropdown = memo(function Dropdown() {
+	const [isPending, startTransition] = useCustomTransition();
 	const searchParams = useSearchParams();
-	const pathname = usePathname();
+	const params = useParams();
+	const {language} = params;
 	const router = useRouter();
 	const sortParams = searchParams.get("sort") || "numberAsc";
 
+	// is this bad for performance? because router function is marked as transition, if we just use sortParams from reading searchParams, when changin value from select, it will show the stale value.
+	const [sortBy, setSortBy] = useState(sortParams)
 	// see if we can use link and prefetch?
 	const handleChange = (event: SelectChangeEvent) => {
 		const newSearchParams = updateSearchParam(searchParams, {
 			sort: event.target.value,
 		});
-		let newPathname: string = pathname;
-		// if (!pathname.includes("search")) {
-		// 	newPathname = `${pathname}/search`;
-		// }
-
-		router.push(`${newPathname}?${newSearchParams}`);
-		console.log(`navigate to ?${newSearchParams}`);
+		setSortBy(event.target.value);
+		startTransition(() => {
+			router.push(`/${language}/pokemons2?${newSearchParams}`);
+		})
 	};
 
 	const memoItems = useMemo(
@@ -104,9 +106,12 @@ const Dropdown = memo(function Dropdown() {
 		<Select
 			labelId="sort-label"
 			id="sort"
-			value={sortParams}
+			value={sortBy}
 			label="sort"
 			onChange={handleChange}
+			// disable selecting when pending is optional, because one of the main features of transition is interruptable. But is there any way to abort the unresolved request that had been made?
+			className={isPending ? 'pending': 'done'}
+			disabled={isPending}
 		>
 			{memoItems}
 		</Select>

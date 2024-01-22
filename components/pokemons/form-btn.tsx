@@ -1,6 +1,7 @@
 import { memo, useEffect, useLayoutEffect } from "react";
 import { useSearchParams, useRouter, useParams, usePathname } from "next/navigation";
 import { updateSearchParam } from "@/lib/util";
+import { useCustomTransition } from "../transition-context";
 
 type FormBtnProps = {
 	formRef: React.RefObject<HTMLFormElement>;
@@ -27,15 +28,15 @@ const FormBtn = memo(function FormBtn({
 	typeMatch,
 	setTypeMatch
 }: FormBtnProps) {
+	const [isPending, startTransition] = useCustomTransition();
 	const searchParams = useSearchParams();
 	const params = useParams();
-	let pathname = usePathname();
 	const {language} = params;
 	const router = useRouter();
 	const query = searchParams.get("query");
 	const generation = searchParams.get("gen");
 	const type = searchParams.get("type");
-	const match = (searchParams.get("match") || 'part') as 'part' | 'all';
+	const match = (searchParams.get("match") || 'all') as 'part' | 'all';
 
 	// synchronizing state, the reason I'm synchronizing states in this component is that the data requires searchParams.
 	useLayoutEffect(() => {
@@ -69,21 +70,18 @@ const FormBtn = memo(function FormBtn({
 				match: typeMatch
 			});
 
-			if (!pathname.includes('search')) {
-				// pathname += '/search'
-				pathname = pathname
-			};
-
-
 			if (onCloseModal) {
 				onCloseModal();
 			};
 
 			// what should I use, replace or push?
-			router.replace(
-				// `/${language}/pokemons2?${newSearchParams}`
-				`${pathname}?${newSearchParams}`
-			);
+			startTransition(() => {
+				router.replace(
+					// `/${language}/pokemons2?${newSearchParams}`
+					// `/${language}/pokemons/search?${newSearchParams}`
+					`/${language}/pokemons2?${newSearchParams}`
+				);
+			})
 
 			// if (viewModeRef?.current) {
 			// 	// search from root
@@ -107,13 +105,14 @@ const FormBtn = memo(function FormBtn({
 		return () => {
 			formNode.removeEventListener("submit", handleSubmit);
 		};
-	}, [searchQuery, selectedTypes, selectedGenerations, formRef, router, searchParams, language, typeMatch, pathname]);
+	}, [searchQuery, selectedTypes, selectedGenerations, formRef, router, searchParams, language, typeMatch]);
 
 	return (
 		<button
 			// disabled={status === 'loading' ? true : false}
 			className="btn btn-primary btn-lg btn-block w-100 my-3"
 			type="submit"
+			disabled={isPending}
 		>
 			Search
 		</button>
