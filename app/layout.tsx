@@ -6,6 +6,7 @@ import '@/App.css'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter'; 
 import TransitionProvider from "@/components/transition-context";
 import AOSInitializer from "@/components/aos-initializer";
+import Loader from "@/components/loader";
 // import NavBar from "./_components/navBar";
 
 // const DynamicBootstrap = dynamic(
@@ -42,6 +43,7 @@ export default async function RootLayout(props: RootLayoutProps) {
 				{/* {props.search} */}
 				<AOSInitializer/>
 				<TransitionProvider>
+					<Loader/>
 					<AppRouterCacheProvider>
 						{props.children}
 					</AppRouterCacheProvider>

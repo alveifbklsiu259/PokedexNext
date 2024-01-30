@@ -6,7 +6,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { FormControl, MenuItem } from "@mui/material";
 import { updateSearchParam } from "@/lib/util";
 import { useSearchParams, usePathname, useRouter, useParams } from "next/navigation";
-import { useCustomTransition } from "../transition-context";
+import { useCustomTransition, useTransitionRouter } from "../transition-context";
 
 export const sortOptions = [
 	{ text: "Number(low - high)", value: "numberAsc" },
@@ -72,11 +72,10 @@ export default Sort;
 
 
 const Dropdown = memo(function Dropdown() {
-	const [isPending, startTransition] = useCustomTransition();
+	const [isPending, transitionRouter] = useTransitionRouter();
 	const searchParams = useSearchParams();
 	const params = useParams();
 	const {language} = params;
-	const router = useRouter();
 	const sortParams = searchParams.get("sort") || "numberAsc";
 
 	// is this bad for performance? because router function is marked as transition, if we just use sortParams from reading searchParams, when changin value from select, it will show the stale value.
@@ -87,9 +86,10 @@ const Dropdown = memo(function Dropdown() {
 			sort: event.target.value,
 		});
 		setSortBy(event.target.value);
-		startTransition(() => {
-			router.push(`/${language}/pokemons2?${newSearchParams}`);
-		})
+		transitionRouter.replace(
+			`/${language}/pokemons/search?${newSearchParams}`
+			// router.push(`/${language}/pokemons2?${newSearchParams}`);
+		)
 	};
 
 	const memoItems = useMemo(

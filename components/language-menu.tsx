@@ -13,6 +13,7 @@ import {
 	useRouter,
 	useSearchParams,
 } from "next/navigation";
+import { useCustomTransition, useTransitionRouter } from "./transition-context";
 
 
 
@@ -98,17 +99,19 @@ type ItemProprs = {
 
 const Item = memo<ItemProprs>(function Item({ option, handleClose }) {
 	const params = useParams();
-	const router = useRouter();
 	const pathname = usePathname();
 	const language = params.language as string;
 	const newPath = pathname.replace(language, option);
 	const searchParams = useSearchParams();
+	const [isPending, transitionRouter] = useTransitionRouter();
 
 	const handleChangeLanguage = (option: LanguageOption) => {
 		handleClose();
 		// dispatch(changeLanguage({option, pokeId}));
 		// dispatch(changeLanguage({option, pokeId: undefined}));
-		router.replace(`${newPath}?${searchParams.toString()}`);
+		transitionRouter.replace(
+			`${newPath}?${searchParams.toString()}`
+		)
 	};
 
 	return (

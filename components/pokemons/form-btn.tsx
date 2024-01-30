@@ -1,7 +1,7 @@
 import { memo, useEffect, useLayoutEffect } from "react";
 import { useSearchParams, useRouter, useParams, usePathname } from "next/navigation";
 import { updateSearchParam } from "@/lib/util";
-import { useCustomTransition } from "../transition-context";
+import { useCustomTransition, useTransitionRouter } from "../transition-context";
 
 type FormBtnProps = {
 	formRef: React.RefObject<HTMLFormElement>;
@@ -28,11 +28,10 @@ const FormBtn = memo(function FormBtn({
 	typeMatch,
 	setTypeMatch
 }: FormBtnProps) {
-	const [isPending, startTransition] = useCustomTransition();
+	const [isPending, transitionRouter] = useTransitionRouter();
 	const searchParams = useSearchParams();
 	const params = useParams();
 	const {language} = params;
-	const router = useRouter();
 	const query = searchParams.get("query");
 	const generation = searchParams.get("gen");
 	const type = searchParams.get("type");
@@ -75,13 +74,11 @@ const FormBtn = memo(function FormBtn({
 			};
 
 			// what should I use, replace or push?
-			startTransition(() => {
-				router.replace(
-					// `/${language}/pokemons2?${newSearchParams}`
-					// `/${language}/pokemons/search?${newSearchParams}`
-					`/${language}/pokemons2?${newSearchParams}`
-				);
-			})
+			transitionRouter.replace(
+				`/${language}/pokemons/search?${newSearchParams}`
+				// `/${language}/pokemons2?${newSearchParams}`
+			)
+			
 
 			// if (viewModeRef?.current) {
 			// 	// search from root
@@ -105,7 +102,7 @@ const FormBtn = memo(function FormBtn({
 		return () => {
 			formNode.removeEventListener("submit", handleSubmit);
 		};
-	}, [searchQuery, selectedTypes, selectedGenerations, formRef, router, searchParams, language, typeMatch]);
+	}, [searchQuery, selectedTypes, selectedGenerations, formRef, transitionRouter, searchParams, language, typeMatch]);
 
 	return (
 		<button

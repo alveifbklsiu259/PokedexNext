@@ -11,7 +11,7 @@ import type { LanguageOption } from "@/slices/display-slice";
 import BasicInfo from "../basicInfo";
 import { getData, getDataToFetch } from "@/lib/api";
 import Spinner from "@/components/spinner";
-import { useCustomTransition } from "../transition-context";
+import { useCustomTransition, useTransitionRouter } from "../transition-context";
 
 type PokemonsProps = {
 	pokemonData: CachedPokemon;
@@ -27,7 +27,7 @@ const Pokemons = /*memo(*/
 		speciesData,
 		sortedIntersection,
 	}: PokemonsProps) {
-		const [isPending, startTransition] = useCustomTransition();
+		const [isPending] = useTransitionRouter();
 		const params = useParams();
 		const router = useRouter();
 		const { language } = params;

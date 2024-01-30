@@ -1010,6 +1010,34 @@ h1 {
     transition: opacity 0s 0s linear;
 }
 
+.loaderContainer {
+    position: fixed;
+    top: 75%;
+    left: 50%;
+    z-index: 2;
+    transform: translate(-50%, -50%);
+}
+
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px dashed #ff3838;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    box-sizing: border-box;
+    animation: rotation 2s ease-in-out infinite;
+  }
+  
+  @keyframes rotation {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  } 
+
 
 @media(min-width: 576px) {
 
