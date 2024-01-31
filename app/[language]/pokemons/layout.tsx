@@ -70,6 +70,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 					types={types}
 					namesAndIds={pokemonsNamesAndId}
 				/>
+				
 				<Sort />
 				<div id="pokemonsContainer">
 					{children}

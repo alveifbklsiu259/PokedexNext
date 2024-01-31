@@ -1,3 +1,7 @@
+:root {
+    --transition-delay: 0.2s
+}
+
 * {
     box-sizing: border-box;
     font-family: 'Zen Maru Gothic', sans-serif;
@@ -1002,7 +1006,7 @@ h1 {
 .pending {
     opacity: 0.7;
     /* Delay the pending UI by 0.2s so it doesn't show if we render fast enough. */
-    transition: opacity 0.2s 0.2s linear;
+    transition: opacity 0.2s var(--transition-delay) linear;
 }
 
 .done {
@@ -1011,11 +1015,13 @@ h1 {
 }
 
 .loaderContainer {
+    opacity: 0;
     position: fixed;
     top: 75%;
     left: 50%;
     z-index: 2;
     transform: translate(-50%, -50%);
+    animation: fade-in 1s linear var(--transition-delay) forwards;
 }
 
 .loader {
@@ -1027,7 +1033,7 @@ h1 {
     position: relative;
     box-sizing: border-box;
     animation: rotation 2s ease-in-out infinite;
-  }
+}
   
   @keyframes rotation {
     0% {
@@ -1036,7 +1042,17 @@ h1 {
     100% {
       transform: rotate(360deg);
     }
-  } 
+}
+
+@keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+};
+
 
 
 @media(min-width: 576px) {

@@ -3,7 +3,6 @@ import { memo, useState, useMemo } from "react";
 import DataTable, { type TableColumn, type ExpanderComponentProps } from "react-data-table-component";
 import { Switch, Stack, Typography, capitalize } from "@mui/material";
 import { LanguageOption } from "@/app/[language]/page";
-import Spinner from "@/components/spinner";
 import { getTextByLanguage } from "@/lib/util";
 import type { ColData, MovesData } from "./moves-client";
 
@@ -67,7 +66,6 @@ export default function MovesTable({columnData, movesData, selectedVersion, chan
 	const [previousData, setPreviousData] = useState(movesData);
 	const [previousSelectedVersion, setPreviousSelectedVersion] = useState(selectedVersion);
 
-	const cachedSpinner = useMemo(() => <Spinner/>, []);
 	const cachedFilterButton = useMemo(() => <FilterButton isDataReady={isDataReady} changefilteredMethod={changefilteredMethod} />, [isDataReady, changefilteredMethod]);
 
 	const expandableRowsComponentProps = useMemo(()=> ({previousSelectedVersion, language}), [previousSelectedVersion, language]);
@@ -94,7 +92,6 @@ export default function MovesTable({columnData, movesData, selectedVersion, chan
 			subHeader
 			subHeaderComponent={cachedFilterButton}
 			progressPending={!isDataReady}
-			progressComponent={cachedSpinner}
 		/>
 	)
 };

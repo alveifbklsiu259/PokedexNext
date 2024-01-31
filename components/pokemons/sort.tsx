@@ -87,8 +87,8 @@ const Dropdown = memo(function Dropdown() {
 		});
 		setSortBy(event.target.value);
 		transitionRouter.replace(
-			`/${language}/pokemons/search?${newSearchParams}`
-			// router.push(`/${language}/pokemons2?${newSearchParams}`);
+			// `/${language}/pokemons/search?${newSearchParams}`
+			`/${language}/pokemons2?${newSearchParams}`
 		)
 	};
 

@@ -75,8 +75,8 @@ const FormBtn = memo(function FormBtn({
 
 			// what should I use, replace or push?
 			transitionRouter.replace(
-				`/${language}/pokemons/search?${newSearchParams}`
-				// `/${language}/pokemons2?${newSearchParams}`
+				// `/${language}/pokemons/search?${newSearchParams}`
+				`/${language}/pokemons2?${newSearchParams}`
 			)
 			
 

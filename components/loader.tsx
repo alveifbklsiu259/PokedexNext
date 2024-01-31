@@ -8,7 +8,7 @@ export default function Loader() {
 	if (isTransition) {
 		return (
 			<div className="loaderContainer">
-				<span className="loader"></span>;
+				<span className="loader"></span>
 			</div>
 		);
 	}
