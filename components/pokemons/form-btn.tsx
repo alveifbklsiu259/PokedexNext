@@ -30,8 +30,7 @@ const FormBtn = memo(function FormBtn({
 }: FormBtnProps) {
 	const [isPending, transitionRouter] = useTransitionRouter();
 	const searchParams = useSearchParams();
-	const params = useParams();
-	const {language} = params;
+	const {language} = useParams();
 	const query = searchParams.get("query");
 	const generation = searchParams.get("gen");
 	const type = searchParams.get("type");
@@ -75,8 +74,8 @@ const FormBtn = memo(function FormBtn({
 
 			// what should I use, replace or push?
 			transitionRouter.replace(
-				// `/${language}/pokemons/search?${newSearchParams}`
-				`/${language}/pokemons2?${newSearchParams}`
+				`/${language}/pokemons/search?${newSearchParams}`
+				// `/${language}/pokemons2?${newSearchParams}`
 			)
 			
 

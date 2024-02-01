@@ -1,7 +1,17 @@
-import { Skeleton } from "@mui/material";
+import {
+	Box,
+	FormControl,
+	InputLabel,
+	Select,
+	Skeleton,
+	ToggleButton,
+	ToggleButtonGroup,
+} from "@mui/material";
 import { Stat } from "../lib/api";
 import Spinner from "./spinner";
 import { DataTableSkeleton } from "./pokemon/moves-table";
+import { FaTableCellsLarge } from "react-icons/fa6";
+import { BsListUl } from "react-icons/bs";
 
 type RelatedPokemonSkeletonProps = {
 	order: "previous" | "next";
@@ -25,7 +35,7 @@ export const RelatedPokemonSkeleton = ({
 
 export const PokemonsSkeleton = () => {
 	const arr = [...Array(24).keys()].map((num) => num + 1);
-	console.log('pokemons skeleton shows')
+	console.log("pokemons skeleton shows");
 	return (
 		<div className="container">
 			<div className="row g-5">
@@ -43,7 +53,6 @@ export const PokemonsSkeleton = () => {
 		</div>
 	);
 };
-
 
 // reference: https://stackoverflow.com/questions/59461615/a-good-way-to-handle-material-ui-skeleton-scaling-within-a-variable-height-grid
 // note that variant="text" does not take height attribute, to adjust the height of a text suspense, change the font-size
@@ -202,17 +211,47 @@ export const MovesSkeleton = () => {
 						))}
 					</ul>
 				</div>
-				<DataTableSkeleton/>
+				<DataTableSkeleton />
 			</div>
 		</>
 	);
 };
 
+export const ViewModeSkeleton = () => {
+	return (
+		<div className="viewMode">
+			<ToggleButtonGroup value="card" exclusive>
+				<ToggleButton value="card" aria-label="card">
+					<FaTableCellsLarge className="icon"></FaTableCellsLarge>
+				</ToggleButton>
+				<ToggleButton value="list" aria-label="list">
+					<BsListUl className="icon"></BsListUl>
+				</ToggleButton>
+			</ToggleButtonGroup>
+		</div>
+	);
+};
+
+export const SortSkeleton = () => {
+	return (
+		<Box
+			sx={{
+				minWidth: 120,
+				width: "220px",
+				marginLeft: "auto",
+			}}
+		>
+			<FormControl fullWidth>
+				<InputLabel id="sort-label">Sort</InputLabel>
+				<Select labelId="sort-label" id="sort" label="Sort" disabled></Select>
+			</FormControl>
+		</Box>
+	);
+};
+
 // The HTML of skeleton is pretty duplicated, maybe create skeleton using HOC?
 
-
 // what happen if the fallback component for a SSR Suspense is a client component? what if it uses state, Effect, does it rendered on the server?
-
 
 // what is styled-jsx
 //https://github.com/vercel/styled-jsx

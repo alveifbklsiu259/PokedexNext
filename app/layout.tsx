@@ -7,6 +7,8 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import TransitionProvider from "@/components/transition-context";
 import AOSInitializer from "@/components/aos-initializer";
 import Loader from "@/components/loader";
+import { getData, getEndpointData } from "@/lib/api";
+import { getIdFromURL } from "@/lib/util";
 // import NavBar from "./_components/navBar";
 
 // const DynamicBootstrap = dynamic(
@@ -34,6 +36,12 @@ export default async function RootLayout(props: RootLayoutProps) {
 
 	// prefetch data at build time, if we don't do this, sorting pokemons through weight/height... will cause routing unresponsive for a while (select --> nothing happens --> a while later --> url changes --> suspense fallback shows)
 	// const responses = await Promise.all([...Array(1000).keys()].map(num => fetch(`https://pokeapi.co/api/v2/pokemon/${num + 1}`, {cache: 'force-cache'})));
+	// const speciesResponse = await getEndpointData("pokemonSpecies");
+	// const intersection = speciesResponse.results.map((entry) => getIdFromURL(entry.url))
+
+	// const unresolvedPokemons = getData("pokemon", intersection, "id");
+	// 	const unresolvedSpeciesData = getData("pokemonSpecies", intersection, "id");
+	// 	await Promise.all([unresolvedPokemons, unresolvedSpeciesData]);
 
 
 	return (

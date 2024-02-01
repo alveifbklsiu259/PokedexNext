@@ -7,6 +7,9 @@ import {
 	CachedPokemonSpecies,
 } from "@/slices/pokemon-data-slice";
 import Search from "@/components/pokemons/search";
+import ViewMode from "@/components/pokemons/view-mode";
+import { Suspense } from "react";
+import { SortSkeleton, ViewModeSkeleton } from "@/components/skeletons";
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -70,11 +73,17 @@ export default async function Layout({ children, params }: LayoutProps) {
 					types={types}
 					namesAndIds={pokemonsNamesAndId}
 				/>
-				
-				<Sort />
-				<div id="pokemonsContainer">
-					{children}
+				<div className="d-flex mb-3">
+					{/* viewMode reads searchParams, will not be pre-rendered at build time */}
+					<Suspense fallback={<ViewModeSkeleton />}>
+						<ViewMode />
+					</Suspense>
+					<Suspense fallback={<SortSkeleton />}>
+						<Sort />
+					</Suspense>
 				</div>
+
+				<div id="pokemonsContainer">{children}</div>
 			</div>
 		</>
 	);
@@ -90,9 +99,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 
 // does it affet to non root layout groups?
 
-
 //   see commit:769df10a
-
 
 // learn transition --> transition between different routes(route1 --> route2) and within same route (route1 --> route1 or route1 --> route1?q=123)
 // learn next + Framer Motion

@@ -178,7 +178,7 @@ function getArrFromParam (searchParam: string | string[] | undefined): string[] 
 	};
 };
 
-function getStringFromParam (searchParam: string | string[] | undefined): string {
+export function getStringFromParam (searchParam: string | string[] | undefined): string {
 	if (!searchParam) {
 		return '';
 	} else if (Array.isArray(searchParam)) {
@@ -334,4 +334,8 @@ export const getIntersection2 = (searchParams: SearchParams , generations: Cache
 	// const {fetchedPokemons, pokemonsToDisplay, nextRequest} = await getPokemons(pokeData.pokemon, allNamesAndIds, dispatch, intersection, dispalyData.sortBy);
 
 	// return {intersection, searchParam, selectedGenerations, selectedTypes, fetchedPokemons, nextRequest, pokemonsToDisplay};
+};
+
+export const capitalize = (str: string) => {
+	return str.replace(str[0], str[0].toUpperCase())
 };

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { LanguageOption } from "@/slices/display-slice";
 import Sort from "@/components/pokemons/sort";
 import SearchServer from "./search-server";
+import ViewMode from "@/components/pokemons/view-mode";
 
 type LayoutProps = {
 	children: React.ReactNode;
