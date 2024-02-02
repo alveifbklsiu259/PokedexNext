@@ -1,11 +1,11 @@
 import { memo, useCallback } from 'react';
-import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { Switch, Stack, Typography, FormControlLabel } from '@mui/material';
 import { getNameByLanguage } from '@/lib/util';
 import type { SelectedTypes } from '@/slices/search-slice';
 import { CachedType } from '@/slices/pokemon-data-slice';
 import { LanguageOption } from '@/app/[language]/page';
+import { MemoImage } from '../memos';
 
 type FilterTypesProps = {
 	selectedTypes: SelectedTypes
@@ -29,10 +29,16 @@ const FilterTypes = memo<FilterTypesProps>(function FilterTypes ({selectedTypes,
 		});
 	}, [setSelectedTypes]);
 
+	// const image = useMemo(() => <Image width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" />, [])
+
+	// have a custom memo Image or Link
+
+
+
 	return (
 		<ul className="typesFilter col-12 col-sm-6 row justify-content-center gap-3">
 			<div>
-				<h3 ><Image width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" /> Types</h3>
+				<h3 ><MemoImage width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" /> Types</h3>
 				<MatchMethod setTypeMatch={setTypeMatch} typeMatch={typeMatch} />
 			</div>
 			{Object.keys(types).filter(type => type !== 'unknown' && type !== 'shadow').map(type => (

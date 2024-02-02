@@ -333,7 +333,7 @@ export default async function Page({ params }: PageProps) {
 				{/* this button can be in /pokemon/layout.tsx */}
 				<div className="row justify-content-center">
 					<div className="w-50 m-3 btn btn-block btn-secondary">
-						<Link prefetch={true} href={`/${language}/pokemons`}>
+						<Link prefetch={true} href={`/${language}/pokemons`} className="text-white text-decoration-none">
 							Explore More Pokemons
 						</Link>
 					</div>

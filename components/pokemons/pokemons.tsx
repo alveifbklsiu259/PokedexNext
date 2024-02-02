@@ -167,3 +167,6 @@ const Pokemons = /*memo(*/
 );*/
 
 export default Pokemons;
+
+// change form seleting g1 --> g1, g2 --> g1,g2, g3, even though the data passed down to Pokmeons (still the initial 24 pokemon and species) is the smae, the pokemons component still re-render, any way to prevent it?
+// server component renders --> client component (pokemons) renders (but only renders on the client side)

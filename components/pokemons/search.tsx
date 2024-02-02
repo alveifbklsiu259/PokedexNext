@@ -1,6 +1,5 @@
 "use client";
-import { Suspense, memo, useLayoutEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { Suspense, memo, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { AiOutlineCaretDown } from "react-icons/ai";
 import type {
 	CachedAllPokemonNamesAndIds,
@@ -10,6 +9,7 @@ import type {
 import FormBtn from "./form-btn";
 import AdvancedSearch from "./advanced-search";
 import Input from "./input";
+import { MemoImage } from "../memos";
 
 type SearchProps = {
 	onCloseModal?: () => void;
@@ -44,10 +44,12 @@ const Search = memo(function Search({
 		};
 	}, [onCloseModal]);
 
+	const MemoAiOutlineCaretDown = useMemo(() => <AiOutlineCaretDown className="fa-solid fa-caret-down"></AiOutlineCaretDown>, [])
+
 	return (
 		<div className="card-body mb-4 p-4">
 			<h1 className="display-4 text-center">
-				<Image
+				<MemoImage
 					className="pokeBall"
 					src="/pokeBall.png"
 					alt="pokeBall"
@@ -67,7 +69,7 @@ const Search = memo(function Search({
 				<div className="advancedSearch text-center mt-3">
 					<span className="showAdvanced" onClick={() => handleShowAdvanced()}>
 						Show Advanced Search{" "}
-						<AiOutlineCaretDown className="fa-solid fa-caret-down"></AiOutlineCaretDown>
+						{MemoAiOutlineCaretDown}
 					</span>
 					<AdvancedSearch
 						setSearchQuery={setSearchQuery}

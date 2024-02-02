@@ -66,6 +66,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 				generations={generations}
 				types={types}
 				namesAndIds={pokemonsNamesAndId}
+				language={language}
 			/>
 			{children}
 		</>

@@ -768,6 +768,10 @@ h1 {
     transform: translateY(-50%);
 }
 
+input[type="search" i]::-webkit-search-cancel-button {
+    cursor: pointer;
+}
+
 #pokemonDataList {
     position: absolute;
     background-color: #fff;
@@ -1085,7 +1089,7 @@ h1 {
 
     /* evolution chain */
     .ltThreeContainer {
-        width: 100%;
+        width: 90%;
         display: flex;
         justify-content: space-around;
         flex-wrap: wrap;

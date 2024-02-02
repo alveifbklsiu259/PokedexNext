@@ -245,7 +245,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 				{evolutionChains[0].map((pokemonId, index, array) => (
 					<React.Fragment key={pokemonId}>
 						<li>
-							<Link prefetch={true} href={`./${pokemonId}`}>
+							<Link prefetch={true} href={`./${pokemonId}`} className="text-black text-decoration-none">
 								<div className="chainInfoContainer" >
 									<BasicInfoServer
 										language={language}
@@ -282,7 +282,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 									chain.map((pokemonId, index, array) => (
 										<React.Fragment key={pokemonId}>
 											<li className="multiplePath">
-												<Link prefetch={true} href={`./${pokemonId}`}>
+												<Link prefetch={true} href={`./${pokemonId}`} className="text-black text-decoration-none">
 													<div className="chainInfoContainer" >
 														<BasicInfoServer
 															language={language}

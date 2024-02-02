@@ -170,6 +170,7 @@ const PokemonsServer = async function PokemonsServer({
 		);
 		content = (
 			<Pokemons
+				// see if this key is necessary after migrating to react query
 				key={JSON.stringify(searchParams)}
 				types={types}
 				pokemonData={pokemonData!}

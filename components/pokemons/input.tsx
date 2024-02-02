@@ -127,7 +127,8 @@ const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndId
 					ref={inputRef}
 					autoComplete='off'
 					id="searchInput"
-					type="text"
+					type="search"
+					//https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/search  check if we can rewrite datalist
 					className={`form-control form-control-lg ${isDataListShown && matchList.length ? 'showDatalist' : ''}`}
 					value={searchQuery}
 					onFocus={handleFocus}
@@ -135,7 +136,7 @@ const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndId
 					onInput={handleInput}
 					onKeyDown={handleKeyDown}
 				/>
-				<ClearBtn onClick={handleClearInput} hasText={!!searchQuery} />
+				{/* <ClearBtn onClick={handleClearInput} hasText={!!searchQuery} /> */}
 			</div>
 			<DataList
 				matchList={matchList}

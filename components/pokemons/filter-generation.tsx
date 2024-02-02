@@ -1,5 +1,5 @@
 import { memo, useCallback } from 'react';
-import Image from 'next/image';
+import { MemoImage } from '../memos';
 import type { Generation as GenerationType } from '@/lib/definitions';
 import { CachedGeneration } from '@/slices/pokemon-data-slice';
 
@@ -26,7 +26,7 @@ const FilterGeneration = memo<FilterGenerationProps>(function FilterGeneration (
 	return (
 		<ul className="generation col-12 col-sm-6 row justify-content-center gap-2">
 			<div>
-				<h3 ><Image width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" /> Generations</h3>
+				<h3 ><MemoImage width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" /> Generations</h3>
 			</div>
 			{Object.values(generations).map(generation => (
 				<Generation

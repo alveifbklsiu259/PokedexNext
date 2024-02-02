@@ -67,3 +67,13 @@ export default async function RootLayout(props: RootLayoutProps) {
 // configure documnet file?
 // https://nextjs.org/docs/getting-started/installation#the-pages-directory-optional
 // https://mui.com/material-ui/guides/nextjs/#typescript
+
+
+
+
+	
+	// in a client component, reading params, i.e. const params = useParams() and when the route changes, this component will re-rendered because of "context changed"
+	// also notice that the returned value of useParams is not cached:
+	// this happen when i was in /en/pokemons, and when search params changes, I still get the same params {language: 'en}, but not the same instance,
+	// when I was in /en/pokemon/xxx, change to different pokemon, the params will cahange from for example: {language: 'en', id: 1} to  {language: 'en', id: 2}, in case like this, you say the context changed is understandable, but in the above case, it doesn't quite make sense.
+	// one of a workaround is pass language from the server to the client, but later I will migrate to i18n, then I'll see if the same problem exists.

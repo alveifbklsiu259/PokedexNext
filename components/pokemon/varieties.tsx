@@ -44,7 +44,7 @@ const Varieties = memo<VarietiesProps>(async function Varieties({
 										}
 									>
 										<Link
-											className="text-capitalize"
+											className="text-capitalize text-decoration-none text-center"
 											href={`/${language}/pokemon/${varietyId}`}
 											prefetch={true}
 										>

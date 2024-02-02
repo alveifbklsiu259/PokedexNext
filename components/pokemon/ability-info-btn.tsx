@@ -1,5 +1,5 @@
 "use client";
-import { memo, useState } from "react";
+import { memo, useState, useMemo, useCallback } from "react";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { Ability } from "@/lib/definitions";
 import { getNameByLanguage, getTextByLanguage } from "@/lib/util";
@@ -34,12 +34,27 @@ const AbilityInfoBtn = memo<AbilityInfoBtnProps>(function AbilityInfoBtn({
 		!abilityData && isModalShown ? "modalLoading" : ""
 	}`;
 
-	return (
-		<>
+	const handleShowModal = useCallback(() => {
+		setIsModalShown(true);
+	}, [setIsModalShown]);
+
+	const handleShowDetail = useCallback(() => {
+		setIsDetail(!isDetail)
+	}, [setIsDetail])
+
+	const memoAiFillQuestionCircle = useMemo(
+		() => (
 			<AiFillQuestionCircle
-				onClick={() => setIsModalShown(true)}
+				onClick={handleShowModal}
 				className="icon"
 			></AiFillQuestionCircle>
+		),
+		[handleShowModal]
+	);
+
+	return (
+		<>
+			{memoAiFillQuestionCircle}
 			{isModalShown && (
 				<Modal
 					customClass={customClass}
@@ -55,7 +70,7 @@ const AbilityInfoBtn = memo<AbilityInfoBtnProps>(function AbilityInfoBtn({
 					</div>
 					<div className="modalBtnContainer">
 						<button
-							onClick={() => setIsDetail(!isDetail)}
+							onClick={handleShowDetail}
 							className="btn btn-warning"
 						>
 							Show {isDetail ? "Brief" : "Detail"}
