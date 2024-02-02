@@ -1,3 +1,39 @@
+// import { notFound, redirect } from "next/navigation";
+
+// export const languageOptions = {
+// 	en: "English",
+// 	ja: "日本語",
+// 	// zh_Hant: '繁體中文',
+// 	// zh_Hans: '简体中文',
+// 	// ko: '한국어',
+// 	// fr: 'Français',
+// 	// de: 'Deutsch',
+// };
+
+// export type LanguageOption = keyof typeof languageOptions;
+
+// export async function generateStaticParams() {
+// 	return Object.keys(languageOptions).map((lan) => ({
+// 		language: lan,
+// 	}));
+// }
+// export const dynamicParams = false;
+
+// type LanguagePageProps = {
+// 	params: {
+// 		language: LanguageOption;
+// 	};
+// };
+// export default function LanguagePage({ params }: LanguagePageProps) {
+// 	const { language } = params;
+
+// 	if (Object.keys(languageOptions).includes(language)) {
+// 		redirect(`./${language}/pokemons`);
+// 	} else {
+// 		notFound();
+// 	}
+// }
+
 import { notFound, redirect } from "next/navigation";
 
 export const languageOptions = {
@@ -12,23 +48,24 @@ export const languageOptions = {
 
 export type LanguageOption = keyof typeof languageOptions;
 
-export async function generateStaticParams() {
-	return Object.keys(languageOptions).map((lan) => ({
-		language: lan,
-	}));
-}
-export const dynamicParams = false;
+// export async function generateStaticParams() {
+// 	return Object.keys(languageOptions).map((lan) => ({
+// 		language: lan,
+// 	}));
+// }
+// export const dynamicParams = false;
 
 type LanguagePageProps = {
 	params: {
-		language: LanguageOption;
+		locale: LanguageOption;
 	};
 };
-export default function LanguagePage({ params }: LanguagePageProps) {
-	const { language } = params;
+export default function LanguagePage({ params: {locale} }: LanguagePageProps) {
 
-	if (Object.keys(languageOptions).includes(language)) {
-		redirect(`./${language}/pokemons`);
+	// this should be handled by middleware
+
+	if (Object.keys(languageOptions).includes(locale)) {
+		redirect(`./${locale}/pokemons`);
 	} else {
 		notFound();
 	}
