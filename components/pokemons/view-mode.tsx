@@ -4,9 +4,10 @@ import { BsListUl } from "react-icons/bs";
 import { FaTableCellsLarge } from "react-icons/fa6";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-import { useParams, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useTransitionRouter } from "../transition-context";
 import { updateSearchParam } from "@/lib/util";
+import { useCurrentLocale } from "@/lib/hooks";
 
 export type View = "card" | "list";
 
@@ -15,7 +16,7 @@ const ViewMode = memo(function ViewMode(/* {tableInfoRef}: ViewModeProps */) {
 	const view = (searchParams.get("view") as View | null) || "card";
 	const [viewMode, setViewMode] = useState<View>(view);
 	const [isPending, transitionRouter] = useTransitionRouter();
-	const { language } = useParams();
+	const currentLocale = useCurrentLocale();
 
 	const handleChange = async (
 		_: React.MouseEvent<HTMLElement, MouseEvent>,
@@ -26,7 +27,9 @@ const ViewMode = memo(function ViewMode(/* {tableInfoRef}: ViewModeProps */) {
 				view: nextView,
 			});
 			setViewMode(nextView);
-			transitionRouter.push(`/${language}/pokemons/search?${newSearchParams}`);
+			transitionRouter.push(
+				`/${currentLocale}/pokemons/search?${newSearchParams}`
+			);
 		}
 	};
 

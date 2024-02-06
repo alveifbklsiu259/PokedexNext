@@ -14,7 +14,8 @@ import {
 	transformToKeyName,
 	capitalize,
 } from "@/lib/util";
-import { LanguageOption, SortOption } from "@/slices/display-slice";
+import { SortOption } from "@/slices/display-slice";
+import { type Locale } from "@/i18nConfig";
 import {
 	CachedAllPokemonNamesAndIds,
 	CachedPokemon,
@@ -27,7 +28,7 @@ import PokemonTable from "./pokemons-table";
 
 type PokemonsServerProps = {
 	params: {
-		language: LanguageOption;
+		locale: Locale;
 	};
 	searchParams: { [key: string]: string | string[] | undefined };
 };
@@ -59,7 +60,7 @@ const PokemonsServer = async function PokemonsServer({
 	params,
 	searchParams,
 }: PokemonsServerProps) {
-	const { language } = params;
+	const { locale } = params;
 	const view = (getStringFromParam(searchParams.view) || "card") as View;
 
 	const generationResponse = await getEndpointData("generation");
@@ -81,7 +82,7 @@ const PokemonsServer = async function PokemonsServer({
 	const speciesResponse = await getEndpointData("pokemonSpecies");
 
 	let allNamesAndIds: CachedAllPokemonNamesAndIds;
-	if (language !== "en") {
+	if (locale !== "en") {
 		const speices = await getData(
 			"pokemonSpecies",
 			speciesResponse.results.map((entry) => getIdFromURL(entry.url)),
@@ -89,7 +90,7 @@ const PokemonsServer = async function PokemonsServer({
 		);
 		allNamesAndIds = Object.values(speices).reduce<CachedAllPokemonNamesAndIds>(
 			(pre, cur) => {
-				pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
+				pre[getNameByLanguage(cur.name, locale, cur)] = cur.id;
 				return pre;
 			},
 			{}
@@ -110,7 +111,7 @@ const PokemonsServer = async function PokemonsServer({
 		searchParams,
 		generations,
 		types,
-		language
+		locale
 	);
 	// if (Array.isArray(searchParams.sort)) {
 	// 	throw new Error("invalid sorting param");
@@ -182,7 +183,7 @@ const PokemonsServer = async function PokemonsServer({
 		console.time("table data");
 		// pokemonData = await getData("pokemon", intersection, "id");
 		// speciesData = await getData("pokemonSpecies", intersection, "id");
-		if (language !== "en") {
+		if (locale !== "en") {
 			const unresolvedPokemons = getData("pokemon", intersection, "id");
 			const unresolvedSpeciesData = getData(
 				"pokemonSpecies",
@@ -198,7 +199,7 @@ const PokemonsServer = async function PokemonsServer({
 			>((pre, cur) => {
 				pre[cur] = getNameByLanguage(
 					speciesData[cur].name,
-					language,
+					locale,
 					speciesData[cur]
 				);
 				return pre;
@@ -248,7 +249,7 @@ const PokemonsServer = async function PokemonsServer({
 								key={type}
 								className={`type-${type} type`}
 							>
-								{getNameByLanguage(type, language, types[type])}
+								{getNameByLanguage(type, locale, types[type])}
 							</span>
 						);
 					})}
@@ -293,22 +294,25 @@ const PokemonsServer = async function PokemonsServer({
 		}>((pre, cur) => {
 			const columnHeader = getNameByLanguage(
 				cur,
-				language,
+				locale,
 				stats[transformToKeyName(cur)]
 			);
 			switch (columnHeader) {
-				case "hp":
-					pre[cur] = "HP";
-				case "special-attack":
+				case "Special Attack":
 					pre[cur] = "Sp.Atk";
-				case "special-defense":
+					break;
+				case "Special Defense":
 					pre[cur] = "Sp.Def";
+					break;
 				case "number":
 					pre[cur] = "#";
+					break;
 				case "height":
 					pre[cur] = `${capitalize(columnHeader)} (cm)`;
+					break;
 				case "weight":
 					pre[cur] = `${capitalize(columnHeader)} (kg)`;
+					break;
 				default:
 					pre[cur] = capitalize(columnHeader);
 			}
@@ -338,3 +342,9 @@ const PokemonsServer = async function PokemonsServer({
 };
 
 export default PokemonsServer;
+
+
+// https://gamewith.jp/pokemon-sv/article/show/373727
+// image fade in effect, map
+//https://pokemongo-raku.com/post43649
+//navbard fade down effect

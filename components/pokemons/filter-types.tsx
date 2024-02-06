@@ -1,11 +1,11 @@
 import { memo, useCallback } from 'react';
-import { useParams } from 'next/navigation';
 import { Switch, Stack, Typography, FormControlLabel } from '@mui/material';
 import { getNameByLanguage } from '@/lib/util';
 import type { SelectedTypes } from '@/slices/search-slice';
 import { CachedType } from '@/slices/pokemon-data-slice';
-import { LanguageOption } from '@/app/[language]/page';
 import { MemoImage } from '../memos';
+import { useCurrentLocale } from '@/lib/hooks';
+import { useTranslation } from 'react-i18next';
 
 type FilterTypesProps = {
 	selectedTypes: SelectedTypes
@@ -16,7 +16,7 @@ type FilterTypesProps = {
 };
 
 const FilterTypes = memo<FilterTypesProps>(function FilterTypes ({selectedTypes, setSelectedTypes, setTypeMatch,typeMatch, types}) {
-
+	const {t} = useTranslation();
 	const handleSelectType = useCallback((type: string) => {
 		setSelectedTypes(st => {
 			const update = [...st];
@@ -38,7 +38,7 @@ const FilterTypes = memo<FilterTypesProps>(function FilterTypes ({selectedTypes,
 	return (
 		<ul className="typesFilter col-12 col-sm-6 row justify-content-center gap-3">
 			<div>
-				<h3 ><MemoImage width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" /> Types</h3>
+				<h3 ><MemoImage width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" /> {t('types')}</h3>
 				<MatchMethod setTypeMatch={setTypeMatch} typeMatch={typeMatch} />
 			</div>
 			{Object.keys(types).filter(type => type !== 'unknown' && type !== 'shadow').map(type => (
@@ -62,15 +62,14 @@ type TypeProps = {
 }
 
 const Type = memo<TypeProps>(function Type({type, isTypeSelected, onSelectType, types}) {
-	const params = useParams();
-	const language = params.language as LanguageOption;
+	const currentLocale = useCurrentLocale();
 
 	return (
 		<li
 			onClick={() => onSelectType(type)} 
 			className={`type type-${type} ${isTypeSelected ? 'active' : ''}`}
 		>
-			{getNameByLanguage(type, language, types[type])}
+			{getNameByLanguage(type, currentLocale, types[type])}
 		</li>
 	)
 });
@@ -81,7 +80,7 @@ type MatchMethodProps = {
 }
 
 const MatchMethod = memo<MatchMethodProps>(function MatchMethod({setTypeMatch, typeMatch}) {
-
+	const {t} = useTranslation();
 	// we can use useSearchParams to read typeMatch, but that would cause this component to be only client side rendered.
 	const handleClick = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if(e.target.checked) {
@@ -93,14 +92,14 @@ const MatchMethod = memo<MatchMethodProps>(function MatchMethod({setTypeMatch, t
 
 	return (
 		<Stack direction="row" spacing={1} justifyContent="center" alignItems="baseLine">
-			<Typography>All</Typography>
+			<Typography>{t('matchAll')}</Typography>
 			<FormControlLabel
 				control={<Switch color="primary" onChange={handleClick} />}
-				label="Match"
+				label={t('match')}
 				labelPlacement="bottom"
 				checked={typeMatch === 'part'}
 			/>
-			<Typography>Part</Typography>
+			<Typography>{t('matchPart')}</Typography>
 		</Stack>
 	);
 });

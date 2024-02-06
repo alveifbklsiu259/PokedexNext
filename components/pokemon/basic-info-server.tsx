@@ -2,16 +2,16 @@ import { memo } from "react";
 import { PokemonForm } from "@/lib/definitions";
 import { getIdFromURL } from "@/lib/util";
 import { getData, getEndpointData } from "@/lib/api";
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 import BasicInfo from "../basicInfo";
 
 type BasicInfoServerProps = {
-	language: LanguageOption;
+	locale: Locale;
 	pokemonId: number;
 };
 
 const BasicInfoServer = memo<BasicInfoServerProps>(
-	async function BasicInfoServer({ language, pokemonId }) {
+	async function BasicInfoServer({ locale, pokemonId }) {
 		const pokemonData = await getData("pokemon", pokemonId);
 		const speciesId = getIdFromURL(pokemonData.species.url);
 		const speciesData = await getData("pokemonSpecies", speciesId);
@@ -36,7 +36,7 @@ const BasicInfoServer = memo<BasicInfoServerProps>(
 				pokemonData={pokemonData}
 				types={types}
 				speciesData={speciesData}
-				language={language}
+				locale={locale}
 				formData={formData}
 			/>
 		);

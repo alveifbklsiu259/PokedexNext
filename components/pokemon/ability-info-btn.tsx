@@ -3,11 +3,11 @@ import { memo, useState, useMemo, useCallback } from "react";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { Ability } from "@/lib/definitions";
 import { getNameByLanguage, getTextByLanguage } from "@/lib/util";
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 import dynamic from "next/dynamic";
 
 type AbilityInfoBtnProps = {
-	language: LanguageOption;
+	locale: Locale;
 	abilityData: Ability.Root;
 };
 
@@ -15,7 +15,7 @@ const Modal = dynamic(() => import("@/components/modal"));
 
 const AbilityInfoBtn = memo<AbilityInfoBtnProps>(function AbilityInfoBtn({
 	abilityData,
-	language,
+	locale,
 }) {
 	const [isModalShown, setIsModalShown] = useState(false);
 	const [isDetail, setIsDetail] = useState(false);
@@ -24,11 +24,11 @@ const AbilityInfoBtn = memo<AbilityInfoBtnProps>(function AbilityInfoBtn({
 
 	if (abilityData) {
 		brief = getTextByLanguage(
-			language,
+			locale,
 			abilityData.flavor_text_entries,
 			"flavor_text"
 		);
-		detail = getTextByLanguage(language, abilityData.effect_entries, "effect");
+		detail = getTextByLanguage(locale, abilityData.effect_entries, "effect");
 	}
 	const customClass = `modalBody ${
 		!abilityData && isModalShown ? "modalLoading" : ""
@@ -63,7 +63,7 @@ const AbilityInfoBtn = memo<AbilityInfoBtnProps>(function AbilityInfoBtn({
 					setIsDetail={setIsDetail}
 				>
 					<h1 className="abilityName my-2">
-						{getNameByLanguage(abilityData.name, language, abilityData)}
+						{getNameByLanguage(abilityData.name, locale, abilityData)}
 					</h1>
 					<div className="abilityDescription p-3">
 						<p>{isDetail ? detail : brief}</p>

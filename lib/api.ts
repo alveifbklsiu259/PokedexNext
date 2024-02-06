@@ -1,6 +1,7 @@
 import { getIdFromURL, transformToKeyName, transformToDash, toEndPointString } from "./util";
 import { PokemonDataTypes } from "../slices/pokemon-data-slice";
-import type { LanguageOption, SortOption } from "../slices/display-slice";
+import type { SortOption } from "../slices/display-slice";
+import { type Locale } from "@/i18nConfig";
 import type { AppDispatch, RootState } from '../app/_app/store';
 import type { Pokemon, EndPointData, PokemonForm, GetStringOrNumberKey, EvolutionChain, EvolutionChainResponse, NonNullableArray } from './definitions';
 import { CachedPokemon, CachedAbility, CachedAllPokemonNamesAndIds, CachedPokemonSpecies, GetRequiredData } from "../slices/pokemon-data-slice";
@@ -441,7 +442,7 @@ export async function getAllSpecies(cachedSpecies: CachedPokemonSpecies, pokemon
 type Request = GetRequiredData.Request;
 type FetchedData = GetRequiredData.FetchedData;
 
-export const getRequiredData = async(pokeData: RootState['pokeData'], requestPokemonIds: (number | string)[], requests: Request[], language: LanguageOption, disaptch?: AppDispatch): Promise<FetchedData> => {
+export const getRequiredData = async(pokeData: RootState['pokeData'], requestPokemonIds: (number | string)[], requests: Request[], language: Locale, disaptch?: AppDispatch): Promise<FetchedData> => {
 	const cachedData: {
 		[K in Request]?: (PokemonDataTypes[K][number] | undefined)[]
 	} = {};

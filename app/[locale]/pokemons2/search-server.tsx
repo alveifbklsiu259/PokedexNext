@@ -1,6 +1,6 @@
 import { getData, getEndpointData } from "@/lib/api";
 import { getIdFromURL, getNameByLanguage } from "@/lib/util";
-import { LanguageOption } from "@/slices/display-slice";
+import { type Locale } from "@/i18nConfig";
 import {
 	CachedAllPokemonNamesAndIds,
 	CachedPokemonSpecies,
@@ -8,10 +8,10 @@ import {
 import Search from "@/components/pokemons/search";
 
 type SearchServerProps = {
-	language: LanguageOption;
+	locale: Locale;
 };
 
-export default async function SearchServer({ language }: SearchServerProps) {
+export default async function SearchServer({ locale }: SearchServerProps) {
 	console.time('search server')
 	const generationResponse = await getEndpointData("generation");
 	const generations = await getData(
@@ -34,7 +34,7 @@ export default async function SearchServer({ language }: SearchServerProps) {
 	let speciesData: CachedPokemonSpecies,
 		pokemonsNamesAndId: CachedAllPokemonNamesAndIds;
 
-	if (language !== "en") {
+	if (locale !== "en") {
 		speciesData = await getData(
 			"pokemonSpecies",
 			speciesResponse.results.map((entry) => getIdFromURL(entry.url)),
@@ -43,7 +43,7 @@ export default async function SearchServer({ language }: SearchServerProps) {
 		pokemonsNamesAndId = Object.values(
 			speciesData
 		).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-			pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
+			pre[getNameByLanguage(cur.name, locale, cur)] = cur.id;
 			return pre;
 		}, {});
 	} else {

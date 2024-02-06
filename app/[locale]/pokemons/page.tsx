@@ -1,24 +1,22 @@
 import { getEndpointData, getData } from "@/lib/api";
-import { LanguageOption, languageOptions } from "../page";
+import { type Locale } from "@/i18nConfig";
 import { getIntersection2 } from "@/lib/util";
 import Pokemons from "@/components/pokemons/pokemons";
+import i18nConfig from "@/i18nConfig";
 
 export async function generateStaticParams() {
-	return Object.keys(languageOptions).map((lan) => ({
-		language: lan,
-	}));
+	return i18nConfig.locales.map(locale => ({ locale }));
 }
 export const dynamicParams = false;
 
 type LanguagePageProps = {
 	params: {
-		language: LanguageOption;
+		locale: Locale;
 	};
 };
 
 // try fetching data concurrently and see if it reduces time
-export default async function LanguagePage({ params }: LanguagePageProps) {
-	const { language } = params;
+export default async function LanguagePage({ params: {locale} }: LanguagePageProps) {
 
 	const generationResponse = await getEndpointData("generation");
 	const generations = await getData(
@@ -42,7 +40,7 @@ export default async function LanguagePage({ params }: LanguagePageProps) {
 		{ query: "", type: "", gen: "", match: "" },
 		generations,
 		types,
-		language as LanguageOption
+		locale as Locale
 	);
 
 	return (

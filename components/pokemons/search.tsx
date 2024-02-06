@@ -1,5 +1,6 @@
 "use client";
 import { Suspense, memo, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import { AiOutlineCaretDown } from "react-icons/ai";
 import type {
 	CachedAllPokemonNamesAndIds,
@@ -32,6 +33,7 @@ const Search = memo(function Search({
 	const [typeMatch, setTypeMatch] = useState<"all" | "part">("all");
 	const formRef = useRef<HTMLFormElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const { t } = useTranslation();
 
 	const handleShowAdvanced = () => {
 		setIsAdvancedShown(!isAdvancedShown);
@@ -56,9 +58,9 @@ const Search = memo(function Search({
 					width="46"
 					height="46"
 				/>{" "}
-				Search For Pokemons
+				{t('searchTitle')}
 			</h1>
-			<p className="lead text-center">By Name or the National Pokedex number</p>
+			<p className="lead text-center">{t('searchSubtitle')}</p>
 			<form ref={formRef}>
 				<Input
 					searchQuery={searchQuery}
@@ -68,7 +70,7 @@ const Search = memo(function Search({
 				/>
 				<div className="advancedSearch text-center mt-3">
 					<span className="showAdvanced" onClick={() => handleShowAdvanced()}>
-						Show Advanced Search{" "}
+						{t('advancedSearch')}
 						{MemoAiOutlineCaretDown}
 					</span>
 					<AdvancedSearch
@@ -92,7 +94,7 @@ const Search = memo(function Search({
 							className="btn btn-primary btn-lg btn-block w-100 my-3"
 							type="submit"
 						>
-							Search
+							{t('search')}
 						</button>
 					}
 				>

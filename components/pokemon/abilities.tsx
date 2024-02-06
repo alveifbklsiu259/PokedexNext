@@ -2,15 +2,15 @@ import { memo } from "react";
 import { getAbilities2, getData } from "@/lib/api";
 import AbilityInfoBtn from "./ability-info-btn";
 import { getNameByLanguage, transformToKeyName } from "@/lib/util";
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 
 type AbilitiesProps = {
-	language: LanguageOption;
+	locale: Locale;
 	pokemonId: number;
 };
 
 const Abilities = memo<AbilitiesProps>(
-	async function Abilities({ language, pokemonId }) {
+	async function Abilities({ locale, pokemonId }) {
 		const pokemonData = await getData("pokemon", pokemonId);
 		const abilities = await getAbilities2(pokemonData);
 
@@ -23,12 +23,12 @@ const Abilities = memo<AbilitiesProps>(
 							<span className="me-2">
 								{getNameByLanguage(
 									ability.replace("-", " "),
-									language,
+									locale,
 									abilities[transformToKeyName(ability)]
 								).toLowerCase()}
 							</span>
 							<AbilityInfoBtn
-								language={language}
+								locale={locale}
 								abilityData={abilities[transformToKeyName(ability)]}
 							/>
 							<br />

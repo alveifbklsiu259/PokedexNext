@@ -1,18 +1,18 @@
 import { memo } from "react";
 import MovesClient from "./moves-client";
 import { getData, getEndpointData, getEvolutionChains } from "@/lib/api";
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 import { getIdFromURL } from "@/lib/util";
 import { PokemonForm } from "@/lib/definitions";
 
 type MovesServerProps = {
 	pokemonId: number;
-	language: LanguageOption;
+	locale: Locale;
 };
 
 const MovesServer = memo<MovesServerProps>(async function MovesServer({
 	pokemonId,
-	language,
+	locale,
 }) {
 
 	// type
@@ -70,7 +70,7 @@ const MovesServer = memo<MovesServerProps>(async function MovesServer({
 	return (
 		<>
 			<MovesClient 
-				language={language}
+				locale={locale}
 				pokemonData={pokemonData}
 				speciesData={speciesData}
 				types={types}

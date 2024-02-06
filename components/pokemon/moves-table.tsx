@@ -2,7 +2,7 @@
 import { memo, useState, useMemo } from "react";
 import DataTable, { type TableColumn, type ExpanderComponentProps } from "react-data-table-component";
 import { Switch, Stack, Typography, capitalize } from "@mui/material";
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 import { getTextByLanguage } from "@/lib/util";
 import type { ColData, MovesData } from "./moves-client";
 
@@ -10,12 +10,12 @@ const getSerializedIds = (movesData: MovesData[]) => JSON.stringify(Object.value
 
 interface MoveEffectProps extends ExpanderComponentProps<MovesData> {
 	previousSelectedVersion?: string,
-    language?: LanguageOption
+    locale?: Locale
 }
 
-const MoveEffect: React.FC<MoveEffectProps> = ({data, previousSelectedVersion, language}) => {
-	const effect = getTextByLanguage(language as NonNullable<typeof language>, data.effect, 'effect');
-	const flavorText = getTextByLanguage(language as NonNullable<typeof language>, data.flavorText, 'flavor_text', previousSelectedVersion);
+const MoveEffect: React.FC<MoveEffectProps> = ({data, previousSelectedVersion, locale}) => {
+	const effect = getTextByLanguage(locale as NonNullable<typeof locale>, data.effect, 'effect');
+	const flavorText = getTextByLanguage(locale as NonNullable<typeof locale>, data.flavorText, 'flavor_text', previousSelectedVersion);
 
 	return (
 		<div className="moveDes">
@@ -59,16 +59,16 @@ type MovesTableProps = {
 	changefilteredMethod: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>,
 	filteredMethod: "machine" | "level-up",
 	isDataReady: boolean,
-    language: LanguageOption
+    locale: Locale
 }
 
-export default function MovesTable({columnData, movesData, selectedVersion, changefilteredMethod, filteredMethod, isDataReady, language}: MovesTableProps) {
+export default function MovesTable({columnData, movesData, selectedVersion, changefilteredMethod, filteredMethod, isDataReady, locale}: MovesTableProps) {
 	const [previousData, setPreviousData] = useState(movesData);
 	const [previousSelectedVersion, setPreviousSelectedVersion] = useState(selectedVersion);
 
 	const cachedFilterButton = useMemo(() => <FilterButton isDataReady={isDataReady} changefilteredMethod={changefilteredMethod} />, [isDataReady, changefilteredMethod]);
 
-	const expandableRowsComponentProps = useMemo(()=> ({previousSelectedVersion, language}), [previousSelectedVersion, language]);
+	const expandableRowsComponentProps = useMemo(()=> ({previousSelectedVersion, locale}), [previousSelectedVersion, locale]);
 
 	// if the current data is the same as the previous one, use the previous one to prevent re-render. (caching movesData would probably not work for this since selectedGeneration/selectedVersion changes so often), also use the previous selected version(selected verion is only used for move descriptions which don't change often even between different generation).
 	

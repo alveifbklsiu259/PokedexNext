@@ -1,14 +1,14 @@
 import { memo } from "react";
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 import { getNameByLanguage, transformToKeyName } from "@/lib/util";
 import { getData, getEndpointData } from "@/lib/api";
 
 type StatsProps = {
-	language: LanguageOption;
+	locale: Locale;
 	pokemonId: number;
 };
 
-const Stats = memo<StatsProps>(async function Stats({ language, pokemonId }) {
+const Stats = memo<StatsProps>(async function Stats({ locale, pokemonId }) {
 	const pokemonData = await getData("pokemon", pokemonId);
 	const statResponse = await getEndpointData("stat");
 	const statToFetch = statResponse.results.map((data) => data.url);
@@ -24,7 +24,7 @@ const Stats = memo<StatsProps>(async function Stats({ language, pokemonId }) {
 							<td className="text-capitalize text-center" width="30%">
 								{getNameByLanguage(
 									entry.stat.name,
-									language,
+									locale,
 									stats[transformToKeyName(entry.stat.name)]
 								)}
 							</td>

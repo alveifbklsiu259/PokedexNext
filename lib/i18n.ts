@@ -1,13 +1,14 @@
 import { createInstance } from "i18next";
 import { initReactI18next } from "react-i18next/initReactI18next";
 import resourcesToBackend from "i18next-resources-to-backend";
-import i18nConfig from "@/i18nConfig";
+import i18nConfig, { type Locale, i18nNamespaces } from "@/i18nConfig";
+import { type i18n, Resource } from "i18next";
 
 export default async function initTranslations(
-	locale,
-	namespaces,
-	i18nInstance,
-	resources
+	locale: Locale,
+	namespaces: typeof i18nNamespaces,
+	i18nInstance?: i18n,
+	resources?: Resource
 ) {
 	i18nInstance = i18nInstance || createInstance();
 
@@ -15,12 +16,12 @@ export default async function initTranslations(
 
 	if (!resources) {
 		i18nInstance.use(
-			resourcesToBackend((language, namespace) =>
-				import(`@/locales/${language}/${namespace}.json`)
+			resourcesToBackend(
+				(language: string, namespace: string) =>
+					import(`@/locales/${language}/${namespace}.json`)
 			)
 		);
 	}
-
 	await i18nInstance.init({
 		lng: locale,
 		resources,
@@ -39,4 +40,3 @@ export default async function initTranslations(
 	};
 }
 
-// try migrate to .ts

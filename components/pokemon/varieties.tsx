@@ -1,17 +1,17 @@
 import React, { memo } from "react";
-import { LanguageOption } from "@/slices/display-slice";
+import { type Locale } from "@/i18nConfig";
 import { getFormName2, getIdFromURL } from "@/lib/util";
 import { PokemonForm } from "@/lib/definitions";
 import Link from "next/link";
 import { getData } from "@/lib/api";
 
 type VarietiesProps = {
-	language: LanguageOption;
+	locale: Locale;
 	pokemonId: number;
 };
 
 const Varieties = memo<VarietiesProps>(async function Varieties({
-	language,
+	locale,
 	pokemonId,
 }) {
 	const pokemonData = await getData("pokemon", pokemonId);
@@ -45,10 +45,10 @@ const Varieties = memo<VarietiesProps>(async function Varieties({
 									>
 										<Link
 											className="text-capitalize text-decoration-none text-center"
-											href={`/${language}/pokemon/${varietyId}`}
+											href={`/${locale}/pokemon/${varietyId}`}
 											prefetch={true}
 										>
-											{getFormName2(speciesData, language, pokemons[varietyId], newForms[varietyId])}
+											{getFormName2(speciesData, locale, pokemons[varietyId], newForms[varietyId])}
 										</Link>
 									</li>
 								</React.Fragment>

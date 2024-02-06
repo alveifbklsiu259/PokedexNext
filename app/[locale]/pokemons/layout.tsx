@@ -1,6 +1,6 @@
 import { getData, getEndpointData } from "@/lib/api";
-import { getIdFromURL, getNameByLanguage } from "@/lib/util";
-import { LanguageOption } from "../page";
+import { getIdFromURL, getNameByLanguage, transformToKeyName } from "@/lib/util";
+import { type Locale } from "@/i18nConfig";
 import Sort from "@/components/pokemons/sort";
 import {
 	CachedAllPokemonNamesAndIds,
@@ -13,11 +13,11 @@ import { SortSkeleton, ViewModeSkeleton } from "@/components/skeletons";
 
 type LayoutProps = {
 	children: React.ReactNode;
-	params: { language: LanguageOption };
+	params: { locale: Locale };
 };
 
 export default async function Layout({ children, params }: LayoutProps) {
-	const { language } = params;
+	const { locale } = params;
 	const generationResponse = await getEndpointData("generation");
 	const generations = await getData(
 		"generation",
@@ -39,7 +39,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 	let speciesData: CachedPokemonSpecies,
 		pokemonsNamesAndId: CachedAllPokemonNamesAndIds;
 
-	if (language !== "en") {
+	if (locale !== "en") {
 		speciesData = await getData(
 			"pokemonSpecies",
 			speciesResponse.results.map((entry) => getIdFromURL(entry.url)),
@@ -48,7 +48,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 		pokemonsNamesAndId = Object.values(
 			speciesData
 		).reduce<CachedAllPokemonNamesAndIds>((pre, cur) => {
-			pre[getNameByLanguage(cur.name, language, cur)] = cur.id;
+			pre[getNameByLanguage(cur.name, locale, cur)] = cur.id;
 			return pre;
 		}, {});
 	} else {
@@ -61,6 +61,25 @@ export default async function Layout({ children, params }: LayoutProps) {
 				{}
 			);
 	}
+
+	const statResponse = await getEndpointData('stat');
+	const statToFetch = statResponse.results.map(data => data.url);
+	const stats = await getData('stat', statToFetch, 'name');
+	const pokemon = await getData('pokemon', 1);
+	const statsToDisplay = pokemon.stats.map(entry => transformToKeyName(entry.stat.name));
+	const statNames = statsToDisplay.reduce<{[key: string]: string}>((pre, cur) => {
+		pre[cur] = getNameByLanguage(
+			cur,
+			locale,
+			stats[cur]
+		)
+		return pre;
+	}, {});
+
+	// console.log(statNames)
+	
+
+
 
 	// we may not have to memo Search or Sort because subsequent navigation (searchParams change) will not cause layout to render again. (This statement is partly correct, since Search and Sort are client components, partial rendering does not apply to them(according to my test))
 
@@ -79,7 +98,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 						<ViewMode />
 					</Suspense>
 					<Suspense fallback={<SortSkeleton />}>
-						<Sort />
+						<Sort stats={stats} />
 					</Suspense>
 				</div>
 

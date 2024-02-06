@@ -5,9 +5,10 @@ import InputLabel from "@mui/material/InputLabel";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { FormControl, MenuItem } from "@mui/material";
 import { updateSearchParam } from "@/lib/util";
-import { useSearchParams, useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useTransitionRouter } from "../transition-context";
 import { View } from "./view-mode";
+import { useCurrentLocale } from "@/lib/hooks";
 
 export const sortOptions = [
 	{ text: "Number(low - high)", value: "numberAsc" },
@@ -37,7 +38,7 @@ export const sortOptions = [
 // memo(Sort, () => true) is used to avoid re-render when route changes, for some reason partial rendering does not apply to client component(not sure if it's a bug or intended), but this approach fixes it.
 const Sort =
 	/* memo( */
-	function Sort() {
+	function Sort({stats}) {
 		const searchParams = useSearchParams();
 		const view = (searchParams.get("view") || "card") as View;
 
@@ -81,7 +82,7 @@ export default Sort;
 const Dropdown = memo(function Dropdown() {
 	const [isPending, transitionRouter] = useTransitionRouter();
 	const searchParams = useSearchParams();
-	const { language } = useParams();
+	const currentLocale = useCurrentLocale();
 	const sortParams = searchParams.get("sort") || "numberAsc";
 
 	// is this bad for performance? because router function is marked as transition, if we just use sortParams from reading searchParams, when changin value from select, it will show the stale value.
@@ -93,8 +94,8 @@ const Dropdown = memo(function Dropdown() {
 		});
 		setSortBy(event.target.value);
 		transitionRouter.replace(
-			`/${language}/pokemons/search?${newSearchParams}`
-			// `/${language}/pokemons2?${newSearchParams}`
+			`/${currentLocale}/pokemons/search?${newSearchParams}`
+			// `/${locale}/pokemons2?${newSearchParams}`
 		);
 	};
 

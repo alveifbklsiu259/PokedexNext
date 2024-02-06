@@ -4,17 +4,12 @@ import DataTable, {
 	SortOrder,
 	type TableColumn,
 } from "react-data-table-component";
-import {
-	useParams,
-	usePathname,
-	useRouter,
-	useSearchParams,
-} from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { SortOption } from "@/slices/display-slice";
 import { useTransitionRouter } from "../transition-context";
 import { PokemonTableData } from "./pokemons-server";
 import { capitalize, updateSearchParam } from "@/lib/util";
-import { LanguageOption } from "@/app/[language]/page";
+import { useCurrentLocale } from "@/lib/hooks";
 
 const scrollToTop = (firstDiv: HTMLDivElement) => {
 	console.log("scroll");
@@ -39,8 +34,7 @@ export default function PokemonTable({
 	const searchParams = useSearchParams();
 	const sort = (searchParams.get("sort") || "numberAsc") as SortOption;
 	const [isPending, transitionRouter] = useTransitionRouter();
-	const params = useParams();
-	const language = params.language as LanguageOption;
+	const currentLocale = useCurrentLocale();
 	const tableRef = useRef<HTMLDivElement | null>(null);
 
 	let sortField: string, sortMethod: "asc" | "desc";
@@ -83,7 +77,7 @@ export default function PokemonTable({
 	const handleRowClick = useCallback(
 		async (row: ColData) => {
 			const pokemonId: number = row.number.props["data-value"];
-			transitionRouter.push(`/${language}/pokemon/${pokemonId}`);
+			transitionRouter.push(`/${currentLocale}/pokemon/${pokemonId}`);
 		},
 		[transitionRouter]
 	);

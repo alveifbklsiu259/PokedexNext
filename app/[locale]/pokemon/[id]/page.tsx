@@ -152,7 +152,7 @@
 
 import { Suspense} from "react";
 import Link from "next/link";
-import { LanguageOption } from "../../page";
+import { type Locale } from "@/i18nConfig";
 import Varieties from "@/components/pokemon/varieties";
 import BasicInfoServer from "@/components/pokemon/basic-info-server";
 import Detail from "@/components/pokemon/detail";
@@ -166,7 +166,7 @@ import dynamic from "next/dynamic";
 
 type PageProps = {
 	params: {
-		language: LanguageOption;
+		locale: Locale;
 		id: string;
 	};
 };
@@ -225,7 +225,7 @@ type PageProps = {
 const ScrollToTop = dynamic(() => import("@/components/scroll-to-top"), {ssr: false});
 
 export default async function Page({ params }: PageProps) {
-	const { language, id } = params;
+	const { locale, id } = params;
 
 	// const pokemonData = await getData('pokemon', id);
 	// const speciesData = await getData('pokemonSpecies', getIdFromURL(pokemonData.species.url));
@@ -290,7 +290,7 @@ export default async function Page({ params }: PageProps) {
 
 			<div className="row justify-content-center mainContainer">
 				<Suspense fallback={null}>
-					<Varieties language={language} pokemonId={pokemonId} />
+					<Varieties locale={locale} pokemonId={pokemonId} />
 				</Suspense>
 
 				<div className="basicInfoContainer row col-8 col-sm-6 justify-content-center">
@@ -299,23 +299,23 @@ export default async function Page({ params }: PageProps) {
 							<BasicInfoSkeleton/>
 						}
 					>
-						<BasicInfoServer language={language} pokemonId={pokemonId} />
+						<BasicInfoServer locale={locale} pokemonId={pokemonId} />
 					</Suspense>
 				</div>
 				<div className="detail row text-center col-12 col-sm-6">
 					<Suspense fallback={<DetailSkeleton/>}>
 						<Detail
-							language={language}
+							locale={locale}
 							pokemonId={pokemonId}
 						/>
 					</Suspense>
 				</div>
 				<Suspense fallback={<StatsSkeleton />}>
-					<Stats language={language} pokemonId={pokemonId} />
+					<Stats locale={locale} pokemonId={pokemonId} />
 				</Suspense>
 				<Suspense fallback={<EvolutionChainSkeleton />}>
 					<EvolutionChains
-						language={language}
+						locale={locale}
 						pokemonId={pokemonId}
 						// typeData={typeData}
 						// items={itemData}
@@ -324,7 +324,7 @@ export default async function Page({ params }: PageProps) {
 				<Suspense fallback={<MovesSkeleton/>}>
 					<MovesServer
 						pokemonId={pokemonId}
-						language={language}
+						locale={locale}
 						// reset Moves' states when navigating to pokemon through chains or varieties when the target pokemon's data is cached.
 						// key={id}
 					/>
@@ -333,7 +333,7 @@ export default async function Page({ params }: PageProps) {
 				{/* this button can be in /pokemon/layout.tsx */}
 				<div className="row justify-content-center">
 					<div className="w-50 m-3 btn btn-block btn-secondary">
-						<Link prefetch={true} href={`/${language}/pokemons`} className="text-white text-decoration-none">
+						<Link prefetch={true} href={`/${locale}/pokemons`} className="text-white text-decoration-none">
 							Explore More Pokemons
 						</Link>
 					</div>

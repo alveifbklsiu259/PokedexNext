@@ -3,7 +3,7 @@ import React, { useState, useMemo, memo, useCallback } from "react";
 import Image from "next/image";
 import { Skeleton, capitalize } from "@mui/material";
 import type { TableColumn } from "react-data-table-component";
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 import { transformToKeyName, getNameByLanguage } from "@/lib/util";
 import MovesTable from "./moves-table";
 import { PokemonSpecies, Pokemon, Machine, Move, EvolutionChain } from "@/lib/definitions";
@@ -69,7 +69,7 @@ const columnDataCreator = (filteredMethod: 'level-up' | 'machine'): TableColumn<
 
 type MovesClientProps = {
 	pokemonData: Pokemon.Root
-	language: LanguageOption,
+	locale: Locale,
 	types: CachedType,
 	versionData: CachedVersion,
 	moveData: CachedMove,
@@ -83,7 +83,7 @@ type MovesClientProps = {
 
 const MovesClient = memo<MovesClientProps>(function MovesClient({
 	pokemonData,
-	language,
+	locale,
 	types,
 	versionData,
 	moveData,
@@ -109,11 +109,11 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 	const [isMachinesLoading, setIsMachinesLoading] = useState(false);
 
 	const getVersionName = useCallback((version: string) => {
-		if (language !== 'en') {
+		if (locale !== 'en') {
 			const matchedVersions = Object.values(versionData).filter(entry => entry.version_group.name === version);
 			let versionName = '';
 			matchedVersions.forEach((entry, index, array) => {
-				versionName += getNameByLanguage(entry.name, language, versionData[transformToKeyName(entry.name)]);
+				versionName += getNameByLanguage(entry.name, locale, versionData[transformToKeyName(entry.name)]);
 				if (index < array.length - 1) {
 					versionName += '/';
 				};
@@ -122,7 +122,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 		} else {
 			return version;
 		};
-	}, [versionData, language]);
+	}, [versionData, locale]);
 
 	// for pokemon that learns move(s) on evolution.
 	let maxEvoLevel: undefined | number;
@@ -202,16 +202,16 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 			const lookupName = transformToKeyName(entry.move.name);
 			const cachedMove = moveData[lookupName];
 			const versionDetails = entry.version_group_details;
-			const moveName = capitalize(getNameByLanguage(entry.move.name, language, moveData[transformToKeyName(entry.move.name)]));
+			const moveName = capitalize(getNameByLanguage(entry.move.name, locale, moveData[transformToKeyName(entry.move.name)]));
 
 			const type = cachedMove.type.name;
-			const typeContent = <span data-value={type} data-tag="allowRowEvents" className={`type type-${type}`}>{getNameByLanguage(type, language, types[type]).toUpperCase()}</span>;
+			const typeContent = <span data-value={type} data-tag="allowRowEvents" className={`type type-${type}`}>{getNameByLanguage(type, locale, types[type]).toUpperCase()}</span>;
 
 			// some moves can be learned at different levels.
 			const levelContent = versionDetails.length === 1 ? checkLearnOnEvo(versionDetails[0].level_learned_at, maxEvoLevel) : versionDetails.map(detail => checkLearnOnEvo(detail.level_learned_at, maxEvoLevel));
 
 			// category
-			const categoryText = getNameByLanguage(cachedMove.damage_class.name, language, movesDamageClass[cachedMove.damage_class.name]);
+			const categoryText = getNameByLanguage(cachedMove.damage_class.name, locale, movesDamageClass[cachedMove.damage_class.name]);
 
 			let machineContent: undefined | React.JSX.Element;
 			// get machines, chnage pokemon, get machines, check if all correct? also check redux stat change
@@ -375,7 +375,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 						selectedVersion={selectedVersion}
 						//  remove this prop
 						isDataReady={true}
-						language={language}
+						locale={locale}
 					/>
 				)}
 			</div>

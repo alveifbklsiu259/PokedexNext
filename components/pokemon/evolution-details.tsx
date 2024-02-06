@@ -2,7 +2,7 @@ import { memo } from "react";
 import Image from "next/image";
 import { FaMars, FaVenus } from 'react-icons/fa';
 import { AiOutlineCheck } from 'react-icons/ai';
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 import { getData, getEvolutionChains, getItemsFromChain } from "@/lib/api";
 import { transformToKeyName, getNameByLanguage } from "@/lib/util";
 import { EvolutionChainResponse } from "@/lib/definitions";
@@ -29,7 +29,7 @@ const textsForOtherRequirements = {
 };
 
 type EvolutionDetailsProps = {
-	language: LanguageOption,
+	locale: Locale,
 	chainId: number,
 	defaultFormId: number,
 	isChainDefault: boolean,
@@ -39,7 +39,7 @@ type GetKeys<T> = {
 	[K in keyof T]: T[K]
 }
 
-const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDetails({language, chainId, defaultFormId, isChainDefault}) {
+const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDetails({locale, chainId, defaultFormId, isChainDefault}) {
 	// // evolution chain
 	const chainData = await getEvolutionChains(chainId);
 
@@ -97,7 +97,7 @@ const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDet
 			case 'held_item' : 
 				value = (
 					<>
-						{getNameByLanguage(value, language, items[transformToKeyName(value)!])}
+						{getNameByLanguage(value, locale, items[transformToKeyName(value)!])}
 						<Image className="item" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${value}.png`} alt={`${value}`} />
 					</>
 				)
@@ -143,7 +143,7 @@ const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDet
 					mainText = (
 						<>
 							<span>
-								{`Use ${getNameByLanguage(requirements["item"], language, items[transformToKeyName(requirements["item"])!])}`}
+								{`Use ${getNameByLanguage(requirements["item"], locale, items[transformToKeyName(requirements["item"])!])}`}
 							</span>
 							<Image width='30' height='30' className="item" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/${requirements["item"]}.png`} alt={`${requirements["item"]}`} />
 						</>

@@ -1,17 +1,18 @@
 "use client";
 import { useEffect, useState, useMemo, memo } from "react";
 import { flushSync } from "react-dom";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import type {
 	CachedPokemon,
 	CachedPokemonSpecies,
 	CachedType,
 } from "@/slices/pokemon-data-slice";
-import type { LanguageOption } from "@/slices/display-slice";
+import { type Locale } from "@/i18nConfig";
 import BasicInfo from "../basicInfo";
 import { getData, getDataToFetch } from "@/lib/api";
 import Spinner from "@/components/spinner";
-import { useCustomTransition, useTransitionRouter } from "../transition-context";
+import { useTransitionRouter } from "../transition-context";
+import { useCurrentLocale } from "@/lib/hooks";
 
 type PokemonsProps = {
 	pokemonData: CachedPokemon;
@@ -20,7 +21,8 @@ type PokemonsProps = {
 	sortedIntersection: number[];
 };
 
-const Pokemons = /*memo(*/
+const Pokemons =
+	/*memo(*/
 	function Pokemons({
 		types,
 		pokemonData,
@@ -28,9 +30,8 @@ const Pokemons = /*memo(*/
 		sortedIntersection,
 	}: PokemonsProps) {
 		const [isPending] = useTransitionRouter();
-		const params = useParams();
+		const currentLocale = useCurrentLocale();
 		const router = useRouter();
-		const { language } = params;
 
 		const [cachedData, setCachedData] = useState({
 			pokemon: pokemonData,
@@ -117,7 +118,7 @@ const Pokemons = /*memo(*/
 		]);
 
 		const handleClick = (id: number) => {
-			router.push(`/${language}/pokemon/${id}`);
+			router.push(`/${currentLocale}/pokemon/${id}`);
 		};
 
 		let content;
@@ -137,13 +138,13 @@ const Pokemons = /*memo(*/
 								className={`col-6 col-md-4 col-lg-3 card pb-3 pokemonCard ${
 									!imgSrc ? "justify-content-end" : ""
 								}`}
-								data-aos={index < 4 ? "flip-left" : ''}
+								data-aos={index < 4 ? "flip-left" : ""}
 								data-aos-delay={index < 4 && `${index}00`}
 								onClick={() => handleClick(id)}
 							>
 								<BasicInfo
 									pokemonData={pokemonData}
-									language={language as LanguageOption}
+									locale={currentLocale as Locale}
 									speciesData={cachedData.species[id]}
 									types={types}
 								/>
@@ -157,12 +158,12 @@ const Pokemons = /*memo(*/
 
 		return (
 			<>
-				<div className={`container ${isPending ? 'pending' : 'done'}`}>
+				<div className={`container ${isPending ? "pending" : "done"}`}>
 					<div className="row g-5">{content}</div>
 				</div>
 			</>
 		);
-	}/*,
+	}; /*,
 	() => true
 );*/
 

@@ -35,36 +35,23 @@
 // }
 
 import { notFound, redirect } from "next/navigation";
+import i18nConfig, { type Locale } from '@/i18nConfig';
 
-export const languageOptions = {
-	en: "English",
-	ja: "日本語",
-	// zh_Hant: '繁體中文',
-	// zh_Hans: '简体中文',
-	// ko: '한국어',
-	// fr: 'Français',
-	// de: 'Deutsch',
-};
-
-export type LanguageOption = keyof typeof languageOptions;
-
-// export async function generateStaticParams() {
-// 	return Object.keys(languageOptions).map((lan) => ({
-// 		language: lan,
-// 	}));
-// }
+export async function generateStaticParams() {
+	return i18nConfig.locales.map(locale => ({ locale }));
+}
 // export const dynamicParams = false;
 
-type LanguagePageProps = {
+type PageProps = {
 	params: {
-		locale: LanguageOption;
+		locale: Locale;
 	};
 };
-export default function LanguagePage({ params: {locale} }: LanguagePageProps) {
+export default function Page({ params: {locale} }: PageProps) {
 
 	// this should be handled by middleware
 
-	if (Object.keys(languageOptions).includes(locale)) {
+	if (Object.keys(i18nConfig.locales).includes(locale)) {
 		redirect(`./${locale}/pokemons`);
 	} else {
 		notFound();

@@ -1,13 +1,12 @@
 import NotFoundLink from "@/components/not-found-link";
 import Image from "next/image";
-import Link from "next/link";
 
 export default function NotFound() {
 	return (
 		<div className="errorPage">
 			<div className="col-6">
 				<Image
-                    priority
+					priority
 					className="pageNotFoundImg"
 					width="475"
 					height="475"
@@ -21,7 +20,7 @@ export default function NotFound() {
 					<p className="text-center">
 						The page you&apos;re looking for can not be found.
 					</p>
-					<NotFoundLink/>
+					<NotFoundLink />
 				</div>
 			</div>
 		</div>

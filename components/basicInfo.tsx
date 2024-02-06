@@ -2,12 +2,12 @@ import { memo } from "react";
 import Image from "next/image";
 import { Pokemon, PokemonForm, PokemonSpecies } from "@/lib/definitions";
 import { getFormName2, getIdFromURL, getNameByLanguage } from "@/lib/util";
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 import { CachedType } from "@/slices/pokemon-data-slice";
 
 type BasicInfoProps = {
 	pokemonData: Pokemon.Root;
-	language: LanguageOption;
+	locale: Locale;
 	speciesData: PokemonSpecies.Root | undefined;
 	types: CachedType | undefined;
 	formData?: PokemonForm.Root;
@@ -15,13 +15,13 @@ type BasicInfoProps = {
 
 const BasicInfo = memo<BasicInfoProps>(function BasicInfo({
 	pokemonData,
-	language,
+	locale,
 	speciesData,
 	types,
 	formData,
 }) {
 	const nationalNumber = getIdFromURL(pokemonData.species.url);
-	const formName = getFormName2(speciesData, language, pokemonData, formData);
+	const formName = getFormName2(speciesData, locale, pokemonData, formData);
 
 	let newName: undefined | React.JSX.Element;
 	if (formName.includes("(")) {
@@ -81,7 +81,7 @@ const BasicInfo = memo<BasicInfoProps>(function BasicInfo({
 					>
 						{getNameByLanguage(
 							entry.type.name,
-							language,
+							locale,
 							types?.[entry?.type?.name]
 						)}
 					</span>

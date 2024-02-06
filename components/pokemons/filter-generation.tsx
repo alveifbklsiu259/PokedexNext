@@ -2,6 +2,7 @@ import { memo, useCallback } from 'react';
 import { MemoImage } from '../memos';
 import type { Generation as GenerationType } from '@/lib/definitions';
 import { CachedGeneration } from '@/slices/pokemon-data-slice';
+import { useTranslation } from 'react-i18next';
 
 type FilterGenerationProps = {
 	selectedGenerations: string[],
@@ -10,6 +11,7 @@ type FilterGenerationProps = {
 };
 
 const FilterGeneration = memo<FilterGenerationProps>(function FilterGeneration ({selectedGenerations, setSelectedGenerations, generations}) {
+	const {t} = useTranslation();
 	const handleSelectGeneration = useCallback((generation: GenerationType.Root) => {
 		setSelectedGenerations(sg => {
 			const update = [...sg];
@@ -26,7 +28,7 @@ const FilterGeneration = memo<FilterGenerationProps>(function FilterGeneration (
 	return (
 		<ul className="generation col-12 col-sm-6 row justify-content-center gap-2">
 			<div>
-				<h3 ><MemoImage width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" /> Generations</h3>
+				<h3 ><MemoImage width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" /> {t('generations')}</h3>
 			</div>
 			{Object.values(generations).map(generation => (
 				<Generation

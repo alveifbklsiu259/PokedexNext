@@ -3,18 +3,18 @@ import Link from "next/link";
 import BasicInfoServer from "./basic-info-server";
 import { getIdFromURL } from "@/lib/util";
 import { Pokemon } from "@/lib/definitions";
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 import { getData, getEndpointData, getEvolutionChains } from "@/lib/api";
 import EvolutionDetails from "./evolution-details";
 import Spinner from "../spinner";
 
 type EvolutionChainsProps = {
-	language: LanguageOption,
+	locale: Locale,
 	pokemonId: number,
 }
 
 const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChains({
-	language,
+	locale,
 	pokemonId,
 }) {
 	const pokemonData = await getData('pokemon', pokemonId);
@@ -248,7 +248,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 							<Link prefetch={true} href={`./${pokemonId}`} className="text-black text-decoration-none">
 								<div className="chainInfoContainer" >
 									<BasicInfoServer
-										language={language}
+										locale={locale}
 										pokemonId={pokemonId}
 									/>
 								</div>
@@ -258,7 +258,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 							<li className='caret mt-5 mb-2'>
 								<Suspense fallback={<Spinner/>}>
 									<EvolutionDetails
-										language={language}
+										locale={locale}
 										chainId={chainId}
 										defaultFormId={getDefaultFormId(array[index + 1])}
 										isChainDefault={isChainDefault(array)}
@@ -285,7 +285,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 												<Link prefetch={true} href={`./${pokemonId}`} className="text-black text-decoration-none">
 													<div className="chainInfoContainer" >
 														<BasicInfoServer
-															language={language}
+															locale={locale}
 															pokemonId={pokemonId}
 														/>
 													</div>
@@ -295,7 +295,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 												<li className="caret">
 													<Suspense fallback={<Spinner/>}>
 														<EvolutionDetails
-															language={language}
+															locale={locale}
 															chainId={chainId} 
 															defaultFormId={getDefaultFormId(array[index + 1])}
 															isChainDefault={isChainDefault(array)}

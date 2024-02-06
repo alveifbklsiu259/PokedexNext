@@ -2,20 +2,11 @@ import React, { useState, useEffect, useCallback, memo, Suspense } from "react";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import {
-	LanguageOption,
-	languageOptions,
-} from "../slices/display-slice";
 import { FaLanguage } from "react-icons/fa6";
-import {
-	useParams,
-	usePathname,
-	useRouter,
-	useSearchParams,
-} from "next/navigation";
-import { useCustomTransition, useTransitionRouter } from "./transition-context";
-
-
+import { usePathname, useSearchParams } from "next/navigation";
+import { useTransitionRouter } from "./transition-context";
+import i18nConfig, { type Locale } from "@/i18nConfig";
+import { useCurrentLocale } from "@/lib/hooks";
 
 type AnchorElTypes = null | HTMLButtonElement;
 
@@ -78,12 +69,9 @@ const LanguageMenu = memo(function LanguageMenu() {
 						},
 					}}
 				>
-					{Object.keys(languageOptions).map((option) => (
-						<Suspense key={option} fallback={null}>
-							<Item
-								option={option as keyof typeof languageOptions}
-								handleClose={handleClose}
-							/>
+					{i18nConfig.locales.map((locale) => (
+						<Suspense key={locale} fallback={null}>
+							<Item locale={locale as Locale} handleClose={handleClose} />
 						</Suspense>
 					))}
 				</Menu>
@@ -93,25 +81,38 @@ const LanguageMenu = memo(function LanguageMenu() {
 });
 
 type ItemProprs = {
-	option: keyof typeof languageOptions;
+	locale: Locale;
 	handleClose: () => void;
 };
 
-const Item = memo<ItemProprs>(function Item({ option, handleClose }) {
-	const params = useParams();
+const languages = {
+	en: "English",
+	ja: "日本語",
+	zh_Hant: "繁體中文",
+	zh_Hans: "简体中文",
+	ko: "한국어",
+	fr: "Français",
+	de: "Deutsch",
+};
+
+const Item = memo<ItemProprs>(function Item({ locale, handleClose }) {
 	const pathname = usePathname();
-	const language = params.language as LanguageOption;
-	const newPath = pathname.replace(language, option);
+	const currentLocale = useCurrentLocale();
+	const newPath = pathname.replace(currentLocale, locale);
 	const searchParams = useSearchParams();
 	const [isPending, transitionRouter] = useTransitionRouter();
 
-	const handleChangeLanguage = (option: LanguageOption) => {
+	const handleChangeLanguage = (locale: Locale) => {
 		handleClose();
-		// dispatch(changeLanguage({option, pokeId}));
-		// dispatch(changeLanguage({option, pokeId: undefined}));
-		transitionRouter.replace(
-			`${newPath}?${searchParams.toString()}`
-		)
+
+		// set cookie for next-i18n-router
+		const days = 30;
+		const date = new Date();
+		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+		const expires = date.toUTCString();
+		document.cookie = `NEXT_LOCALE=${locale};expires=${expires};path=/`;
+
+		transitionRouter.replace(`${newPath}?${searchParams.toString()}`);
 	};
 
 	return (
@@ -124,11 +125,11 @@ const Item = memo<ItemProprs>(function Item({ option, handleClose }) {
 					opacity: 1,
 				},
 			}}
-			selected={option === language}
-			disabled={option === language}
-			onClick={() => handleChangeLanguage(option)}
+			selected={locale === currentLocale}
+			disabled={locale === currentLocale}
+			onClick={() => handleChangeLanguage(locale)}
 		>
-			{languageOptions[option]}
+			{languages[locale]}
 		</MenuItem>
 	);
 });

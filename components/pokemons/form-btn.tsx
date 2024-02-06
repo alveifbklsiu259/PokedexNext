@@ -1,7 +1,9 @@
 import { memo, useEffect, useLayoutEffect } from "react";
-import { useSearchParams, useRouter, useParams, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { updateSearchParam } from "@/lib/util";
-import { useCustomTransition, useTransitionRouter } from "../transition-context";
+import { useTransitionRouter } from "../transition-context";
+import { useCurrentLocale } from "@/lib/hooks";
+import { useTranslation } from "react-i18next";
 
 type FormBtnProps = {
 	formRef: React.RefObject<HTMLFormElement>;
@@ -11,9 +13,9 @@ type FormBtnProps = {
 	setSelectedGenerations: React.Dispatch<React.SetStateAction<string[]>>;
 	selectedTypes: string[];
 	setSelectedTypes: React.Dispatch<React.SetStateAction<string[]>>;
-	onCloseModal? : () => void;
-	setTypeMatch: React.Dispatch<React.SetStateAction<'part' | 'all'>>;
-	typeMatch: string
+	onCloseModal?: () => void;
+	setTypeMatch: React.Dispatch<React.SetStateAction<"part" | "all">>;
+	typeMatch: string;
 };
 
 const FormBtn = memo(function FormBtn({
@@ -26,15 +28,16 @@ const FormBtn = memo(function FormBtn({
 	setSelectedTypes,
 	onCloseModal,
 	typeMatch,
-	setTypeMatch
+	setTypeMatch,
 }: FormBtnProps) {
 	const [isPending, transitionRouter] = useTransitionRouter();
 	const searchParams = useSearchParams();
-	const {language} = useParams();
+	const currentLocale = useCurrentLocale();
 	const query = searchParams.get("query");
 	const generation = searchParams.get("gen");
 	const type = searchParams.get("type");
-	const match = (searchParams.get("match") || 'all') as 'part' | 'all';
+	const match = (searchParams.get("match") || "all") as "part" | "all";
+	const {t} = useTranslation();
 
 	// synchronizing state, the reason I'm synchronizing states in this component is that the data requires searchParams.
 	useLayoutEffect(() => {
@@ -45,13 +48,21 @@ const FormBtn = memo(function FormBtn({
 				: sg
 		);
 		setSelectedTypes((st) => {
-				return type ? (st.toString() === type ? st : type?.split(",")) : st
-			}
-		);
-		if (match === 'part') {
-			setTypeMatch(match)
+			return type ? (st.toString() === type ? st : type?.split(",")) : st;
+		});
+		if (match === "part") {
+			setTypeMatch(match);
 		}
-	}, [query, generation, type, match, setSearchQuery, setSelectedGenerations, setSelectedTypes, setTypeMatch]);
+	}, [
+		query,
+		generation,
+		type,
+		match,
+		setSearchQuery,
+		setSelectedGenerations,
+		setSelectedTypes,
+		setTypeMatch,
+	]);
 
 	// attatching event listener to the form. Since the event needs searchParams, if we try to attatch the event in Search component(where the form element is, that would cause it to only rendered on the client)
 	useEffect(() => {
@@ -63,21 +74,20 @@ const FormBtn = memo(function FormBtn({
 				query: searchQuery,
 				type: selectedTypes.toString(),
 				gen: selectedGenerations
-				.map((gen) => gen.replace("generation-", ""))
-				.toString(),
-				match: typeMatch
+					.map((gen) => gen.replace("generation-", ""))
+					.toString(),
+				match: typeMatch,
 			});
 
 			if (onCloseModal) {
 				onCloseModal();
-			};
+			}
 
 			// what should I use, replace or push?
 			transitionRouter.replace(
-				`/${language}/pokemons/search?${newSearchParams}`
-				// `/${language}/pokemons2?${newSearchParams}`
-			)
-			
+				`/${currentLocale}/pokemons/search?${newSearchParams}`
+				// `/${currentLocale}/pokemons2?${newSearchParams}`
+			);
 
 			// if (viewModeRef?.current) {
 			// 	// search from root
@@ -101,7 +111,16 @@ const FormBtn = memo(function FormBtn({
 		return () => {
 			formNode.removeEventListener("submit", handleSubmit);
 		};
-	}, [searchQuery, selectedTypes, selectedGenerations, formRef, transitionRouter, searchParams, language, typeMatch]);
+	}, [
+		searchQuery,
+		selectedTypes,
+		selectedGenerations,
+		formRef,
+		transitionRouter,
+		searchParams,
+		currentLocale,
+		typeMatch,
+	]);
 
 	return (
 		<button
@@ -110,7 +129,7 @@ const FormBtn = memo(function FormBtn({
 			type="submit"
 			disabled={isPending}
 		>
-			Search
+			{t('search')}
 		</button>
 	);
 });

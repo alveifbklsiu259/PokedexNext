@@ -1,7 +1,7 @@
 import React, { Suspense, memo } from "react";
 import { FaMars, FaVenus } from "react-icons/fa";
 import { BsQuestionLg } from "react-icons/bs";
-import { LanguageOption } from "@/app/[language]/page";
+import { type Locale } from "@/i18nConfig";
 import { getIdFromURL, getTextByLanguage } from "@/lib/util";
 import { getData } from "@/lib/api";
 import Abilities from "./abilities";
@@ -26,12 +26,12 @@ function getGender(gender_rate: number) {
 }
 
 type DetailProps = {
-	language: LanguageOption;
+	locale: Locale;
 	pokemonId: number;
 };
 
 const Detail = memo<DetailProps>(async function Detail({
-	language,
+	locale: locale,
 	pokemonId,
 }) {
 	const pokemonData = await getData("pokemon", pokemonId);
@@ -39,7 +39,7 @@ const Detail = memo<DetailProps>(async function Detail({
 	const speciesData = await getData("pokemonSpecies", speciesId);
 
 	const flavorText = getTextByLanguage(
-		language,
+		locale,
 		speciesData.flavor_text_entries,
 		"flavor_text"
 	);
@@ -61,7 +61,7 @@ const Detail = memo<DetailProps>(async function Detail({
 			<div className="col-6 abilities p-0">
 				Abilities <br />
 				<Suspense fallback={<AbilitiesSkeleton />}>
-					<Abilities language={language} pokemonId={pokemonId} />
+					<Abilities locale={locale} pokemonId={pokemonId} />
 				</Suspense>
 			</div>
 			<p className="col-12 m-3 p-2 text-start description">{flavorText}</p>

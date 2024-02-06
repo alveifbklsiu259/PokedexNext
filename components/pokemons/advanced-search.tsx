@@ -3,6 +3,7 @@ import type { SelectedTypes } from "@/slices/search-slice";
 import FilterGeneration from "./filter-generation";
 import FilterTypes from "./filter-types";
 import { CachedGeneration, CachedType } from "@/slices/pokemon-data-slice";
+import { useTranslation } from "react-i18next";
 
 type AdvancedSearchProps = {
 	setSearchQuery: React.Dispatch<React.SetStateAction<string>>,
@@ -29,6 +30,7 @@ const AdvancedSearch = memo<AdvancedSearchProps>(function AdvancedSearch({
 	types,
 	isAdvancedShown
 }) {
+	const {t} = useTranslation();
 	const handleReset = () => {
 		// if no state update needed, return the same state to prevent re-render.
 		setSelectedTypes(st => !st.length ? st : []);
@@ -54,7 +56,7 @@ const AdvancedSearch = memo<AdvancedSearchProps>(function AdvancedSearch({
 					onClick={handleReset}
 					type="button"
 					className="btn btn-md resetBtn bg-danger"
-				>Reset
+				>{t('reset')}
 				</button>
 			</div>
 		</div>
