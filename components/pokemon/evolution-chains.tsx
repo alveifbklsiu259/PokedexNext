@@ -3,10 +3,11 @@ import Link from "next/link";
 import BasicInfoServer from "./basic-info-server";
 import { getIdFromURL } from "@/lib/util";
 import { Pokemon } from "@/lib/definitions";
-import { type Locale } from "@/i18nConfig";
+import { i18nNamespaces, type Locale } from "@/i18nConfig";
 import { getData, getEndpointData, getEvolutionChains } from "@/lib/api";
 import EvolutionDetails from "./evolution-details";
 import Spinner from "../spinner";
+import { initTranslationsServer } from "@/lib/i18n";
 
 type EvolutionChainsProps = {
 	locale: Locale,
@@ -17,6 +18,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 	locale,
 	pokemonId,
 }) {
+	const {t} = await initTranslationsServer(locale, i18nNamespaces);
 	const pokemonData = await getData('pokemon', pokemonId);
 	const speciesId = getIdFromURL(pokemonData.species.url);
 	const speciesData = await getData('pokemonSpecies', speciesId)
@@ -316,7 +318,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 
 	return (
 		<div className="col-12 mt-5 evolutionChains p-0">
-			<h1 className="text-center">Evolutions</h1>
+			<h1 className="text-center">{t('pokemon:evolutions')}</h1>
 			{content}
 		</div>
 	)

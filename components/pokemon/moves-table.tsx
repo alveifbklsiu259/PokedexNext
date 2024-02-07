@@ -5,12 +5,13 @@ import { Switch, Stack, Typography, capitalize } from "@mui/material";
 import { type Locale } from "@/i18nConfig";
 import { getTextByLanguage } from "@/lib/util";
 import type { ColData, MovesData } from "./moves-client";
+import { useTranslation } from "react-i18next";
 
 const getSerializedIds = (movesData: MovesData[]) => JSON.stringify(Object.values(movesData).map(move => move.id));
 
 interface MoveEffectProps extends ExpanderComponentProps<MovesData> {
 	previousSelectedVersion?: string,
-    locale?: Locale
+	locale?: Locale
 }
 
 const MoveEffect: React.FC<MoveEffectProps> = ({data, previousSelectedVersion, locale}) => {
@@ -43,11 +44,12 @@ type FilterButtonProps = {
 };
 
 const FilterButton = memo(function FilterButton({isDataReady, changefilteredMethod}: FilterButtonProps) {
+	const {t} = useTranslation('pokemon');
 	return (
 		<Stack direction="row" spacing={1} alignItems="center">
-			<Typography>Level</Typography>
+			<Typography>{t('level')}</Typography>
 				<Switch disabled={!isDataReady} onChange={changefilteredMethod}/>
-			<Typography>Machine</Typography>
+			<Typography>{t('machine')}</Typography>
 		</Stack>
 	)
 });

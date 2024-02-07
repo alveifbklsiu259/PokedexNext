@@ -2,11 +2,12 @@ import { memo } from "react";
 import Image from "next/image";
 import { FaMars, FaVenus } from 'react-icons/fa';
 import { AiOutlineCheck } from 'react-icons/ai';
-import { type Locale } from "@/i18nConfig";
+import { i18nNamespaces, type Locale } from "@/i18nConfig";
 import { getData, getEvolutionChains, getItemsFromChain } from "@/lib/api";
 import { transformToKeyName, getNameByLanguage } from "@/lib/util";
 import { EvolutionChainResponse } from "@/lib/definitions";
 import ChainDetailsBtn from "./chain-detail-btn";
+import { initTranslationsServer } from "@/lib/i18n";
 
 const textsForOtherRequirements = {
 	gender: 'Gender',
@@ -40,6 +41,7 @@ type GetKeys<T> = {
 }
 
 const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDetails({locale, chainId, defaultFormId, isChainDefault}) {
+	const {t} = await initTranslationsServer(locale, i18nNamespaces);
 	// // evolution chain
 	const chainData = await getEvolutionChains(chainId);
 
@@ -127,7 +129,7 @@ const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDet
 		switch(trigger) {
 			case 'level-up' : 
 				if (requirements["min_level"]) {
-					mainText = `Level ${requirements["min_level"]}`
+					mainText = `${t('pokemon:level')} ${requirements["min_level"]}`
 					delete requirements["min_level"];
 				} else {
 					mainText = `Level up`

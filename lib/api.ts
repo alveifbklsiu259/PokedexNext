@@ -1,6 +1,6 @@
 import { getIdFromURL, transformToKeyName, transformToDash, toEndPointString } from "./util";
 import { PokemonDataTypes } from "../slices/pokemon-data-slice";
-import type { SortOption } from "../slices/display-slice";
+import {type SortOption} from '@/components/pokemons/sort';
 import { type Locale } from "@/i18nConfig";
 import type { AppDispatch, RootState } from '../app/_app/store';
 import type { Pokemon, EndPointData, PokemonForm, GetStringOrNumberKey, EvolutionChain, EvolutionChainResponse, NonNullableArray } from './definitions';
@@ -97,6 +97,7 @@ export const getAbilities2 = async (pokemonData: Pokemon.Root | Pokemon.Root[]) 
 
 type GetSortField<T extends SortOption> = T extends `${infer A}Asc` ? A : SortOption extends `${infer B}Desc` ? B : never;
 type SortField = GetSortField<SortOption>;
+
 export type Stat = Exclude<SortField, "number" | "height" | "name" | "weight" >
 
 // const sortPokemons = (allPokemons: CachedPokemon, sortOption: SortOption, allPokemonNamesAndIds: CachedAllPokemonNamesAndIds, request: number[]) => {

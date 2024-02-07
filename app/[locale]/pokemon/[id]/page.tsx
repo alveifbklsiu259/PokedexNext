@@ -152,7 +152,7 @@
 
 import { Suspense} from "react";
 import Link from "next/link";
-import { type Locale } from "@/i18nConfig";
+import { i18nNamespaces, type Locale } from "@/i18nConfig";
 import Varieties from "@/components/pokemon/varieties";
 import BasicInfoServer from "@/components/pokemon/basic-info-server";
 import Detail from "@/components/pokemon/detail";
@@ -162,6 +162,7 @@ import EvolutionChains from "@/components/pokemon/evolution-chains";
 import { BasicInfoSkeleton, DetailSkeleton, EvolutionChainSkeleton, MovesSkeleton, RelatedPokemonSkeleton, StatsSkeleton } from "@/components/skeletons";
 import RelatedPokemon from "@/components/pokemon/related-pokemon";
 import dynamic from "next/dynamic";
+import { initTranslationsServer } from "@/lib/i18n";
 // import ScrollToTop from "@/components/scroll-to-top";
 
 type PageProps = {
@@ -226,6 +227,7 @@ const ScrollToTop = dynamic(() => import("@/components/scroll-to-top"), {ssr: fa
 
 export default async function Page({ params }: PageProps) {
 	const { locale, id } = params;
+	const {t} = await initTranslationsServer(locale, i18nNamespaces);
 
 	// const pokemonData = await getData('pokemon', id);
 	// const speciesData = await getData('pokemonSpecies', getIdFromURL(pokemonData.species.url));
@@ -314,6 +316,7 @@ export default async function Page({ params }: PageProps) {
 					<Stats locale={locale} pokemonId={pokemonId} />
 				</Suspense>
 				<Suspense fallback={<EvolutionChainSkeleton />}>
+					
 					<EvolutionChains
 						locale={locale}
 						pokemonId={pokemonId}
@@ -334,7 +337,7 @@ export default async function Page({ params }: PageProps) {
 				<div className="row justify-content-center">
 					<div className="w-50 m-3 btn btn-block btn-secondary">
 						<Link prefetch={true} href={`/${locale}/pokemons`} className="text-white text-decoration-none">
-							Explore More Pokemons
+							{t('pokemon:explore')}
 						</Link>
 					</div>
 				</div>

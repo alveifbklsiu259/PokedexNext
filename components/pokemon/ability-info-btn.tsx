@@ -5,6 +5,7 @@ import { Ability } from "@/lib/definitions";
 import { getNameByLanguage, getTextByLanguage } from "@/lib/util";
 import { type Locale } from "@/i18nConfig";
 import dynamic from "next/dynamic";
+import { useTranslation } from "react-i18next";
 
 type AbilityInfoBtnProps = {
 	locale: Locale;
@@ -19,6 +20,7 @@ const AbilityInfoBtn = memo<AbilityInfoBtnProps>(function AbilityInfoBtn({
 }) {
 	const [isModalShown, setIsModalShown] = useState(false);
 	const [isDetail, setIsDetail] = useState(false);
+	const {t} = useTranslation('pokemon');
 
 	let brief: string | undefined, detail: string | undefined;
 
@@ -40,7 +42,7 @@ const AbilityInfoBtn = memo<AbilityInfoBtnProps>(function AbilityInfoBtn({
 
 	const handleShowDetail = useCallback(() => {
 		setIsDetail(!isDetail)
-	}, [setIsDetail])
+	}, [setIsDetail, isDetail])
 
 	const memoAiFillQuestionCircle = useMemo(
 		() => (
@@ -73,7 +75,7 @@ const AbilityInfoBtn = memo<AbilityInfoBtnProps>(function AbilityInfoBtn({
 							onClick={handleShowDetail}
 							className="btn btn-warning"
 						>
-							Show {isDetail ? "Brief" : "Detail"}
+							{t(`show${isDetail ? "Brief" : "Detail"}`)}
 						</button>
 					</div>
 				</Modal>

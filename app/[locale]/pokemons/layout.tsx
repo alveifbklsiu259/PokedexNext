@@ -1,6 +1,6 @@
 import { getData, getEndpointData } from "@/lib/api";
 import { getIdFromURL, getNameByLanguage, transformToKeyName } from "@/lib/util";
-import { type Locale } from "@/i18nConfig";
+import { i18nNamespaces, type Locale } from "@/i18nConfig";
 import Sort from "@/components/pokemons/sort";
 import {
 	CachedAllPokemonNamesAndIds,
@@ -10,6 +10,7 @@ import Search from "@/components/pokemons/search";
 import ViewMode from "@/components/pokemons/view-mode";
 import { Suspense } from "react";
 import { SortSkeleton, ViewModeSkeleton } from "@/components/skeletons";
+import initTranslations from "@/lib/i18n";
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -24,6 +25,8 @@ export default async function Layout({ children, params }: LayoutProps) {
 		generationResponse.results.map((entry) => entry.name),
 		"name"
 	);
+	const {resources} = await initTranslations(locale, i18nNamespaces);
+
 
 	// types
 	const typeResponse = await getEndpointData("type");
@@ -64,8 +67,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 
 	const statResponse = await getEndpointData('stat');
 	const statToFetch = statResponse.results.map(data => data.url);
-	const stats = await getData('stat', statToFetch, 'name');
-	const pokemon = await getData('pokemon', 1);
+	const [stats, pokemon] = await Promise.all([getData('stat', statToFetch, 'name'), getData('pokemon', 1)]);
 	const statsToDisplay = pokemon.stats.map(entry => transformToKeyName(entry.stat.name));
 	const statNames = statsToDisplay.reduce<{[key: string]: string}>((pre, cur) => {
 		pre[cur] = getNameByLanguage(
@@ -75,10 +77,6 @@ export default async function Layout({ children, params }: LayoutProps) {
 		)
 		return pre;
 	}, {});
-
-	// console.log(statNames)
-	
-
 
 
 	// we may not have to memo Search or Sort because subsequent navigation (searchParams change) will not cause layout to render again. (This statement is partly correct, since Search and Sort are client components, partial rendering does not apply to them(according to my test))
@@ -98,7 +96,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 						<ViewMode />
 					</Suspense>
 					<Suspense fallback={<SortSkeleton />}>
-						<Sort stats={stats} />
+						<Sort statNames={statNames} />
 					</Suspense>
 				</div>
 

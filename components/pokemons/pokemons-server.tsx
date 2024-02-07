@@ -12,9 +12,8 @@ import {
 	getNameByLanguage,
 	getStringFromParam,
 	transformToKeyName,
-	capitalize,
 } from "@/lib/util";
-import { SortOption } from "@/slices/display-slice";
+import { type SortOption } from "./sort";
 import { type Locale } from "@/i18nConfig";
 import {
 	CachedAllPokemonNamesAndIds,
@@ -292,32 +291,15 @@ const PokemonsServer = async function PokemonsServer({
 		const columnHeaders = Object.keys(pokemonTableData[0] || []).reduce<{
 			[key: string]: string;
 		}>((pre, cur) => {
-			const columnHeader = getNameByLanguage(
+			pre[cur] = getNameByLanguage(
 				cur,
 				locale,
 				stats[transformToKeyName(cur)]
 			);
-			switch (columnHeader) {
-				case "Special Attack":
-					pre[cur] = "Sp.Atk";
-					break;
-				case "Special Defense":
-					pre[cur] = "Sp.Def";
-					break;
-				case "number":
-					pre[cur] = "#";
-					break;
-				case "height":
-					pre[cur] = `${capitalize(columnHeader)} (cm)`;
-					break;
-				case "weight":
-					pre[cur] = `${capitalize(columnHeader)} (kg)`;
-					break;
-				default:
-					pre[cur] = capitalize(columnHeader);
-			}
 			return pre;
 		}, {});
+
+		console.log('server renders')
 
 		content = (
 			<PokemonTable data={pokemonTableData} columnHeaders={columnHeaders} />

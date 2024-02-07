@@ -8,6 +8,7 @@ import { transformToKeyName, getNameByLanguage } from "@/lib/util";
 import MovesTable from "./moves-table";
 import { PokemonSpecies, Pokemon, Machine, Move, EvolutionChain } from "@/lib/definitions";
 import { CachedMachine, CachedType, CachedVersion, CachedMove, CachedGeneration, CachedMoveDamageClass } from "@/slices/pokemon-data-slice";
+import { useTranslation } from "react-i18next";
 
 export type ColData = {
 	level?: number | React.JSX.Element,
@@ -93,7 +94,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 	chainData,
 	movesDamageClass,
 }) {
-
+	const {t} = useTranslation('pokemon');
 	const generationNames = useMemo(() => Object.values(generationData).map(generation => generation.name), [generationData]);
 	const generationOptions = useMemo(() => generationNames.slice(generationNames.indexOf(debutGeneration)), [generationNames, debutGeneration]);
 	const [selectedGeneration, setSelectedGeneration] = useState(debutGeneration);
@@ -344,7 +345,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 	return (
 		<>
 			<div className="moves text-center mt-5">
-				<h1>Moves</h1>
+				<h1>{t('moves')}</h1>
 				<div>
 					{generationOptions.map(generation => (
 						<button 

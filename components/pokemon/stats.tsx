@@ -1,7 +1,8 @@
 import { memo } from "react";
-import { type Locale } from "@/i18nConfig";
+import { i18nNamespaces, type Locale } from "@/i18nConfig";
 import { getNameByLanguage, transformToKeyName } from "@/lib/util";
 import { getData, getEndpointData } from "@/lib/api";
+import { initTranslationsServer } from "@/lib/i18n";
 
 type StatsProps = {
 	locale: Locale;
@@ -13,10 +14,11 @@ const Stats = memo<StatsProps>(async function Stats({ locale, pokemonId }) {
 	const statResponse = await getEndpointData("stat");
 	const statToFetch = statResponse.results.map((data) => data.url);
 	const stats = await getData("stat", statToFetch, "name");
+	const {t} = await initTranslationsServer(locale, i18nNamespaces);
 
 	return (
 		<div className="col-12 mt-5 stats">
-			<h1 className="text-center">Stats</h1>
+			<h1 className="text-center">{t('pokemon:stats')}</h1>
 			<table className="mx-auto">
 				<tbody>
 					{pokemonData.stats.map((entry) => (
@@ -44,7 +46,7 @@ const Stats = memo<StatsProps>(async function Stats({ locale, pokemonId }) {
 					))}
 					<tr>
 						<td className="text-center" style={{ fontSize: "bold" }}>
-							Total
+							{t('total')}
 						</td>
 						<td>
 							{pokemonData.stats.reduce(

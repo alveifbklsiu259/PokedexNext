@@ -251,3 +251,5 @@ If a route is dynamically rendered, useSearchParams will be available on the ser
 
 //  implement turbolink,
 //  grayed out pokemons, instead of using skeleton
+
+// can i use React.createRef with server component?

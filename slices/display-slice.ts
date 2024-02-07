@@ -6,10 +6,9 @@ import { GetRequiredData, getInitialData, getPokemonsOnScroll, getRequiredDataTh
 import { searchPokemon } from "./search-slice";
 import type { RootState } from "@/_app/store"; 
 import { createAppAsyncThunk } from "@/_app/hooks";
-import { sortOptions } from "../components/pokemons/sort";
+import { type SortOption } from "../components/pokemons/sort";
 import { TableInfoRefTypes } from "../app/[language]/_components/pokemonData/pokemons";
 
-export type SortOption = typeof sortOptions[number]['value'];
 export const languageOptions = {
 	en: 'English',
 	ja: '日本語',

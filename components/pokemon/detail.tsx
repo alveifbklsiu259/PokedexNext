@@ -1,11 +1,12 @@
 import React, { Suspense, memo } from "react";
 import { FaMars, FaVenus } from "react-icons/fa";
 import { BsQuestionLg } from "react-icons/bs";
-import { type Locale } from "@/i18nConfig";
+import { i18nNamespaces, type Locale } from "@/i18nConfig";
 import { getIdFromURL, getTextByLanguage } from "@/lib/util";
 import { getData } from "@/lib/api";
 import Abilities from "./abilities";
 import { AbilitiesSkeleton } from "@/components/skeletons";
+import { initTranslationsServer } from "@/lib/i18n";
 
 function getGender(gender_rate: number) {
 	switch (gender_rate) {
@@ -37,6 +38,7 @@ const Detail = memo<DetailProps>(async function Detail({
 	const pokemonData = await getData("pokemon", pokemonId);
 	const speciesId = getIdFromURL(pokemonData.species.url);
 	const speciesData = await getData("pokemonSpecies", speciesId);
+	const {t} = await initTranslationsServer(locale, i18nNamespaces);
 
 	const flavorText = getTextByLanguage(
 		locale,
@@ -46,20 +48,21 @@ const Detail = memo<DetailProps>(async function Detail({
 	return (
 		<>
 			<p className="my-4 col-6">
-				Height
+				{t('height')}
 				<br /> <span>{pokemonData.height * 10} cm</span>
 			</p>
 			<p className="my-4 col-6">
-				Weight
+				{t('weight')}
 				<br /> <span>{(pokemonData.weight * 100) / 1000} kg</span>
 			</p>
 			<p className="col-6 d-flex flex-column">
-				Gender
+				{t('pokemon:gender')}
 				<br />
 				<span className="mt-4">{getGender(speciesData.gender_rate)}</span>
 			</p>
 			<div className="col-6 abilities p-0">
-				Abilities <br />
+				{t('pokemon:abilities')}
+				 <br />
 				<Suspense fallback={<AbilitiesSkeleton />}>
 					<Abilities locale={locale} pokemonId={pokemonId} />
 				</Suspense>
