@@ -10,7 +10,7 @@ import Search from "@/components/pokemons/search";
 import ViewMode from "@/components/pokemons/view-mode";
 import { Suspense } from "react";
 import { SortSkeleton, ViewModeSkeleton } from "@/components/skeletons";
-import initTranslations from "@/lib/i18n";
+import { initTranslationsServer } from "@/lib/i18n";
 
 type LayoutProps = {
 	children: React.ReactNode;
@@ -25,8 +25,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 		generationResponse.results.map((entry) => entry.name),
 		"name"
 	);
-	const {resources} = await initTranslations(locale, i18nNamespaces);
-
+	const {t} = await initTranslationsServer(locale, i18nNamespaces);
 
 	// types
 	const typeResponse = await getEndpointData("type");
@@ -95,7 +94,7 @@ export default async function Layout({ children, params }: LayoutProps) {
 					<Suspense fallback={<ViewModeSkeleton />}>
 						<ViewMode />
 					</Suspense>
-					<Suspense fallback={<SortSkeleton />}>
+					<Suspense fallback={<SortSkeleton t={t} />}>
 						<Sort statNames={statNames} />
 					</Suspense>
 				</div>

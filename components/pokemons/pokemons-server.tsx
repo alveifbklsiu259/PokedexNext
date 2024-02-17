@@ -24,6 +24,7 @@ import {
 import Pokemons from "@/components/pokemons/pokemons";
 import { type View } from "./view-mode";
 import PokemonTable from "./pokemons-table";
+import Image from "next/image";
 
 type PokemonsServerProps = {
 	params: {
@@ -110,7 +111,8 @@ const PokemonsServer = async function PokemonsServer({
 		searchParams,
 		generations,
 		types,
-		locale
+		locale,
+		allNamesAndIds
 	);
 	// if (Array.isArray(searchParams.sort)) {
 	// 	throw new Error("invalid sorting param");
@@ -226,9 +228,9 @@ const PokemonsServer = async function PokemonsServer({
 				// data-value is for sorting
 				<div data-value={id} className={`idData idData-${id}`}>
 					<div data-tag="allowRowEvents">{String(id).padStart(4, "0")}</div>
-					<img
-						width="96px"
-						height="96px"
+					<Image
+						width={96}
+						height={96}
 						data-tag="allowRowEvents"
 						src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${[
 							id,

@@ -3,6 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
+		"turbo": "i18nexus pull && next dev --turbo",
 		"dev": "i18nexus pull && next dev",
 		"build": "i18nexus pull && next build",
 		"start": "i18nexus pull && next start",

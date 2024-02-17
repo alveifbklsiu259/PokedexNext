@@ -6,7 +6,7 @@ import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { FormControl, MenuItem } from "@mui/material";
 import { transformToKeyName, updateSearchParam } from "@/lib/util";
 import { useSearchParams } from "next/navigation";
-import { useTransitionRouter } from "../transition-context";
+import { useTransitionRouter } from "../transition-provider";
 import { View } from "./view-mode";
 import { useCurrentLocale } from "@/lib/hooks";
 import { useTranslation } from "react-i18next";
@@ -165,7 +165,7 @@ const Dropdown = memo(function Dropdown({ statNames }: DropdownProps) {
 					{getSortText(option)}
 				</MenuItem>
 			)),
-		[]
+		[getSortText]
 	);
 
 	return (

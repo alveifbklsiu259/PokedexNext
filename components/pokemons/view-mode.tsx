@@ -5,7 +5,7 @@ import { FaTableCellsLarge } from "react-icons/fa6";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import { useSearchParams } from "next/navigation";
-import { useTransitionRouter } from "../transition-context";
+import { useTransitionRouter } from "../transition-provider";
 import { updateSearchParam } from "@/lib/util";
 import { useCurrentLocale } from "@/lib/hooks";
 

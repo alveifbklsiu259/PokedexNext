@@ -12,6 +12,7 @@ import Spinner from "./spinner";
 import { DataTableSkeleton } from "./pokemon/moves-table";
 import { FaTableCellsLarge } from "react-icons/fa6";
 import { BsListUl } from "react-icons/bs";
+import type { i18n } from "i18next";
 
 type RelatedPokemonSkeletonProps = {
 	order: "previous" | "next";
@@ -56,6 +57,7 @@ export const PokemonsSkeleton = () => {
 
 // reference: https://stackoverflow.com/questions/59461615/a-good-way-to-handle-material-ui-skeleton-scaling-within-a-variable-height-grid
 // note that variant="text" does not take height attribute, to adjust the height of a text suspense, change the font-size
+
 export const BasicInfoSkeleton = () => {
 	return (
 		<div
@@ -89,26 +91,31 @@ export const BasicInfoSkeleton = () => {
 	);
 };
 
-export const DetailSkeleton = () => {
+type DetailSkeletonProps = {
+	t: i18n["t"];
+};
+
+export const DetailSkeleton = ({ t }: DetailSkeletonProps) => {
 	return (
 		<>
 			<p className="my-4 col-6">
-				Height
+				{t("height")}
 				<br /> <Skeleton className="skeleton__text__centered" width={85} />
 			</p>
 			<p className="my-4 col-6">
-				Weight
+				{t("weight")}
 				<br /> <Skeleton className="skeleton__text__centered" width={85} />
 			</p>
 			<p className="col-6 d-flex flex-column">
-				Gender
+				{t("pokemon:gender")}
 				<br />
 				<span className="mt-4">
 					<Skeleton className="skeleton__text__centered" width={65} />
 				</span>
 			</p>
 			<div className="col-6 abilities p-0">
-				Abilities <br />
+				{t("pokemon:abilities")}
+				<br />
 				<AbilitiesSkeleton />
 			</div>
 			<p className="col-12 m-3 p-2 text-start description">
@@ -128,7 +135,10 @@ export const AbilitiesSkeleton = () => {
 	);
 };
 
-export const StatsSkeleton = () => {
+type StatsSkeletonProps = {
+	t: i18n["t"];
+};
+export const StatsSkeleton = ({ t }: StatsSkeletonProps) => {
 	const stats: Stat[] = [
 		"hp",
 		"attack",
@@ -144,13 +154,18 @@ export const StatsSkeleton = () => {
 
 	return (
 		<div className="col-12 mt-5 stats">
-			<h1 className="text-center">Stats</h1>
+			<h1 className="text-center">{t("pokemon:stats")}</h1>
 			<table className="mx-auto">
 				<tbody>
 					{stats.map((stat) => (
 						<tr key={stat}>
 							<td className="text-capitalize text-center" width="30%">
-								{stat === "hp" ? stat.toUpperCase() : stat.replace("-", " ")}
+								<Skeleton
+									width={150}
+									height={33}
+									sx={{ fontSize: "1.4em" }}
+									className="m-auto"
+								/>
 							</td>
 							<td width="10%">
 								<Skeleton width={40} height={33} sx={{ fontSize: "1.4em" }} />
@@ -164,7 +179,7 @@ export const StatsSkeleton = () => {
 					))}
 					<tr>
 						<td className="text-center" style={{ fontSize: "bold" }}>
-							Total
+							{t("total")}
 						</td>
 						<td>
 							<Skeleton width={40} height={33} />
@@ -176,20 +191,28 @@ export const StatsSkeleton = () => {
 	);
 };
 
-export const EvolutionChainSkeleton = () => {
+type EvolutionChainSkeletonProps = {
+	t: i18n["t"];
+};
+
+export const EvolutionChainSkeleton = ({ t }: EvolutionChainSkeletonProps) => {
 	return (
 		<div className="col-12 mt-5 evolutionChains p-0">
-			<h1 className="text-center">Evolutions</h1>
+			<h1 className="text-center">{t("pokemon:evolutions")}</h1>
 			<Spinner />
 		</div>
 	);
 };
 
-export const MovesSkeleton = () => {
+type MovesSkeletonProps = {
+	t: i18n["t"];
+};
+
+export const MovesSkeleton = ({ t }: MovesSkeletonProps) => {
 	return (
 		<>
 			<div className="moves text-center mt-5">
-				<h1>Moves</h1>
+				<h1>{t("pokemon:moves")}</h1>
 				<div>
 					{[...Array(9).keys()].map((num) => (
 						<button
@@ -232,7 +255,11 @@ export const ViewModeSkeleton = () => {
 	);
 };
 
-export const SortSkeleton = () => {
+type SortSkeletonProps = {
+	t: i18n["t"];
+};
+
+export const SortSkeleton = ({ t }: SortSkeletonProps) => {
 	return (
 		<Box
 			sx={{
@@ -242,10 +269,32 @@ export const SortSkeleton = () => {
 			}}
 		>
 			<FormControl fullWidth>
-				<InputLabel id="sort-label">Sort</InputLabel>
+				<InputLabel id="sort-label">{t("sort")}</InputLabel>
 				<Select labelId="sort-label" id="sort" label="Sort" disabled></Select>
 			</FormControl>
 		</Box>
+	);
+};
+
+export const VarietiesSkeleton = () => {
+	return (
+		// <Skeleton
+		// 	variant="rectangular"
+		// 	height={42}
+		// 	width="100%"
+		// 	className="marginWithVarieties"
+		// />
+		<div className="marginWithVarieties" style={{height: '66px'}}></div>
+	);
+};
+
+export const VarietyNameSkeleton = ({index}: {index: number}) => {
+	return (
+		<li className={index === 0 ? "active" : ""}>
+			<button disabled={true} className="text-capitalize">
+				<Skeleton variant="rectangular" width={68} height={24} />
+			</button>
+		</li>
 	);
 };
 

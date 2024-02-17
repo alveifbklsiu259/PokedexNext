@@ -11,7 +11,7 @@ import { type Locale } from "@/i18nConfig";
 import BasicInfo from "../basicInfo";
 import { getData, getDataToFetch } from "@/lib/api";
 import Spinner from "@/components/spinner";
-import { useTransitionRouter } from "../transition-context";
+import { useTransitionRouter } from "../transition-provider";
 import { useCurrentLocale } from "@/lib/hooks";
 
 type PokemonsProps = {

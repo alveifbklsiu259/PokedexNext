@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import PokemonsServer from "@/components/pokemons/pokemons-server";
-import type { LanguageOption } from "@/slices/display-slice";
 import { PokemonsSkeleton } from "@/components/skeletons";
+import { Locale } from "@/i18nConfig";
 
 type PageProps = {
 	params: {
-		language: LanguageOption;
+		locale: Locale;
 	};
 	searchParams: { [key: string]: string | string[] | undefined };
 };

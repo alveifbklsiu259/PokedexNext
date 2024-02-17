@@ -37,6 +37,7 @@ const BasicInfo = memo<BasicInfoProps>(function BasicInfo({
 
 	// there's some error from the API(some img src is https://raw.githubusercontent.com/PokeAPI/sprites/master/https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/xxx), just temporary workaround
 	let imgSrc = pokemonData.sprites?.other?.["official-artwork"]?.front_default;
+	// let imgSrc = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${pokemonData.id}.gif`;
 	if (
 		imgSrc &&
 		imgSrc.includes(

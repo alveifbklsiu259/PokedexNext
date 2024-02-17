@@ -1,7 +1,7 @@
 import { memo, useEffect, useLayoutEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { updateSearchParam } from "@/lib/util";
-import { useTransitionRouter } from "../transition-context";
+import { useTransitionRouter } from "../transition-provider";
 import { useCurrentLocale } from "@/lib/hooks";
 import { useTranslation } from "react-i18next";
 

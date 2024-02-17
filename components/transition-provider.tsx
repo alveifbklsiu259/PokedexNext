@@ -1,26 +1,68 @@
 "use client";
+import { useRouter } from "next/navigation";
+import { createContext, useContext, useTransition, useMemo } from "react";
+import type {AppRouterInstance, NavigateOptions } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
-import { I18nextProvider } from "react-i18next";
-import initTranslations from "@/lib/i18n";
-import { createInstance, type Resource } from "i18next";
-import { type Locale, i18nNamespaces } from "@/i18nConfig";
+const TransitionContext = createContext<
+	[boolean, React.TransitionStartFunction] | null
+>(null);
 
 type TransitionProviderProps = {
 	children: React.ReactNode;
-	locale: Locale;
-	namespaces: typeof i18nNamespaces;
-	resources: Resource;
 };
 
-export default function TranslationsProvider({
+export default function TransitionProvider({
 	children,
-	locale,
-	namespaces,
-	resources,
 }: TransitionProviderProps) {
-	const i18n = createInstance();
-
-	initTranslations(locale, namespaces, i18n, resources);
-
-	return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
+	const [isPending, startTransition] = useTransition();
+	return (
+		<TransitionContext.Provider value={[isPending, startTransition]}>
+			{children}
+		</TransitionContext.Provider>
+	);
 }
+
+export const useCustomTransition = () => {
+	const transitionContext = useContext(TransitionContext);
+	if (transitionContext === null) {
+		throw new Error("transition context is not initialized");
+	}
+	return transitionContext;
+};
+
+export const useTransitionRouter = () => {
+	const router = useRouter();
+	const [isPending, startTransition] = useCustomTransition();
+	const routerKeys = Object.keys(router) as (keyof AppRouterInstance)[];
+	const transitionRouter = useMemo(() => ({...router}), [router]);
+	routerKeys.forEach(key => {
+		switch (key) {
+			case 'push' :
+			case 'replace': {
+				transitionRouter[key] = (...arg: Parameters<typeof transitionRouter[typeof key]>) => {
+					startTransition(() => {
+						router[key](...arg as [href: string, options?: NavigateOptions | undefined])
+					})
+				}
+			};
+			break;
+			case 'prefetch' : {
+				transitionRouter[key] = (...arg: Parameters<typeof transitionRouter[typeof key]>) => {
+					startTransition(() => {
+						router[key](...arg)
+					})
+				}
+			};
+			break;
+			default : {
+				transitionRouter[key] = () => {
+					startTransition(() => {
+						router[key]()
+					})
+				}
+			}
+		};
+	});
+
+	return [isPending, transitionRouter] as const;
+};

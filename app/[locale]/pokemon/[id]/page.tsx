@@ -159,7 +159,7 @@ import Detail from "@/components/pokemon/detail";
 import Stats from "@/components/pokemon/stats";
 import MovesServer from "@/components/pokemon/moves-server";
 import EvolutionChains from "@/components/pokemon/evolution-chains";
-import { BasicInfoSkeleton, DetailSkeleton, EvolutionChainSkeleton, MovesSkeleton, RelatedPokemonSkeleton, StatsSkeleton } from "@/components/skeletons";
+import { BasicInfoSkeleton, DetailSkeleton, EvolutionChainSkeleton, MovesSkeleton, RelatedPokemonSkeleton, StatsSkeleton, VarietiesSkeleton } from "@/components/skeletons";
 import RelatedPokemon from "@/components/pokemon/related-pokemon";
 import dynamic from "next/dynamic";
 import { initTranslationsServer } from "@/lib/i18n";
@@ -224,6 +224,7 @@ type PageProps = {
 // };
 
 const ScrollToTop = dynamic(() => import("@/components/scroll-to-top"), {ssr: false});
+const Overlay = dynamic(() => import("@/components/overlay"), {ssr: false})
 
 export default async function Page({ params }: PageProps) {
 	const { locale, id } = params;
@@ -283,6 +284,7 @@ export default async function Page({ params }: PageProps) {
 
 	return (
 		<>
+			<Overlay />
 			<Suspense fallback={<RelatedPokemonSkeleton order="previous"/>}>
 				<RelatedPokemon pokemonId={pokemonId} order="previous" />
 			</Suspense>
@@ -291,32 +293,31 @@ export default async function Page({ params }: PageProps) {
 			</Suspense>
 
 			<div className="row justify-content-center mainContainer">
-				<Suspense fallback={null}>
+				<Suspense fallback={<VarietiesSkeleton />}>
 					<Varieties locale={locale} pokemonId={pokemonId} />
 				</Suspense>
 
 				<div className="basicInfoContainer row col-8 col-sm-6 justify-content-center">
 					<Suspense
 						fallback={
-							<BasicInfoSkeleton/>
+							<BasicInfoSkeleton />
 						}
 					>
 						<BasicInfoServer locale={locale} pokemonId={pokemonId} />
 					</Suspense>
 				</div>
 				<div className="detail row text-center col-12 col-sm-6">
-					<Suspense fallback={<DetailSkeleton/>}>
+					<Suspense fallback={<DetailSkeleton t={t}/>}>
 						<Detail
 							locale={locale}
 							pokemonId={pokemonId}
 						/>
 					</Suspense>
 				</div>
-				<Suspense fallback={<StatsSkeleton />}>
+				<Suspense fallback={<StatsSkeleton t={t}/>}>
 					<Stats locale={locale} pokemonId={pokemonId} />
 				</Suspense>
-				<Suspense fallback={<EvolutionChainSkeleton />}>
-					
+				<Suspense fallback={<EvolutionChainSkeleton t={t}/>}>
 					<EvolutionChains
 						locale={locale}
 						pokemonId={pokemonId}
@@ -324,7 +325,7 @@ export default async function Page({ params }: PageProps) {
 						// items={itemData}
 					/>
 				</Suspense>
-				<Suspense fallback={<MovesSkeleton/>}>
+				<Suspense fallback={<MovesSkeleton t={t}/>}>
 					<MovesServer
 						pokemonId={pokemonId}
 						locale={locale}

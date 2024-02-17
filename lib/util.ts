@@ -2,7 +2,8 @@ import { ReadonlyURLSearchParams } from "next/navigation";
 import type { Pokemon, PokemonForm, PokemonSpecies } from "./definitions";
 import { LanguageOption } from "@/app/[language]/page";
 import type { EndPointRequest } from "./api";
-import { CachedGeneration, CachedType } from "../slices/pokemon-data-slice";
+import { CachedAllPokemonNamesAndIds, CachedGeneration, CachedType } from "../slices/pokemon-data-slice";
+import { Locale } from "@/i18nConfig";
 
 export function getIdFromURL<T extends string | undefined>(url: T): T extends string ? number : undefined;
 export function getIdFromURL(url: string | undefined): number | undefined {
@@ -188,7 +189,7 @@ export function getStringFromParam (searchParam: string | string[] | undefined):
 	};
 };
 
-export const getIntersection = (searchParams: {[key: string]: string | string[] | undefined} , generations: CachedGeneration, types: CachedType, language: LanguageOption): number[] => {
+export const getIntersection = (searchParams: {[key: string]: string | string[] | undefined} , generations: CachedGeneration, types: CachedType, locale: Locale, allNamesAndIds: CachedAllPokemonNamesAndIds): number[] => {
 	const {query, type, gen, match, sort} = searchParams;
 	const selectedTypes = getArrFromParam(type);
 	const selectedGenerations = getArrFromParam(gen);
@@ -217,17 +218,13 @@ export const getIntersection = (searchParams: {[key: string]: string | string[] 
 		searchResult = pokemonRange;
 	} else if (isNaN(Number(trimmedText))) {
 		// search by name
-		searchResult = pokemonRange.filter(pokemon => {
-			if (language === 'en') {
-				return pokemon.name.toLowerCase().includes(trimmedText.toLowerCase())
-			} else {
-				// const speciesData = pokeData.pokemonSpecies[getIdFromURL(pokemon.url)]
-				// return getNameByLanguage(pokemon.name.toLowerCase(), language, speciesData).toLocaleLowerCase().includes(trimmedText.toLowerCase());
-
-				// handle non-en
-
-			};
-		});
+		if (locale === 'en') {
+			searchResult = pokemonRange.filter(pokemon => pokemon.name.toLowerCase().includes(trimmedText.toLowerCase()))
+		} else {
+			searchResult = Object.keys(allNamesAndIds).filter(name => name.toLowerCase().includes(trimmedText.toLocaleLowerCase())).map(name => ({
+				name, url: `https://pokeapi.co/api/v2/pokemon-species/${allNamesAndIds[name]}/`
+			}));
+		};
 	} else {
 		// search by id
 		searchResult = pokemonRange.filter(pokemon => String(getIdFromURL(pokemon.url)).padStart(4 ,'0').includes(String(trimmedText)));
@@ -264,7 +261,7 @@ type SearchParams = {
 	[key: string]: string
 }
 
-export const getIntersection2 = (searchParams: SearchParams , generations: CachedGeneration, types: CachedType, language: LanguageOption): number[] => {
+export const getIntersection2 = (searchParams: SearchParams , generations: CachedGeneration, types: CachedType, locale: Locale): number[] => {
 	const {query, type, gen, match} = searchParams;
 	const selectedTypes = getArrFromParam(type);
 	const selectedGenerations = getArrFromParam(gen);
@@ -294,7 +291,7 @@ export const getIntersection2 = (searchParams: SearchParams , generations: Cache
 	} else if (isNaN(Number(trimmedText))) {
 		// search by name
 		searchResult = pokemonRange.filter(pokemon => {
-			if (language === 'en') {
+			if (locale === 'en') {
 				return pokemon.name.toLowerCase().includes(trimmedText.toLowerCase())
 			} else {
 				// const speciesData = pokeData.pokemonSpecies[getIdFromURL(pokemon.url)]

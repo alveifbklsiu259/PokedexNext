@@ -1,9 +1,9 @@
-import React, { memo } from "react";
+import { Suspense, memo } from "react";
 import { type Locale } from "@/i18nConfig";
-import { getFormName2, getIdFromURL } from "@/lib/util";
-import { PokemonForm } from "@/lib/definitions";
-import Link from "next/link";
+import { getIdFromURL } from "@/lib/util";
 import { getData } from "@/lib/api";
+import VarietyName from "./variety-name";
+import { VarietyNameSkeleton } from "../skeletons";
 
 type VarietiesProps = {
 	locale: Locale;
@@ -18,49 +18,36 @@ const Varieties = memo<VarietiesProps>(async function Varieties({
 	const speciesId = getIdFromURL(pokemonData.species.url);
 	const speciesData = await getData("pokemonSpecies", speciesId);
 
-	const pokemons = await getData('pokemon', speciesData.varieties.map(variety => getIdFromURL(variety.pokemon.url)),'id');
-	const formsToFetch: number[] = [];
-	Object.values(pokemons).forEach(pokemon => pokemon.forms.forEach(form => formsToFetch.push(getIdFromURL(form.url))));
-	const forms = await getData('pokemonForm', formsToFetch, 'id');
-	const newForms = Object.values(forms).reduce<{
-		[id: number]: PokemonForm.Root
-	}>((pre, cur) => {
-		pre[getIdFromURL(cur.pokemon.url)] = cur;
-		return pre
-	}, {});
+	// waterfall in VarietyName, try to solve it
 
 	return (
 		<>
-			{speciesData.varieties.length > 1 && (
-				<div className="col-12 varieties">
+			{speciesData.varieties.length > 1 ? (
+				<div className="col-12 varieties marginWithVarieties">
 					<ul>
-						{speciesData.varieties.map((variety) => {
+						{speciesData.varieties.map((variety, index) => {
 							const varietyId = getIdFromURL(variety.pokemon.url);
 							return (
-								<React.Fragment key={variety.pokemon.name}>
-									<li
-										className={
-											pokemonData.name === variety.pokemon.name ? "active" : ""
-										}
-									>
-										<Link
-											className="text-capitalize text-decoration-none text-center"
-											href={`/${locale}/pokemon/${varietyId}`}
-											prefetch={true}
-										>
-											{getFormName2(speciesData, locale, pokemons[varietyId], newForms[varietyId])}
-										</Link>
-									</li>
-								</React.Fragment>
-							)
+								<Suspense fallback={<VarietyNameSkeleton index={index} />}>
+									<VarietyName
+										key={varietyId}
+										varietyId={varietyId}
+										varietyName={variety.pokemon.name}
+										locale={locale}
+										pokemonData={pokemonData}
+										speciesData={speciesData}
+									/>
+								</Suspense>
+							);
 						})}
 					</ul>
 				</div>
-			)}
+			) : <div className="marginWithoutVarieties"></div>
+		
+		}
 		</>
 	);
 });
 export default Varieties;
-
 
 // I was thinking about having varieties and evolution chain in a layout, so when changing form, theses two components will not re-render, but I'm currenly navigating to a new [id] when change form, to implement the said requirement, maybe we should use searchParams, but I also want to test if I can statically generate pokemon/[id], so maybe implement it later

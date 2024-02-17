@@ -3,7 +3,7 @@ import { createInstance } from "i18next";
 import { initReactI18next } from "react-i18next/initReactI18next";
 import resourcesToBackend from "i18next-resources-to-backend";
 import i18nConfig, { type Locale, i18nNamespaces } from "@/i18nConfig";
-import { type i18n, Resource } from "i18next";
+import type { i18n, Resource } from "i18next";
 
 const initTranslations = async function initTranslations(
 	locale: Locale,
@@ -26,8 +26,16 @@ const initTranslations = async function initTranslations(
 	if (!resources) {
 		i18nInstance.use(
 			resourcesToBackend(
-				(language: string, namespace: string) =>
-					import(`@/locales/${language}/${namespace}.json`)
+				(language: string, namespace: string) => {
+					let localeDir: string;
+					if (language.includes('-')) {
+						const indexOfDash = language.indexOf('-');
+						localeDir = language.slice(0, indexOfDash).concat(language.slice(indexOfDash).toUpperCase());
+					} else {
+						localeDir = language;
+					};
+					return import(`@/locales/${localeDir}/${namespace}.json`)
+				}
 			)
 		);
 	}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCustomTransition } from "./transition-context";
+import { useCustomTransition } from "./transition-provider";
 
 export default function Loader() {
 	const [isTransition] = useCustomTransition();

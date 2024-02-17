@@ -4,7 +4,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { FaLanguage } from "react-icons/fa6";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useTransitionRouter } from "./transition-context";
+import { useTransitionRouter } from "./transition-provider";
 import i18nConfig, { type Locale } from "@/i18nConfig";
 import { useCurrentLocale } from "@/lib/hooks";
 
@@ -71,7 +71,7 @@ const LanguageMenu = memo(function LanguageMenu() {
 				>
 					{i18nConfig.locales.map((locale) => (
 						<Suspense key={locale} fallback={null}>
-							<Item locale={locale as Locale} handleClose={handleClose} />
+							<Item locale={locale} handleClose={handleClose} />
 						</Suspense>
 					))}
 				</Menu>
@@ -85,11 +85,13 @@ type ItemProprs = {
 	handleClose: () => void;
 };
 
-const languages = {
+const languages: {
+	[P in Locale]: string
+} = {
 	en: "English",
 	ja: "日本語",
-	zh_Hant: "繁體中文",
-	zh_Hans: "简体中文",
+	"zh-Hant": "繁體中文",
+	"zh-Hans": "简体中文",
 	ko: "한국어",
 	fr: "Français",
 	de: "Deutsch",
@@ -100,18 +102,20 @@ const Item = memo<ItemProprs>(function Item({ locale, handleClose }) {
 	const currentLocale = useCurrentLocale();
 	const newPath = pathname.replace(currentLocale, locale);
 	const searchParams = useSearchParams();
-	const [isPending, transitionRouter] = useTransitionRouter();
+	const [_, transitionRouter] = useTransitionRouter();
 
-	const handleChangeLanguage = (locale: Locale) => {
-		handleClose();
+	console.log(searchParams)
 
-		// set cookie for next-i18n-router
+	const handleChangeLanguage = () => {
+		handleClose();	
+
+		/* set cookie for next-i18n-router
 		const days = 30;
 		const date = new Date();
 		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
 		const expires = date.toUTCString();
-		document.cookie = `NEXT_LOCALE=${locale};expires=${expires};path=/`;
-
+		document.cookie = `NEXT_LOCALE=${locale};expires=${expires};path=/`; 
+		*/
 		transitionRouter.replace(`${newPath}?${searchParams.toString()}`);
 	};
 
@@ -127,7 +131,7 @@ const Item = memo<ItemProprs>(function Item({ locale, handleClose }) {
 			}}
 			selected={locale === currentLocale}
 			disabled={locale === currentLocale}
-			onClick={() => handleChangeLanguage(locale)}
+			onClick={handleChangeLanguage}
 		>
 			{languages[locale]}
 		</MenuItem>
@@ -135,3 +139,8 @@ const Item = memo<ItemProprs>(function Item({ locale, handleClose }) {
 });
 
 export default LanguageMenu;
+
+
+// hair
+// mask
+// cell phone case

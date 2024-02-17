@@ -6,7 +6,7 @@ import DataTable, {
 } from "react-data-table-component";
 import { useSearchParams } from "next/navigation";
 import type { SortMethod, SortOption, SortField } from "./sort";
-import { useTransitionRouter } from "../transition-context";
+import { useTransitionRouter } from "../transition-provider";
 import { PokemonTableData } from "./pokemons-server";
 import { capitalize, updateSearchParam } from "@/lib/util";
 import { useCurrentLocale } from "@/lib/hooks";
@@ -66,7 +66,7 @@ export default function PokemonTable({
 				return `${t('total')}`;
 		};
 		return columnHeader;
-	}, [])
+	}, [t])
 
 	const firstUppercaseIndex = sort.search(/[A-Z]/);
 	const sortField = sort.slice(0, firstUppercaseIndex) as SortField;
@@ -95,15 +95,16 @@ export default function PokemonTable({
 						? sortElement(dataKey)
 						: undefined,
 			})),
-		[data, columnHeaders, sortElement]
+		[data, columnHeaders, sortElement, getColumnHeader]
 	);
+
 
 	const handleRowClick = useCallback(
 		async (row: ColData) => {
 			const pokemonId: number = row.number.props["data-value"];
 			transitionRouter.push(`/${currentLocale}/pokemon/${pokemonId}`);
 		},
-		[transitionRouter]
+		[transitionRouter, currentLocale]
 	);
 
 	const handleChangePage = useCallback(
