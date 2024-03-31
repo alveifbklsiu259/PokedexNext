@@ -7,6 +7,82 @@ export type NonNullableArray<T extends any[]> = {
 	[K in keyof T]: NonNullable<T[K]>;
 };
 
+export type SelectedTypes = string[];
+
+
+export type CachedPokemon = {
+	[id: string | number]: Pokemon.Root
+};
+
+export type CachedPokemonSpecies = {
+	[id: string | number]: PokemonSpecies.Root
+};
+
+export type CachedAbility = {
+	[name: string]: Ability.Root
+};
+
+export type CachedMachine = {
+	[name: string]: {
+		version_groups: {
+			[name: string]: string | undefined
+		}
+	}
+};
+
+export type CachedStat = {
+	[name: string]: Stat.Root
+};
+
+export type CachedAllPokemonNamesAndIds = {
+	[name: string]: number
+};
+
+export type CachedMoveDamageClass = {
+	[name: string]: MoveDamageClass.Root;
+};
+
+export type CachedVersion = {
+	[name: string]: Version.Root
+};
+
+export type CachedItem = {
+	[name: string]: Item.Root
+};
+
+export type CachedEvolutionChain = {
+	[id: string | number]: EvolutionChain.Root
+};
+
+export type CachedGeneration = {
+	[name: string]: Generation.Root
+};
+
+export type CachedType = {
+	[name: string]: Type.Root
+};
+
+export type CachedMove = {
+	[name: string]: Move.Root
+};
+
+export type PokemonDataTypes = {
+	pokemon: CachedPokemon,
+	pokemonCount: null | number,
+	pokemonSpecies: CachedPokemonSpecies,
+	ability: CachedAbility,
+	type: CachedType,
+	move: CachedMove,
+	machine: CachedMachine,
+	stat: CachedStat,
+	moveDamageClass: CachedMoveDamageClass,
+	version: CachedVersion,
+	generation: CachedGeneration,
+	evolutionChain: CachedEvolutionChain,
+	item: CachedItem,
+	allPokemonNamesAndIds: CachedAllPokemonNamesAndIds
+};
+
 // API types
 export namespace Pokemon {
 	export interface Root {

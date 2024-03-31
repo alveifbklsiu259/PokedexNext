@@ -1,9 +1,10 @@
-import { memo, useEffect, useLayoutEffect } from "react";
+import { memo, useEffect, useLayoutEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { updateSearchParam } from "@/lib/util";
 import { useTransitionRouter } from "../transition-provider";
 import { useCurrentLocale } from "@/lib/hooks";
 import { useTranslation } from "react-i18next";
+import Button from '@mui/material/Button';
 
 type FormBtnProps = {
 	formRef: React.RefObject<HTMLFormElement>;
@@ -37,7 +38,8 @@ const FormBtn = memo(function FormBtn({
 	const generation = searchParams.get("gen");
 	const type = searchParams.get("type");
 	const match = (searchParams.get("match") || "all") as "part" | "all";
-	const {t} = useTranslation();
+	const [prevSearchParams, setPrevSearchParams] = useState(searchParams.toString());
+	const { t } = useTranslation();
 
 	// synchronizing state, the reason I'm synchronizing states in this component is that the data requires searchParams.
 	useLayoutEffect(() => {
@@ -83,26 +85,12 @@ const FormBtn = memo(function FormBtn({
 				onCloseModal();
 			}
 
-			// what should I use, replace or push?
-			transitionRouter.replace(
-				`/${currentLocale}/pokemons/search?${newSearchParams}`
-				// `/${currentLocale}/pokemons2?${newSearchParams}`
-			);
-
-			// if (viewModeRef?.current) {
-			// 	// search from root
-			// 	viewModeRef.current.scrollIntoView();
-			// } else {
-			// 	// search from navbar, could be at root or /pokemons/xxx.
-			// 	if (!document.querySelector('.viewModeContainer')) {
-			// 		// navigateNoUpdates('/', {state: 'resetPosition'});
-			// 		router.push('/');
-			// 	};
-			// 	setTimeout(() => {
-			// 		document.querySelector('.viewModeContainer')?.scrollIntoView();
-			// 	}, 10);
-			// };
-			// dispatch(searchPokemon({searchQuery, selectedGenerations, selectedTypes, typeMatch}));
+			if (prevSearchParams !== newSearchParams) {
+				transitionRouter.replace(
+					`/${currentLocale}/pokemons/search?${newSearchParams}`
+				);
+				setPrevSearchParams(newSearchParams);
+			};
 		};
 
 		// By attaching the submit event when FormBtn mounts, we don't have to read useSearchParams in Search component in which if we do, it will cause the whole tree down below to render on the client if the route is statically rendered on the server.
@@ -123,18 +111,15 @@ const FormBtn = memo(function FormBtn({
 	]);
 
 	return (
-		<button
-			// disabled={status === 'loading' ? true : false}
-			className="btn btn-primary btn-lg btn-block w-100 my-3"
+		<Button
+			variant="contained"
 			type="submit"
 			disabled={isPending}
+			className="w-100 my-3"
 		>
 			{t('search')}
-		</button>
+		</Button>
 	);
 });
 
 export default FormBtn;
-
-// when searchQuery, selectedTypes, selectedGenerations change, this component will re-renders, maybe solve this by passing ref down?
-// improve performance of this component

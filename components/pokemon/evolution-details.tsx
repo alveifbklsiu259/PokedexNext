@@ -40,8 +40,8 @@ type GetKeys<T> = {
 	[K in keyof T]: T[K]
 }
 
-const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDetails({locale, chainId, defaultFormId, isChainDefault}) {
-	const {t} = await initTranslationsServer(locale, i18nNamespaces);
+const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDetails({ locale, chainId, defaultFormId, isChainDefault }) {
+	const { t } = await initTranslationsServer(locale, i18nNamespaces);
 	// // evolution chain
 	const chainData = await getEvolutionChains(chainId);
 
@@ -60,43 +60,43 @@ const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDet
 	type Requirements = Partial<GetKeys<Omit<typeof selectedDetail, 'trigger'>>>
 
 	let requirements: Requirements,
-		trigger: string, 
+		trigger: string,
 		mainText: string | React.JSX.Element = '',
 		otherRequirements: React.JSX.Element | undefined,
 		content: React.JSX.Element;
 
 	const rephrase = (requirements: Requirements, requirement: keyof Requirements) => {
 		let value = requirements[requirement];
-		switch(requirement) {
-			case 'gender' : 
+		switch (requirement) {
+			case 'gender':
 				switch (value) {
-					case 1 : {
+					case 1: {
 						value = <FaVenus className="fa-venus"></FaVenus>
 						break;
 					}
-					default : {
+					default: {
 						value = <FaMars className="fa-mars"></FaMars>
 					}
 				}
 				break;
 
-				case 'relative_physical_stats' :
+			case 'relative_physical_stats':
 				switch (value) {
-					case 1 : {
+					case 1: {
 						value = 'Attack > Defense';
 						break;
 					}
-					case -1 : {
+					case -1: {
 						value = 'Attack < Defense';
 						break;
 					}
-					default : {
+					default: {
 						value = 'Attack = Defense';
 					}
 				}
 				break;
 
-			case 'held_item' : 
+			case 'held_item':
 				value = (
 					<>
 						{getNameByLanguage(value, locale, items[transformToKeyName(value)!])}
@@ -104,8 +104,8 @@ const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDet
 					</>
 				)
 				break;
-			
-			default : 
+
+			default:
 				value = requirements[requirement];
 		};
 
@@ -125,9 +125,9 @@ const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDet
 			}, {});
 
 		trigger = selectedDetail.trigger.name;
-		
-		switch(trigger) {
-			case 'level-up' : 
+
+		switch (trigger) {
+			case 'level-up':
 				if (requirements["min_level"]) {
 					mainText = `${t('pokemon:level')} ${requirements["min_level"]}`
 					delete requirements["min_level"];
@@ -135,12 +135,12 @@ const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDet
 					mainText = `Level up`
 				};
 				break;
-	
-			case 'trade' : 
+
+			case 'trade':
 				mainText = `Trade`
 				break;
-	
-			case 'use-item' : 
+
+			case 'use-item':
 				if (requirements["item"]) {
 					mainText = (
 						<>
@@ -153,14 +153,14 @@ const EvolutionDetails = memo<EvolutionDetailsProps>(async function EvolutionDet
 					delete requirements["item"];
 				};
 				break;
-			
-			case 'shed' : 
+
+			case 'shed':
 				mainText = 'Level 20, Empty spot in party, Pokeball in bag';
 				break;
-			default : 
+			default:
 				mainText = 'No Data';
 		};
-		
+
 		otherRequirements = (
 			<ul className="p-0 mt-2 mb-4">
 				{

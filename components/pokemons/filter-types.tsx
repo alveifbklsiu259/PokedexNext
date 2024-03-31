@@ -1,8 +1,7 @@
 import { memo, useCallback } from 'react';
 import { Switch, Stack, Typography, FormControlLabel } from '@mui/material';
 import { getNameByLanguage } from '@/lib/util';
-import type { SelectedTypes } from '@/slices/search-slice';
-import { CachedType } from '@/slices/pokemon-data-slice';
+import type { CachedType, SelectedTypes } from '@/lib/definitions';
 import { MemoImage } from '../memos';
 import { useCurrentLocale } from '@/lib/hooks';
 import { useTranslation } from 'react-i18next';
@@ -15,8 +14,8 @@ type FilterTypesProps = {
 	types: CachedType
 };
 
-const FilterTypes = memo<FilterTypesProps>(function FilterTypes ({selectedTypes, setSelectedTypes, setTypeMatch,typeMatch, types}) {
-	const {t} = useTranslation();
+const FilterTypes = memo<FilterTypesProps>(function FilterTypes({ selectedTypes, setSelectedTypes, setTypeMatch, typeMatch, types }) {
+	const { t } = useTranslation();
 	const handleSelectType = useCallback((type: string) => {
 		setSelectedTypes(st => {
 			const update = [...st];
@@ -29,12 +28,6 @@ const FilterTypes = memo<FilterTypesProps>(function FilterTypes ({selectedTypes,
 		});
 	}, [setSelectedTypes]);
 
-	// const image = useMemo(() => <Image width='150' height='150' className="pokeBall" src='/ball.svg' alt="pokeBall" />, [])
-
-	// have a custom memo Image or Link
-
-
-
 	return (
 		<ul className="typesFilter col-12 col-sm-6 row justify-content-center gap-3">
 			<div>
@@ -42,7 +35,7 @@ const FilterTypes = memo<FilterTypesProps>(function FilterTypes ({selectedTypes,
 				<MatchMethod setTypeMatch={setTypeMatch} typeMatch={typeMatch} />
 			</div>
 			{Object.keys(types).filter(type => type !== 'unknown' && type !== 'shadow').map(type => (
-				<Type 
+				<Type
 					key={type}
 					type={type}
 					isTypeSelected={selectedTypes.includes(type)}
@@ -56,17 +49,17 @@ const FilterTypes = memo<FilterTypesProps>(function FilterTypes ({selectedTypes,
 
 type TypeProps = {
 	type: string,
-	isTypeSelected: boolean, 
+	isTypeSelected: boolean,
 	onSelectType: (type: string) => void,
 	types: CachedType
 }
 
-const Type = memo<TypeProps>(function Type({type, isTypeSelected, onSelectType, types}) {
+const Type = memo<TypeProps>(function Type({ type, isTypeSelected, onSelectType, types }) {
 	const currentLocale = useCurrentLocale();
 
 	return (
 		<li
-			onClick={() => onSelectType(type)} 
+			onClick={() => onSelectType(type)}
 			className={`type type-${type} ${isTypeSelected ? 'active' : ''}`}
 		>
 			{getNameByLanguage(type, currentLocale, types[type])}
@@ -79,11 +72,11 @@ type MatchMethodProps = {
 	typeMatch: string
 }
 
-const MatchMethod = memo<MatchMethodProps>(function MatchMethod({setTypeMatch, typeMatch}) {
-	const {t} = useTranslation();
+const MatchMethod = memo<MatchMethodProps>(function MatchMethod({ setTypeMatch, typeMatch }) {
+	const { t } = useTranslation();
 	// we can use useSearchParams to read typeMatch, but that would cause this component to be only client side rendered.
 	const handleClick = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if(e.target.checked) {
+		if (e.target.checked) {
 			setTypeMatch('part');
 		} else {
 			setTypeMatch('all');
@@ -105,6 +98,3 @@ const MatchMethod = memo<MatchMethodProps>(function MatchMethod({setTypeMatch, t
 });
 
 export default FilterTypes;
-
-
-// should I pass matchMethod down to this comp or read searchParams?

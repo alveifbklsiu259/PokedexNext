@@ -9,7 +9,7 @@ type ChainDetailsBtnProps = {
 
 const Modal = dynamic(() => import("../modal"));
 
-const ChainDetailsBtn = memo<ChainDetailsBtnProps>(function ChainDetailsBtn({otherRequirements}) {
+const ChainDetailsBtn = memo<ChainDetailsBtnProps>(function ChainDetailsBtn({ otherRequirements }) {
 	const [isModalShown, setIsModalShown] = useState(false);
 
 	const handleClick = useCallback(() => {

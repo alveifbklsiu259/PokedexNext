@@ -7,7 +7,7 @@ import { type Locale } from "@/i18nConfig";
 import { transformToKeyName, getNameByLanguage } from "@/lib/util";
 import MovesTable from "./moves-table";
 import { PokemonSpecies, Pokemon, Machine, Move, EvolutionChain } from "@/lib/definitions";
-import { CachedMachine, CachedType, CachedVersion, CachedMove, CachedGeneration, CachedMoveDamageClass } from "@/slices/pokemon-data-slice";
+import type { CachedMachine, CachedType, CachedVersion, CachedMove, CachedGeneration, CachedMoveDamageClass } from "@/lib/definitions";
 import { useTranslation } from "react-i18next";
 
 export type ColData = {
@@ -29,12 +29,12 @@ export type MovesData = ColData & {
 
 const formatColumnHeader = (data: keyof ColData) => {
 	switch (data) {
-		case 'pp' : 
+		case 'pp':
 			return 'PP'
-		case 'acc' :
-		case 'cat' :
+		case 'acc':
+		case 'cat':
 			return capitalize(data).concat('.');
-		default : 
+		default:
 			return capitalize(data)
 	};
 };
@@ -49,7 +49,7 @@ const sortNumsWithNull = (data: 'power') => (rowA: ColData, rowB: ColData) => {
 const sortElement = (data: 'type' | 'machine' | 'level') => (rowA: ColData, rowB: ColData) => {
 	const a: number | string = typeof rowA[data] === 'object' ? (rowA[data] as React.JSX.Element).props['data-value'] : rowA[data];
 	const b: number | string = typeof rowB[data] === 'object' ? (rowB[data] as React.JSX.Element).props['data-value'] : rowB[data];
-	return String(a).localeCompare(String(b), undefined, {numeric: true});
+	return String(a).localeCompare(String(b), undefined, { numeric: true });
 };
 
 const columnDataCreator = (filteredMethod: 'level-up' | 'machine'): TableColumn<ColData>[] => {
@@ -94,7 +94,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 	chainData,
 	movesDamageClass,
 }) {
-	const {t} = useTranslation('pokemon');
+	const { t } = useTranslation('pokemon');
 	const generationNames = useMemo(() => Object.values(generationData).map(generation => generation.name), [generationData]);
 	const generationOptions = useMemo(() => generationNames.slice(generationNames.indexOf(debutGeneration)), [generationNames, debutGeneration]);
 	const [selectedGeneration, setSelectedGeneration] = useState(debutGeneration);
@@ -169,7 +169,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 			version_group: version
 		};
 		type ConditionKey = keyof typeof conditions;
-		
+
 		const test = (versionDetail: Pokemon.VersionGroupDetail) => Object.keys(conditions).every(key => {
 			const entry = conditions[key as ConditionKey];
 			if (Array.isArray(entry)) {
@@ -180,7 +180,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 		});
 
 		const matches = pokemonData.moves.filter(move => move.version_group_details.some(test));
-		const results = matches.map(move => ({...move, version_group_details: move.version_group_details.filter(test)}));
+		const results = matches.map(move => ({ ...move, version_group_details: move.version_group_details.filter(test) }));
 		return results;
 	}, [pokemonData]);
 
@@ -188,7 +188,6 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 	const movesLearnedByMachine = useMemo(() => filterMoves('machine', versionOptions), [filterMoves, versionOptions]);
 
 	// all moves for current pokemon.
-	// const movesToFetch = useMemo(() => pokemonData.moves.filter(entry => !moveData[transformToKeyName(entry.move.name)]).map(entry => getIdFromURL(entry.move.url)), [pokemonData, moveData]);
 
 	const checkLearnOnEvo = useCallback((level: number, maxEvoLevel: number | undefined) => {
 		// level-up; data-value attribute is used for sorting, if maxEvoLevel is 0, put it after level 1.
@@ -215,26 +214,13 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 			const categoryText = getNameByLanguage(cachedMove.damage_class.name, locale, movesDamageClass[cachedMove.damage_class.name]);
 
 			let machineContent: undefined | React.JSX.Element;
-			// get machines, chnage pokemon, get machines, check if all correct? also check redux stat change
 
-			// if (!isFilteredByLevel) {
-			// 	// const url = movesLearnedByMachine.find(entry => transformToKeyName(entry.move.name) === lookupName)!.move.url;
-			// 	// the latest version may not have machine data
-			// 	const machineEntry = moveData[lookupName].machines.find(entry => entry.version_group.name === selectedVersion);
-			// 	let machineUrl = machineEntry ? machineEntry.machine.url : undefined;
-			// 	machineContent = <MachineContent url={machineUrl} type={type} key={lookupName.concat(`_${selectedVersion}`)}/>
-			// };
 			if (!isFilteredByLevel) {
 				if (isMachinesLoading) {
 					machineContent = (
 						<div data-value={'loading'}>
-							{/* <Image
-								src="/spinner.gif"
-								alt="Loading..."
-								width={30}
-								height={30}
-							/> */}
-							<Skeleton variant="rectangular" width={72.7} height={30}  />
+
+							<Skeleton variant="rectangular" width={72.7} height={30} />
 						</div>
 					)
 				} else if (machines) {
@@ -242,7 +228,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 					machineContent = (
 						<div data-value={machine} className="machineData">
 							<div data-tag="allowRowEvents">{machine.toUpperCase()}</div>
-							<Image width={30} height={30} data-tag="allowRowEvents" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-${type}.png`} alt={`tm-${type}`} className="machine"/>
+							<Image width={30} height={30} data-tag="allowRowEvents" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-${type}.png`} alt={`tm-${type}`} className="machine" />
 						</div>
 					)
 				}
@@ -268,7 +254,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 			if (move.level instanceof Array) {
 				(move.level as (number | React.JSX.Element)[]).forEach(level => {
 					const lv = typeof level === 'object' ? 0 : level;
-					data.push({...move, level: level, id: move.move.concat(`-${lv}`)})
+					data.push({ ...move, level: level, id: move.move.concat(`-${lv}`) })
 				})
 				delete data[index];
 			};
@@ -276,11 +262,11 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 
 		//  initial sort, remove empty element
 		return data.flat().sort((a, b) => {
-			const sortField = isFilteredByLevel ? 'level': 'machine';
+			const sortField = isFilteredByLevel ? 'level' : 'machine';
 
 			const rowA: string | number = typeof a[sortField] === 'object' ? (a[sortField] as React.JSX.Element).props['data-value'] : a[sortField] as number;
 			const rowB: string | number = typeof b[sortField] === 'object' ? (b[sortField] as React.JSX.Element).props['data-value'] : b[sortField] as number;
-			return String(rowA).localeCompare(String(rowB), undefined, {numeric: true});
+			return String(rowA).localeCompare(String(rowB), undefined, { numeric: true });
 		});
 	};
 
@@ -297,11 +283,10 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 		setSelectedVersion(version);
 	};
 
-	// const isMachineDataReady = movesLearnedByMachine.every(entry => machines[transformToKeyName(entry.move.name)]);
 
 	const changefilteredMethod = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
 		setFilteredMethod(e.target.checked ? 'machine' : 'level-up');
-		
+
 		if (e.target.checked && machines === null) {
 			const machinesToFetch: string[] = [];
 			let fetchedMachines: Machine.Root[] | undefined;
@@ -320,7 +305,7 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 			fetchedMachines.forEach(machine => {
 				const keyName = transformToKeyName(machine.move.name);
 				if (!machineData[keyName]) {
-					machineData[keyName] = {version_groups: {}};
+					machineData[keyName] = { version_groups: {} };
 				};
 				machineData[keyName].version_groups = {
 					...machineData[keyName].version_groups,
@@ -331,24 +316,22 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 			movesLearnedByMachine.forEach(machine => {
 				const keyName = transformToKeyName(machine.move.name);
 				if (!machineData[keyName]) {
-					machineData[keyName] = {version_groups: {}};
+					machineData[keyName] = { version_groups: {} };
 				};
 			});
 			setMachines(machineData)
 			setIsMachinesLoading(false)
-			
-			// dispatch(machineDataLoaded(machineData));
+
 		};
 	}, [setFilteredMethod, moveData, machines, setMachines, setIsMachinesLoading, movesLearnedByMachine]);
 
-	// const isDataReady = filteredMethod === 'level-up' ? !!movesData : !!movesData && isMachineDataReady;
 	return (
 		<>
 			<div className="moves text-center mt-5">
 				<h1>{t('moves')}</h1>
 				<div>
 					{generationOptions.map(generation => (
-						<button 
+						<button
 							className={`generationBtn btn btn-outline-secondary m-1 ${selectedGeneration === generation ? 'active' : ''}`}
 							// disabled={!isDataReady}
 							key={generation}
@@ -371,8 +354,8 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 					<MovesTable
 						movesData={movesData}
 						columnData={columnData}
-						changefilteredMethod={changefilteredMethod} 
-						filteredMethod={filteredMethod} 
+						changefilteredMethod={changefilteredMethod}
+						filteredMethod={filteredMethod}
 						selectedVersion={selectedVersion}
 						//  remove this prop
 						isDataReady={true}
@@ -384,59 +367,3 @@ const MovesClient = memo<MovesClientProps>(function MovesClient({
 	)
 });
 export default MovesClient;
-
-
-type MachineContentProps = {
-	url: string | undefined;
-	type: string
-}
-
-
-// if we have the machine stored in moves-client, we're gonna have to fetch all of them or the whole table will re-renders when we change gneration/version
-// const MachineContent = ({url, type}: MachineContentProps) => {
-// 	const [isLoading, setIsLoading] = useState(true);	
-// 	const [data, setData] = useState<Machine.Root | null>(null);
-
-// 	useEffect(() => {
-// 		if (url && data === null) {
-// 			const getMachine = async() => {
-// 				const response = await fetch(url);
-// 				const machine: Machine.Root = await response.json();
-// 				setData(machine);
-// 				setIsLoading(false)
-// 			};
-// 			getMachine();
-// 		} else if (url === undefined) {
-// 			setIsLoading(false)
-// 		};
-// 	}, [url, data, setData]);
-
-// 	let content;
-	
-// 	if (isLoading) {
-// 		content = (
-// 			<Image
-// 				src="/spinner.gif"
-// 				alt="Loading..."
-// 				width={30}
-// 				height={30}
-// 			/>
-// 		)
-// 	} else if(!isLoading && data === null) {
-// 		content = <span>No Data</span>
-// 	} else {
-// 		const machine = data!.item.name;
-// 		content = (
-// 			<div data-value={machine} className="machineData">
-// 				<div data-tag="allowRowEvents">{machine?.toUpperCase()}</div>
-// 				<Image width={30} height={30} data-tag="allowRowEvents" src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/tm-${type}.png`} alt={`tm-${type}`} className="machine"/>
-// 			</div>
-// 		)
-// 	}
-
-// 	return (
-// 		<>
-// 			{content}
-// 		</>
-// 	)
-// }

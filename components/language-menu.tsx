@@ -104,11 +104,8 @@ const Item = memo<ItemProprs>(function Item({ locale, handleClose }) {
 	const searchParams = useSearchParams();
 	const [_, transitionRouter] = useTransitionRouter();
 
-	console.log(searchParams)
-
 	const handleChangeLanguage = () => {
 		handleClose();	
-
 		/* set cookie for next-i18n-router
 		const days = 30;
 		const date = new Date();
@@ -139,8 +136,3 @@ const Item = memo<ItemProprs>(function Item({ locale, handleClose }) {
 });
 
 export default LanguageMenu;
-
-
-// hair
-// mask
-// cell phone case

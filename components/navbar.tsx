@@ -6,7 +6,6 @@ import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Slide from "@mui/material/Slide";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-import { useRouter } from "next/navigation";
 import LanguageMenu from "./language-menu";
 import Search from "./pokemons/search";
 import { FaMagnifyingGlass } from "react-icons/fa6";
@@ -14,7 +13,7 @@ import {
 	CachedAllPokemonNamesAndIds,
 	CachedGeneration,
 	CachedType,
-} from "../slices/pokemon-data-slice";
+} from "@/lib/definitions";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useCurrentLocale } from "@/lib/hooks";
@@ -80,7 +79,7 @@ type MainBarProps = {
 
 const MainBar = memo<MainBarProps>(function MainBar({ setIsModalShown }) {
 	const currentLocale = useCurrentLocale();
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 	return (
 		<Box sx={{ flexGrow: 1, mb: 9 }}>
 			<HideOnScroll>

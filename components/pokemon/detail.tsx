@@ -2,7 +2,7 @@ import React, { Suspense, memo } from "react";
 import { FaMars, FaVenus } from "react-icons/fa";
 import { BsQuestionLg } from "react-icons/bs";
 import { i18nNamespaces, type Locale } from "@/i18nConfig";
-import { getIdFromURL, getTextByLanguage } from "@/lib/util";
+import { getIdFromURL, getTextByLocale } from "@/lib/util";
 import { getData } from "@/lib/api";
 import Abilities from "./abilities";
 import { AbilitiesSkeleton } from "@/components/skeletons";
@@ -38,9 +38,9 @@ const Detail = memo<DetailProps>(async function Detail({
 	const pokemonData = await getData("pokemon", pokemonId);
 	const speciesId = getIdFromURL(pokemonData.species.url);
 	const speciesData = await getData("pokemonSpecies", speciesId);
-	const {t} = await initTranslationsServer(locale, i18nNamespaces);
+	const { t } = await initTranslationsServer(locale, i18nNamespaces);
 
-	const flavorText = getTextByLanguage(
+	const flavorText = getTextByLocale(
 		locale,
 		speciesData.flavor_text_entries,
 		"flavor_text"
@@ -62,7 +62,7 @@ const Detail = memo<DetailProps>(async function Detail({
 			</p>
 			<div className="col-6 abilities p-0">
 				{t('pokemon:abilities')}
-				 <br />
+				<br />
 				<Suspense fallback={<AbilitiesSkeleton />}>
 					<Abilities locale={locale} pokemonId={pokemonId} />
 				</Suspense>

@@ -18,7 +18,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 	locale,
 	pokemonId,
 }) {
-	const {t} = await initTranslationsServer(locale, i18nNamespaces);
+	const { t } = await initTranslationsServer(locale, i18nNamespaces);
 	const pokemonData = await getData('pokemon', pokemonId);
 	const speciesId = getIdFromURL(pokemonData.species.url);
 	const speciesData = await getData('pokemonSpecies', speciesId)
@@ -102,7 +102,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 				commonName: '',
 				idsInCommon: [] as number[]
 			};
-			
+
 			const gens: string[] = [];
 			[...pokeIdsWithoutNbf, ...nbfIds].forEach((id, index, ids) => {
 				const formId = getIdFromURL(pokemons[id].forms[0].url);
@@ -151,7 +151,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 			return exist;
 		};
 		evolutionChains = evolutionChains.reduce<number[][]>((newChains, currentChain) => {
-			const {commonName, commonGeneration, idsInCommon} = getCommonData(currentChain);
+			const { commonName, commonGeneration, idsInCommon } = getCommonData(currentChain);
 			const commonTest = (form: Pokemon.Root) => {
 				const formData = forms[getIdFromURL(form.forms[0].url)]
 				const isFormMatch = formData.form_name === commonName;
@@ -168,16 +168,16 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 					};
 				});
 			};
-			
+
 			if (allHasNbf(currentChain)) {
 				const newChain = getMatchedIds(currentChain);
 				newChains.push(currentChain);
 				if (!hasChain(newChain, newChains)) {
 					newChains.push(newChain);
 				};
-			} else if(someHasNbf(currentChain)) {
+			} else if (someHasNbf(currentChain)) {
 				const newChain = getMatchedIds(currentChain);
-				
+
 				if (isDefaultFormFromSameGeneration(currentChain)) {
 					newChains.push(currentChain);
 				} else {
@@ -234,7 +234,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 			maxDepth = chain.length;
 		};
 	});
-	
+
 	let content;
 	if (evolutionChains.length === 1 && evolutionChains[0].length === 1) {
 		content = (
@@ -258,7 +258,7 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 						</li>
 						{index < array.length - 1 && (
 							<li className='caret mt-5 mb-2'>
-								<Suspense fallback={<Spinner/>}>
+								<Suspense fallback={<Spinner />}>
 									<EvolutionDetails
 										locale={locale}
 										chainId={chainId}
@@ -295,10 +295,10 @@ const EvolutionChains = memo<EvolutionChainsProps>(async function EvolutionChain
 											</li>
 											{index < array.length - 1 && (
 												<li className="caret">
-													<Suspense fallback={<Spinner/>}>
+													<Suspense fallback={<Spinner />}>
 														<EvolutionDetails
 															locale={locale}
-															chainId={chainId} 
+															chainId={chainId}
 															defaultFormId={getDefaultFormId(array[index + 1])}
 															isChainDefault={isChainDefault(array)}
 														/>

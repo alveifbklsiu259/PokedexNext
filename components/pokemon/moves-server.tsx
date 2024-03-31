@@ -42,7 +42,7 @@ const MovesServer = memo<MovesServerProps>(async function MovesServer({
 	const versionResponse = await getEndpointData('version');
 	const versionToFetch = versionResponse.results.map(data => data.url);
 	const versions = await getData('version', versionToFetch, 'name');
-	
+
 	// pokemon/species data
 	let pokemonData = await getData('pokemon', pokemonId);
 	const speciesId = getIdFromURL(pokemonData.species.url);
@@ -69,7 +69,7 @@ const MovesServer = memo<MovesServerProps>(async function MovesServer({
 
 	return (
 		<>
-			<MovesClient 
+			<MovesClient
 				locale={locale}
 				pokemonData={pokemonData}
 				speciesData={speciesData}
@@ -86,10 +86,3 @@ const MovesServer = memo<MovesServerProps>(async function MovesServer({
 });
 
 export default MovesServer;
-
-// because DataTable can only be a client component, we can't render it on the server, we have to pass fetched data down.
-
-// try: 
-//1. just pass fetched data down
-//2.  get the initial column and data on the server, then pass the data down instead of the fetched data
-// see which on is faster

@@ -1,7 +1,6 @@
 import { memo, useCallback } from 'react';
 import { MemoImage } from '../memos';
-import type { Generation as GenerationType } from '@/lib/definitions';
-import { CachedGeneration } from '@/slices/pokemon-data-slice';
+import type { Generation as GenerationType, CachedGeneration } from '@/lib/definitions';
 import { useTranslation } from 'react-i18next';
 
 type FilterGenerationProps = {
@@ -10,8 +9,8 @@ type FilterGenerationProps = {
 	generations: CachedGeneration
 };
 
-const FilterGeneration = memo<FilterGenerationProps>(function FilterGeneration ({selectedGenerations, setSelectedGenerations, generations}) {
-	const {t} = useTranslation();
+const FilterGeneration = memo<FilterGenerationProps>(function FilterGeneration({ selectedGenerations, setSelectedGenerations, generations }) {
+	const { t } = useTranslation();
 	const handleSelectGeneration = useCallback((generation: GenerationType.Root) => {
 		setSelectedGenerations(sg => {
 			const update = [...sg];
@@ -48,10 +47,10 @@ type GenerationProps = {
 	isGenerationSelected: boolean
 }
 
-const Generation = memo<GenerationProps>(function Generation({generation, onSelectGeneration, isGenerationSelected}) {
+const Generation = memo<GenerationProps>(function Generation({ generation, onSelectGeneration, isGenerationSelected }) {
 	return (
 		<li
-			onClick={() => onSelectGeneration(generation)} 
+			onClick={() => onSelectGeneration(generation)}
 			className={`d-flex justify-content-center align-items-center ${isGenerationSelected ? 'active' : ''}`}
 		>
 			{(generation.name.replace('generation-', '')).toUpperCase()}

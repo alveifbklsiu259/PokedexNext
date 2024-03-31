@@ -14,7 +14,7 @@ const Stats = memo<StatsProps>(async function Stats({ locale, pokemonId }) {
 	const statResponse = await getEndpointData("stat");
 	const statToFetch = statResponse.results.map((data) => data.url);
 	const stats = await getData("stat", statToFetch, "name");
-	const {t} = await initTranslationsServer(locale, i18nNamespaces);
+	const { t } = await initTranslationsServer(locale, i18nNamespaces);
 
 	return (
 		<div className="col-12 mt-5 stats">

@@ -1,12 +1,12 @@
 "use client";
-import { useEffect, useState, useMemo, memo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { flushSync } from "react-dom";
 import { useRouter } from "next/navigation";
 import type {
 	CachedPokemon,
 	CachedPokemonSpecies,
 	CachedType,
-} from "@/slices/pokemon-data-slice";
+} from "@/lib/definitions";
 import { type Locale } from "@/i18nConfig";
 import BasicInfo from "../basicInfo";
 import { getData, getDataToFetch } from "@/lib/api";
@@ -22,7 +22,6 @@ type PokemonsProps = {
 };
 
 const Pokemons =
-	/*memo(*/
 	function Pokemons({
 		types,
 		pokemonData,
@@ -54,7 +53,7 @@ const Pokemons =
 			const getDataOnScroll = async () => {
 				if (
 					window.innerHeight + document.documentElement.scrollTop >
-						document.documentElement.offsetHeight * 0.98 &&
+					document.documentElement.offsetHeight * 0.98 &&
 					nextRequest.length &&
 					!isScrolling
 				) {
@@ -135,9 +134,8 @@ const Pokemons =
 						return (
 							<div
 								key={id}
-								className={`col-6 col-md-4 col-lg-3 card pb-3 pokemonCard ${
-									!imgSrc ? "justify-content-end" : ""
-								}`}
+								className={`col-6 col-md-4 col-lg-3 card pb-3 pokemonCard ${!imgSrc ? "justify-content-end" : ""
+									}`}
 								data-aos={index < 4 ? "flip-left" : ""}
 								data-aos-delay={index < 4 && `${index}00`}
 								onClick={() => handleClick(id)}
@@ -163,11 +161,6 @@ const Pokemons =
 				</div>
 			</>
 		);
-	}; /*,
-	() => true
-);*/
+	}
 
 export default Pokemons;
-
-// change form seleting g1 --> g1, g2 --> g1,g2, g3, even though the data passed down to Pokmeons (still the initial 24 pokemon and species) is the smae, the pokemons component still re-render, any way to prevent it?
-// server component renders --> client component (pokemons) renders (but only renders on the client side)

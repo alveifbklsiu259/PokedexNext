@@ -1,9 +1,8 @@
 import { memo } from "react";
 import Image from "next/image";
-import { Pokemon, PokemonForm, PokemonSpecies } from "@/lib/definitions";
-import { getFormName2, getIdFromURL, getNameByLanguage } from "@/lib/util";
+import type { Pokemon, PokemonForm, PokemonSpecies, CachedType } from "@/lib/definitions";
+import { getFormName, getIdFromURL, getNameByLanguage } from "@/lib/util";
 import { type Locale } from "@/i18nConfig";
-import { CachedType } from "@/slices/pokemon-data-slice";
 
 type BasicInfoProps = {
 	pokemonData: Pokemon.Root;
@@ -21,7 +20,7 @@ const BasicInfo = memo<BasicInfoProps>(function BasicInfo({
 	formData,
 }) {
 	const nationalNumber = getIdFromURL(pokemonData.species.url);
-	const formName = getFormName2(speciesData, locale, pokemonData, formData);
+	const formName = getFormName(speciesData, locale, pokemonData, formData);
 
 	let newName: undefined | React.JSX.Element;
 	if (formName.includes("(")) {
@@ -54,9 +53,8 @@ const BasicInfo = memo<BasicInfoProps>(function BasicInfo({
 
 	return (
 		<div
-			className={`basicInfo d-flex flex-column align-items-center text-center p-0 h-100 ${
-				!imgSrc ? "justify-content-end" : ""
-			} `}
+			className={`basicInfo d-flex flex-column align-items-center text-center p-0 h-100 ${!imgSrc ? "justify-content-end" : ""
+				} `}
 		>
 			{imgSrc ? (
 				<Image

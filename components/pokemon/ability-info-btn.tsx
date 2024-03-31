@@ -2,10 +2,11 @@
 import { memo, useState, useMemo, useCallback } from "react";
 import { AiFillQuestionCircle } from "react-icons/ai";
 import { Ability } from "@/lib/definitions";
-import { getNameByLanguage, getTextByLanguage } from "@/lib/util";
+import { getNameByLanguage, getTextByLocale } from "@/lib/util";
 import { type Locale } from "@/i18nConfig";
 import dynamic from "next/dynamic";
 import { useTranslation } from "react-i18next";
+import { Button } from "@mui/material";
 
 type AbilityInfoBtnProps = {
 	locale: Locale;
@@ -20,21 +21,20 @@ const AbilityInfoBtn = memo<AbilityInfoBtnProps>(function AbilityInfoBtn({
 }) {
 	const [isModalShown, setIsModalShown] = useState(false);
 	const [isDetail, setIsDetail] = useState(false);
-	const {t} = useTranslation('pokemon');
+	const { t } = useTranslation('pokemon');
 
 	let brief: string | undefined, detail: string | undefined;
 
 	if (abilityData) {
-		brief = getTextByLanguage(
+		brief = getTextByLocale(
 			locale,
 			abilityData.flavor_text_entries,
 			"flavor_text"
 		);
-		detail = getTextByLanguage(locale, abilityData.effect_entries, "effect");
+		detail = getTextByLocale(locale, abilityData.effect_entries, "effect");
 	}
-	const customClass = `modalBody ${
-		!abilityData && isModalShown ? "modalLoading" : ""
-	}`;
+	const customClass = `modalBody ${!abilityData && isModalShown ? "modalLoading" : ""
+		}`;
 
 	const handleShowModal = useCallback(() => {
 		setIsModalShown(true);
@@ -71,12 +71,13 @@ const AbilityInfoBtn = memo<AbilityInfoBtnProps>(function AbilityInfoBtn({
 						<p>{isDetail ? detail : brief}</p>
 					</div>
 					<div className="modalBtnContainer">
-						<button
+						<Button
 							onClick={handleShowDetail}
-							className="btn btn-warning"
+							variant="contained"
+							color="warning"
 						>
 							{t(`show${isDetail ? "Brief" : "Detail"}`)}
-						</button>
+						</Button>
 					</div>
 				</Modal>
 			)}

@@ -1,7 +1,7 @@
 import type { Locale } from "@/i18nConfig";
 import { getData } from "@/lib/api";
 import type { Pokemon, PokemonForm, PokemonSpecies } from "@/lib/definitions";
-import { getFormName2, getIdFromURL } from "@/lib/util";
+import { getFormName, getIdFromURL } from "@/lib/util";
 import Link from "next/link";
 
 type VarietyNameProps = {
@@ -43,7 +43,7 @@ export default async function VarietyName({
 				href={`/${locale}/pokemon/${varietyId}`}
 				prefetch={true}
 			>
-				{getFormName2(
+				{getFormName(
 					speciesData,
 					locale,
 					pokemons[varietyId],

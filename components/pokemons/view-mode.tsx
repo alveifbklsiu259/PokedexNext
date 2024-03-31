@@ -11,7 +11,7 @@ import { useCurrentLocale } from "@/lib/hooks";
 
 export type View = "card" | "list";
 
-const ViewMode = memo(function ViewMode(/* {tableInfoRef}: ViewModeProps */) {
+const ViewMode = memo(function ViewMode() {
 	const searchParams = useSearchParams();
 	const view = (searchParams.get("view") as View | null) || "card";
 	const [viewMode, setViewMode] = useState<View>(view);
@@ -66,5 +66,3 @@ const ViewMode = memo(function ViewMode(/* {tableInfoRef}: ViewModeProps */) {
 	);
 });
 export default ViewMode;
-
-// myabe we can have a viewModeContent which takes a optional searchParams prop, then we can use this content in skeleton too, but then we can't use useMemo, not sure if it's gonna affect performance

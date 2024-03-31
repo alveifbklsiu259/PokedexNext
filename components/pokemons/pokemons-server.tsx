@@ -20,7 +20,7 @@ import {
 	CachedPokemon,
 	CachedPokemonSpecies,
 	CachedStat,
-} from "@/slices/pokemon-data-slice";
+} from "@/lib/definitions";
 import Pokemons from "@/components/pokemons/pokemons";
 import { type View } from "./view-mode";
 import PokemonTable from "./pokemons-table";
@@ -35,8 +35,8 @@ type PokemonsServerProps = {
 
 export type PokemonNames =
 	| {
-			[key: string | number]: string;
-	  }
+		[key: string | number]: string;
+	}
 	| undefined;
 
 // pokemon table
@@ -105,7 +105,6 @@ const PokemonsServer = async function PokemonsServer({
 				{}
 			);
 	}
-	// have a early return based on searchPrams?
 
 	const intersection = getIntersection(
 		searchParams,
@@ -114,14 +113,9 @@ const PokemonsServer = async function PokemonsServer({
 		locale,
 		allNamesAndIds
 	);
-	// if (Array.isArray(searchParams.sort)) {
-	// 	throw new Error("invalid sorting param");
-	// }
+
 	const sort = (getStringFromParam(searchParams.sort) ||
 		"numberAsc") as SortOption;
-
-	// refactor getPokemons2, this is the cause for long loading
-	// or maybe the below code can be moved to getIntersection? why does getIntersection not use sort?
 
 	let pokemonData: CachedPokemon,
 		sortedIntersection: number[],
@@ -172,7 +166,6 @@ const PokemonsServer = async function PokemonsServer({
 		);
 		content = (
 			<Pokemons
-				// see if this key is necessary after migrating to react query
 				key={JSON.stringify(searchParams)}
 				types={types}
 				pokemonData={pokemonData!}
@@ -181,9 +174,6 @@ const PokemonsServer = async function PokemonsServer({
 			/>
 		);
 	} else {
-		console.time("table data");
-		// pokemonData = await getData("pokemon", intersection, "id");
-		// speciesData = await getData("pokemonSpecies", intersection, "id");
 		if (locale !== "en") {
 			const unresolvedPokemons = getData("pokemon", intersection, "id");
 			const unresolvedSpeciesData = getData(
@@ -213,11 +203,6 @@ const PokemonsServer = async function PokemonsServer({
 		const statToFetch = statResponse.results.map((data) => data.url);
 		stats = await getData("stat", statToFetch, "name");
 
-		console.timeEnd("table data");
-
-		// try getting the table data and column data here, see if it's faster?
-
-		// maybe instead of getting all the data, we fetch only the first xx data and then fetch data on the client side in PokemonTable(use pagination hook from react query)
 
 		// get table data
 		const pokemonTableData: PokemonTableData = intersection.map((id) => {
@@ -301,34 +286,12 @@ const PokemonsServer = async function PokemonsServer({
 			return pre;
 		}, {});
 
-		console.log('server renders')
-
 		content = (
 			<PokemonTable data={pokemonTableData} columnHeaders={columnHeaders} />
 		);
 	}
 
-	// if (sort !== 'numberAsc') {
-	// 	// the data fetching should prolong the loading content display time, why it instead affect the unresponsiveness of url change??????
-	// 	await new Promise(res => setTimeout(() => res('success'), 10000));
-	// 	const responses = await Promise.all([...Array(1000).keys()].map(num => fetch(`https://pokeapi.co/api/v2/pokemon/${num + 1}`)));
-	// 	const datas = responses.map(res => res.json());
-
-	// 	const data = await Promise.all(datas);
-
-	// };
-
-	// notice that pokemons2 --> pokemons2?xxxx will be slow, but pokemons2?xxx --> pokemons2?xxx will be fast, why>?
-
-	// console.timeEnd("pokemonsServer");
-
 	return <>{content}</>;
 };
 
 export default PokemonsServer;
-
-
-// https://gamewith.jp/pokemon-sv/article/show/373727
-// image fade in effect, map
-//https://pokemongo-raku.com/post43649
-//navbard fade down effect

@@ -1,9 +1,9 @@
-import { memo } from "react";
-import type { SelectedTypes } from "@/slices/search-slice";
+import { memo, useCallback } from "react";
 import FilterGeneration from "./filter-generation";
 import FilterTypes from "./filter-types";
-import { CachedGeneration, CachedType } from "@/slices/pokemon-data-slice";
 import { useTranslation } from "react-i18next";
+import type { CachedGeneration, CachedType, SelectedTypes } from "@/lib/definitions";
+import { Button } from "@mui/material";
 
 type AdvancedSearchProps = {
 	setSearchQuery: React.Dispatch<React.SetStateAction<string>>,
@@ -15,7 +15,6 @@ type AdvancedSearchProps = {
 	typeMatch: string,
 	generations: CachedGeneration,
 	types: CachedType,
-	isAdvancedShown: boolean
 };
 
 const AdvancedSearch = memo<AdvancedSearchProps>(function AdvancedSearch({
@@ -28,17 +27,15 @@ const AdvancedSearch = memo<AdvancedSearchProps>(function AdvancedSearch({
 	typeMatch,
 	generations,
 	types,
-	isAdvancedShown
 }) {
-	const {t} = useTranslation();
-	const handleReset = () => {
+	const handleReset = useCallback(() => {
 		// if no state update needed, return the same state to prevent re-render.
 		setSelectedTypes(st => !st.length ? st : []);
 		setSelectedGenerations(sg => !sg.length ? sg : []);
 		setSearchQuery('');
-	};
+	}, [setSelectedTypes, setSelectedGenerations, setSearchQuery])
 	return (
-		<div className={`advancedSearchContent ${!isAdvancedShown ? 'hide' : ''}`}>
+		<div>
 			<div className="container m-0 row justify-content-center">
 				<FilterGeneration
 					selectedGenerations={selectedGenerations}
@@ -52,14 +49,27 @@ const AdvancedSearch = memo<AdvancedSearchProps>(function AdvancedSearch({
 					typeMatch={typeMatch}
 					types={types}
 				/>
-				<button
-					onClick={handleReset}
-					type="button"
-					className="btn btn-md resetBtn bg-danger"
-				>{t('reset')}
-				</button>
+				<ResetBtn onClick={handleReset} />
 			</div>
 		</div>
 	)
 });
 export default AdvancedSearch;
+
+type ResetBtnProps = {
+	onClick: () => void
+};
+
+const ResetBtn = memo(function ResetBtn({ onClick }: ResetBtnProps) {
+	const { t } = useTranslation();
+
+	return (
+		<Button
+			onClick={onClick}
+			variant="contained"
+			color="error"
+			className=" resetBtn"
+		>{t('reset')}
+		</Button>
+	)
+})

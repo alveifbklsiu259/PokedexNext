@@ -36,7 +36,6 @@ export const RelatedPokemonSkeleton = ({
 
 export const PokemonsSkeleton = () => {
 	const arr = [...Array(24).keys()].map((num) => num + 1);
-	console.log("pokemons skeleton shows");
 	return (
 		<div className="container">
 			<div className="row g-5">
@@ -278,17 +277,11 @@ export const SortSkeleton = ({ t }: SortSkeletonProps) => {
 
 export const VarietiesSkeleton = () => {
 	return (
-		// <Skeleton
-		// 	variant="rectangular"
-		// 	height={42}
-		// 	width="100%"
-		// 	className="marginWithVarieties"
-		// />
-		<div className="marginWithVarieties" style={{height: '66px'}}></div>
+		<div className="marginWithVarieties" style={{ height: '66px' }}></div>
 	);
 };
 
-export const VarietyNameSkeleton = ({index}: {index: number}) => {
+export const VarietyNameSkeleton = ({ index }: { index: number }) => {
 	return (
 		<li className={index === 0 ? "active" : ""}>
 			<button disabled={true} className="text-capitalize">
@@ -297,10 +290,3 @@ export const VarietyNameSkeleton = ({index}: {index: number}) => {
 		</li>
 	);
 };
-
-// The HTML of skeleton is pretty duplicated, maybe create skeleton using HOC?
-
-// what happen if the fallback component for a SSR Suspense is a client component? what if it uses state, Effect, does it rendered on the server?
-
-// what is styled-jsx
-//https://github.com/vercel/styled-jsx

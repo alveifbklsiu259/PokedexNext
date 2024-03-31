@@ -6,11 +6,12 @@ import type {
 	CachedAllPokemonNamesAndIds,
 	CachedGeneration,
 	CachedType,
-} from "@/slices/pokemon-data-slice";
+} from "@/lib/definitions";
 import FormBtn from "./form-btn";
 import AdvancedSearch from "./advanced-search";
 import Input from "./input";
 import { MemoImage } from "../memos";
+import { Accordion, AccordionDetails, AccordionSummary, Button, Typography } from "@mui/material";
 
 type SearchProps = {
 	onCloseModal?: () => void;
@@ -26,7 +27,6 @@ const Search = memo(function Search({
 	namesAndIds,
 	onCloseModal
 }: SearchProps) {
-	const [isAdvancedShown, setIsAdvancedShown] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedGenerations, setSelectedGenerations] = useState<string[]>([]);
 	const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
@@ -34,10 +34,6 @@ const Search = memo(function Search({
 	const formRef = useRef<HTMLFormElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { t } = useTranslation();
-
-	const handleShowAdvanced = () => {
-		setIsAdvancedShown(!isAdvancedShown);
-	};
 
 	// auto focus when modal is opened.
 	useLayoutEffect(() => {
@@ -68,34 +64,48 @@ const Search = memo(function Search({
 					ref={inputRef}
 					namesAndIds={namesAndIds}
 				/>
-				<div className="advancedSearch text-center mt-3">
-					<span className="showAdvanced" onClick={() => handleShowAdvanced()}>
-						{t('advancedSearch')}
-						{MemoAiOutlineCaretDown}
-					</span>
-					<AdvancedSearch
-						setSearchQuery={setSearchQuery}
-						selectedTypes={selectedTypes}
-						setSelectedTypes={setSelectedTypes}
-						selectedGenerations={selectedGenerations}
-						setSelectedGenerations={setSelectedGenerations}
-						setTypeMatch={setTypeMatch}
-						typeMatch={typeMatch}
-						generations={generations}
-						types={types}
-						isAdvancedShown={isAdvancedShown}
-					/>
-				</div>
+				<Accordion className="advancedSearch mt-3 text-center" sx={{
+					backgroundColor: 'transparent', "&.MuiAccordion-root": {
+						boxShadow: 'none',
+					}, "&::before": {
+						display: 'none'
+					}, "& .MuiAccordionSummary-content": {
+						justifyContent: 'center'
+					}
+				}}>
+					<AccordionSummary
+						expandIcon={MemoAiOutlineCaretDown}
+						aria-controls="panel-content"
+						id="panel-header"
+						sx={{ minHeight: 'unset', height: '30px', '&.Mui-expanded': { minHeight: 'unset' } }}
+					>
+						<Typography>{t('advancedSearch')}</Typography>
+					</AccordionSummary>
+					<AccordionDetails>
+						<AdvancedSearch
+							setSearchQuery={setSearchQuery}
+							selectedTypes={selectedTypes}
+							setSelectedTypes={setSelectedTypes}
+							selectedGenerations={selectedGenerations}
+							setSelectedGenerations={setSelectedGenerations}
+							setTypeMatch={setTypeMatch}
+							typeMatch={typeMatch}
+							generations={generations}
+							types={types}
+						/>
+					</AccordionDetails>
+				</Accordion>
 				{/* FormBtn uses searchParams */}
 				<Suspense
 					fallback={
-						<button
-							disabled
-							className="btn btn-primary btn-lg btn-block w-100 my-3"
+						<Button
+							variant="contained"
 							type="submit"
+							disabled
+							className="w-100 my-3"
 						>
 							{t('search')}
-						</button>
+						</Button>
 					}
 				>
 					<FormBtn
@@ -114,13 +124,6 @@ const Search = memo(function Search({
 			</form>
 		</div>
 	);
-}, (prevProps: Readonly<SearchProps>, nextProps: Readonly<SearchProps>) => {
-	// This component is rendered by a statically server-rendered route, the props passed to it should always be the same, but I don't know why the props change on every navigation.
-	// Is it because of this? "Props passed from the Server to Client Components need to be serializable by React."
-	// ref: https://react-cn.github.io/react/tips/self-closing-tag.html
-	
-	// another approach would be passing serialized data down using JSON.stringify*(data)
-	return true;
 });
 
 export default Search;

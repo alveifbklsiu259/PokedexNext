@@ -1,6 +1,6 @@
 import { forwardRef, memo, useCallback } from "react";
 import Image from "next/image";
-import { CachedAllPokemonNamesAndIds } from "@/slices/pokemon-data-slice";
+import { CachedAllPokemonNamesAndIds } from "@/lib/definitions";
 
 const colorMatching = (pokemonName: string, searchQuery: string | number) => {
 	const lowerCaseSearchParam = String(searchQuery).toLowerCase();
@@ -123,20 +123,16 @@ const ListItem = memo<ListItemProps>(function ListItem({
 	return (
 		<div
 			className={`${isHovered ? 'datalist_hover' : ''} ${isActive ? 'datalist_active' : ''}`}
-			onMouseOver={() => {onMouseOver(pokemon)}}
+			onMouseOver={() => { onMouseOver(pokemon) }}
 			onMouseLeave={onMouseLeave}
-			onClick={() => {onClick(pokemon)}}
+			onClick={() => { onClick(pokemon) }}
 			// for mobile device
-			onTouchMove={() => {onMouseOver(pokemon)}}
+			onTouchMove={() => { onMouseOver(pokemon) }}
 			onTouchEnd={(e) => onTouchEnd(e, pokemon, isHovered)}
 			key={pokemon}
 		>
 			<span>{colorMatching(pokemon, searchQuery)}</span>
-			<Image width='96' height='96' src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${namesAndIds[pokemon]}.png`} alt={pokemon}/>
+			<Image width='96' height='96' src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${namesAndIds[pokemon]}.png`} alt={pokemon} />
 		</div>
 	)
 });
-
-
-// can I SSG this component?
-// maybe not, since we use ref and scrollTop

@@ -1,8 +1,8 @@
-import { useRef, useState, useMemo, memo, useCallback, forwardRef} from "react";
+import { useRef, useState, useMemo, memo, useCallback, forwardRef } from "react";
 import { flushSync } from "react-dom";
 import { FaXmark } from 'react-icons/fa6'
 import DataList from './data-list';
-import { CachedAllPokemonNamesAndIds } from "@/slices/pokemon-data-slice";
+import { CachedAllPokemonNamesAndIds } from "@/lib/definitions";
 
 type InputProps = {
 	searchQuery: string,
@@ -10,12 +10,12 @@ type InputProps = {
 	namesAndIds: CachedAllPokemonNamesAndIds
 };
 
-const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndIds}: InputProps, forwardedInputRef: React.ForwardedRef<HTMLInputElement> | undefined) {
+const Input = forwardRef(function Input({ searchQuery, setSearchQuery, namesAndIds }: InputProps, forwardedInputRef: React.ForwardedRef<HTMLInputElement> | undefined) {
 	const [isDataListShown, setIsDataListShown] = useState(false);
 	const [hoveredPokemon, setHoveredPokemon] = useState('');
 	const [currentFocus, setCurrentFocus] = useState(-1);
 	const datalistRef = useRef<HTMLDivElement>(null);
-	
+
 	// there's no inputRef passed down from ErrorPage.js
 	const inputRefForErrorPage = useRef<HTMLInputElement>(null);
 	// we'll not use ref callback in our component
@@ -23,8 +23,8 @@ const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndId
 
 	const matchList = useMemo(() => {
 		const match = Object.keys(namesAndIds).filter(name => name.toLowerCase().includes(searchQuery.toLowerCase()));
-		const sortedByStart = match.filter(name => name.startsWith(searchQuery)).sort((a,b) => a.localeCompare(b));
-		const remainder = match.filter(name => !sortedByStart.includes(name)).sort((a,b) => a.localeCompare(b));
+		const sortedByStart = match.filter(name => name.startsWith(searchQuery)).sort((a, b) => a.localeCompare(b));
+		const remainder = match.filter(name => !sortedByStart.includes(name)).sort((a, b) => a.localeCompare(b));
 		return searchQuery !== '' ? sortedByStart.concat(remainder) : [];
 	}, [namesAndIds, searchQuery]);
 
@@ -58,14 +58,6 @@ const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndId
 		resetFocus(datalistRef.current!);
 	};
 
-	const handleClearInput = useCallback(() => {
-		flushSync(() => {setSearchQuery('')});
-		resetFocus(datalistRef.current!);
-		// for mobile
-		setHoveredPokemon('');
-		inputRef.current!.focus();
-	}, [resetFocus, datalistRef, inputRef])
-
 	const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
 		const datalist = datalistRef.current!;
 		const focusName = (datalist: HTMLDivElement, nextFocus: number) => {
@@ -75,7 +67,7 @@ const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndId
 		};
 
 		switch (e.key) {
-			case 'ArrowDown' : {
+			case 'ArrowDown': {
 				e.preventDefault();
 				if (matchList.length) {
 					let nextFocus;
@@ -88,7 +80,7 @@ const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndId
 				};
 				break;
 			}
-			case 'ArrowUp' : {
+			case 'ArrowUp': {
 				e.preventDefault();
 				if (matchList.length) {
 					let nextFocus;
@@ -101,7 +93,7 @@ const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndId
 				};
 				break;
 			}
-			case 'Enter' : {
+			case 'Enter': {
 				if (currentFocus > -1) {
 					e.preventDefault();
 					(datalist.children[currentFocus] as HTMLElement).click();
@@ -109,13 +101,13 @@ const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndId
 				setIsDataListShown(false);
 				break;
 			}
-			case 'Escape' : {
+			case 'Escape': {
 				setIsDataListShown(false);
 				setSearchQuery('');
 				resetFocus(datalist);
 				break;
 			}
-			default : 
+			default:
 			// most of the input changes are handled by handleInput
 		};
 	}, [currentFocus, setSearchQuery, matchList.length, resetFocus]);
@@ -128,7 +120,6 @@ const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndId
 					autoComplete='off'
 					id="searchInput"
 					type="search"
-					//https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/search  check if we can rewrite datalist
 					className={`form-control form-control-lg ${isDataListShown && matchList.length ? 'showDatalist' : ''}`}
 					value={searchQuery}
 					onFocus={handleFocus}
@@ -136,7 +127,6 @@ const Input = forwardRef(function Input({searchQuery, setSearchQuery, namesAndId
 					onInput={handleInput}
 					onKeyDown={handleKeyDown}
 				/>
-				{/* <ClearBtn onClick={handleClearInput} hasText={!!searchQuery} /> */}
 			</div>
 			<DataList
 				matchList={matchList}
@@ -162,6 +152,6 @@ type ClearBtnProps = {
 	onClick: () => void
 }
 
-const ClearBtn = memo(function ClearBtn({hasText, onClick}: ClearBtnProps) {
+const ClearBtn = memo(function ClearBtn({ hasText, onClick }: ClearBtnProps) {
 	return <FaXmark className={`xmark ${!hasText ? 'd-none' : ''}`} onClick={onClick}></FaXmark>
 })

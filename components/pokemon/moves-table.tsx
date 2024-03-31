@@ -3,7 +3,7 @@ import { memo, useState, useMemo } from "react";
 import DataTable, { type TableColumn, type ExpanderComponentProps } from "react-data-table-component";
 import { Switch, Stack, Typography, capitalize } from "@mui/material";
 import { type Locale } from "@/i18nConfig";
-import { getTextByLanguage } from "@/lib/util";
+import { getTextByLocale } from "@/lib/util";
 import type { ColData, MovesData } from "./moves-client";
 import { useTranslation } from "react-i18next";
 
@@ -14,9 +14,9 @@ interface MoveEffectProps extends ExpanderComponentProps<MovesData> {
 	locale?: Locale
 }
 
-const MoveEffect: React.FC<MoveEffectProps> = ({data, previousSelectedVersion, locale}) => {
-	const effect = getTextByLanguage(locale as NonNullable<typeof locale>, data.effect, 'effect');
-	const flavorText = getTextByLanguage(locale as NonNullable<typeof locale>, data.flavorText, 'flavor_text', previousSelectedVersion);
+const MoveEffect: React.FC<MoveEffectProps> = ({ data, previousSelectedVersion, locale }) => {
+	const effect = getTextByLocale(locale as NonNullable<typeof locale>, data.effect, 'effect');
+	const flavorText = getTextByLocale(locale as NonNullable<typeof locale>, data.flavorText, 'flavor_text', previousSelectedVersion);
 
 	return (
 		<div className="moveDes">
@@ -43,12 +43,12 @@ type FilterButtonProps = {
 	changefilteredMethod: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>,
 };
 
-const FilterButton = memo(function FilterButton({isDataReady, changefilteredMethod}: FilterButtonProps) {
-	const {t} = useTranslation('pokemon');
+const FilterButton = memo(function FilterButton({ isDataReady, changefilteredMethod }: FilterButtonProps) {
+	const { t } = useTranslation('pokemon');
 	return (
 		<Stack direction="row" spacing={1} alignItems="center">
 			<Typography>{t('level')}</Typography>
-				<Switch disabled={!isDataReady} onChange={changefilteredMethod}/>
+			<Switch disabled={!isDataReady} onChange={changefilteredMethod} />
 			<Typography>{t('machine')}</Typography>
 		</Stack>
 	)
@@ -61,19 +61,19 @@ type MovesTableProps = {
 	changefilteredMethod: (e: React.ChangeEvent<HTMLInputElement>) => Promise<void>,
 	filteredMethod: "machine" | "level-up",
 	isDataReady: boolean,
-    locale: Locale
+	locale: Locale
 }
 
-export default function MovesTable({columnData, movesData, selectedVersion, changefilteredMethod, filteredMethod, isDataReady, locale}: MovesTableProps) {
+export default function MovesTable({ columnData, movesData, selectedVersion, changefilteredMethod, filteredMethod, isDataReady, locale }: MovesTableProps) {
 	const [previousData, setPreviousData] = useState(movesData);
 	const [previousSelectedVersion, setPreviousSelectedVersion] = useState(selectedVersion);
 
 	const cachedFilterButton = useMemo(() => <FilterButton isDataReady={isDataReady} changefilteredMethod={changefilteredMethod} />, [isDataReady, changefilteredMethod]);
 
-	const expandableRowsComponentProps = useMemo(()=> ({previousSelectedVersion, locale}), [previousSelectedVersion, locale]);
+	const expandableRowsComponentProps = useMemo(() => ({ previousSelectedVersion, locale }), [previousSelectedVersion, locale]);
 
 	// if the current data is the same as the previous one, use the previous one to prevent re-render. (caching movesData would probably not work for this since selectedGeneration/selectedVersion changes so often), also use the previous selected version(selected verion is only used for move descriptions which don't change often even between different generation).
-	
+
 	if (getSerializedIds(previousData) !== getSerializedIds(movesData)) {
 		setPreviousData(movesData);
 		setPreviousSelectedVersion(selectedVersion);
@@ -116,6 +116,5 @@ export function DataTableSkeleton() {
 		/>
 	)
 }
-
 
 // there's some TS problem with expandableRowsComponent, reference: https://react-data-table-component.netlify.app/?path=/docs/expandable-basic--basic#typescript

@@ -7,7 +7,7 @@ type ModalProps = {
 	setIsDetail?: React.Dispatch<React.SetStateAction<boolean>>
 };
 
-export default function Modal({customClass, isModalShown, setIsModalShown, setIsDetail, children}: PropsWithChildren<ModalProps>) {
+export default function Modal({ customClass, isModalShown, setIsModalShown, setIsDetail, children }: PropsWithChildren<ModalProps>) {
 	const handleCloseModal = useCallback(() => {
 		setIsModalShown(false);
 		if (setIsDetail) {
