@@ -78,15 +78,7 @@ export function getAbilitiesToDisplay(pokemonData: Pokemon.Root | Pokemon.Root[]
 	];
 };
 
-export const getAbilities = async (pokemonData: Pokemon.Root | Pokemon.Root[], cachedAbilities: CachedAbility) => {
-	const abilitiesToDisplay = getAbilitiesToDisplay(pokemonData);
-	const abilitiesToFetch = getDataToFetch(cachedAbilities, abilitiesToDisplay).map(ability => transformToDash(ability));
-	if (abilitiesToFetch.length) {
-		return await getData('ability', abilitiesToFetch, 'name');
-	};
-};
-
-export const getAbilities2 = async (pokemonData: Pokemon.Root | Pokemon.Root[]) => {
+export const getAbilities = async (pokemonData: Pokemon.Root | Pokemon.Root[]) => {
 	const abilitiesToDisplay = getAbilitiesToDisplay(pokemonData);
 	return await getData('ability', abilitiesToDisplay.map(ability => transformToDash(ability)), 'name');
 };
@@ -171,32 +163,6 @@ export const sortPokemons = (allPokemons: CachedPokemon, sortOption: SortOption,
 			return sortPokemonsByStat(stat);
 		};
 	};
-};
-
-
-
-export const getPokemons2 = async (cachedPokemons: CachedPokemon, allPokemonNamesAndIds: CachedAllPokemonNamesAndIds, request: number[], sortOption: SortOption) => {
-
-	let sortedRequest: number[],
-		fetchedPokemons: GetReturnedDataType<'pokemon', []> | undefined,
-		pokemonsToDisplay: number[],
-		allPokemons = { ...cachedPokemons };
-	const isSortByNameOrId = (sortOption.includes('number') || sortOption.includes('name'));
-	// when sort by options other than number or name, it requires all the pokemon data in intersection to make some comparison.
-	if (!isSortByNameOrId) {
-		const pokemonsToFetch = getDataToFetch(cachedPokemons, request);
-		fetchedPokemons = await getData('pokemon', pokemonsToFetch, 'id');
-		allPokemons = { ...fetchedPokemons, ...cachedPokemons };
-	};
-
-	sortedRequest = sortPokemons(allPokemons, sortOption, allPokemonNamesAndIds, request).slice();
-	pokemonsToDisplay = sortedRequest.slice().splice(0, 24);
-
-	if (isSortByNameOrId) {
-		const pokemonsToFetch = getDataToFetch(allPokemons, pokemonsToDisplay);
-		fetchedPokemons = await getData('pokemon', pokemonsToFetch, 'id');
-	};
-	return { fetchedPokemons, sortedRequest };
 };
 
 export const getEvolutionChains = async (chainId: number) => {

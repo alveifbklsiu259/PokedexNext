@@ -26,7 +26,7 @@ type NameEntries = {
 } | undefined
 
 type GetNameByLanguage = {
-	(defaultName: string, language: Locale, entries: NameEntries | undefined): string
+	(defaultName: string, language: Locale, entries?: NameEntries): string
 }
 export const getNameByLanguage: GetNameByLanguage = (defaultName, language, entries) => {
 	if (!entries) {
@@ -37,7 +37,7 @@ export const getNameByLanguage: GetNameByLanguage = (defaultName, language, entr
 	};
 };
 
-export const getFormName = (speciesData: PokemonSpecies.Root | undefined, language: Locale, pokemonData: Pokemon.Root, formData: PokemonForm.Root | undefined) => {
+export const getFormName = (speciesData: PokemonSpecies.Root | undefined, language: Locale, pokemonData: Pokemon.Root, formData?: PokemonForm.Root) => {
 	let pokemonName = getNameByLanguage(pokemonData.name, language, speciesData);
 	let formName: string;
 
@@ -127,21 +127,6 @@ export const updateSearchParam = (searchParams: ReadonlyURLSearchParams, newPara
 	};
 	return params.toString();
 };
-
-export const updateSearchParam2 = (newParams: {
-	[key: string]: string
-}): string => {
-
-	let newSearchParams: string = '';
-	Object.keys(newParams).forEach(params => {
-		if (newParams[params] !== '') {
-			newSearchParams += `${params}=${newParams[params]}`;
-		};
-	});
-
-	return newSearchParams;
-};
-
 
 function getArrFromParam(searchParam: string | string[] | undefined): string[] {
 	if (!searchParam) {
