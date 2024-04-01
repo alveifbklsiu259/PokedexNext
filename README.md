@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next.js Pokedex APP
+A pokedex APP that is built on [PokéAPI](https://pokeapi.co/docs/v2) using Next.js.
 
-## Getting Started
 
-First, run the development server:
+## Features
+- SSG, SSR, route transition.
+- Search Pokemon through type, generation, id or name.
+- Sort Pokemon through multiple ways.
+- Support multiple languages.
+- Displayed as table or cards.
+- Rich information, including evolution chains, moves...
+- Infinite scroll.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech Stack
+- [React](https://react.dev/)
+- [Next.js](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Material UI](https://mui.com/material-ui/)
+- [React Data Table Component](https://react-data-table-component.netlify.app/?path=/story/getting-started-intro--page)
+- [React-i18next](https://react.i18next.com/)
+- [Jest](https://jestjs.io/)
+- [Bootstrap](https://getbootstrap.com/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Installation
+1. Clone the repo: `git clone https://github.com/alveifbklsiu259/PokedexNext.git`  
+2. Change directory: `cd PokedexNext`  
+3. Install dependencies: `npm install`  
+4. Start dev mode: `npm run dev`  
+5. Build: `npm run build`  
+6. Start production mode: `npm start`  
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Demonstration
+live demo: [https://react-pokedex-app-murex.vercel.app/](https://react-pokedex-app-murex.vercel.app/)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Image credits
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+[https://freepngimg.com/png/37466-pokeball-image](https://freepngimg.com/png/37466-pokeball-image)  
+[https://en.wikipedia.org/wiki/File:Pok%C3%A9_Ball_icon.svg](https://en.wikipedia.org/wiki/File:Pok%C3%A9_Ball_icon.svg)  
+**License: Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**
