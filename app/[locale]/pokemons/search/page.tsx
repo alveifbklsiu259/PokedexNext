@@ -3,9 +3,6 @@ import PokemonsServer from "@/components/pokemons/pokemons-server";
 import { PokemonsSkeleton } from "@/components/skeletons";
 import { Locale } from "@/i18nConfig";
 
-export const revalidate = 0;
-export const dynamic = 'force-dynamic';
-export const runtime = 'edge';
 type PageProps = {
 	params: {
 		locale: Locale;

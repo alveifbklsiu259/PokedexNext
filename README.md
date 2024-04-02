@@ -1,9 +1,14 @@
 # Next.js Pokedex APP
 A pokedex APP that is built on [PokéAPI](https://pokeapi.co/docs/v2) using Next.js.
 
+## Note: 
+Vercel does imposes some limits when using their platform. 
+- If you ran into any error when viewing the live demo provided below, **I strongly recommend taht you build the project on your own machine.**
+
+- In the codebase, Promise.allsettled was used as a workaround for deployment error on Vercel.
 
 ## Features
-- SSG, SSR, route transition.
+- SSG, SSR, route transition, Suspense.
 - Search Pokemon through type, generation, id or name.
 - Sort Pokemon through multiple ways.
 - Support multiple languages.
@@ -30,7 +35,7 @@ A pokedex APP that is built on [PokéAPI](https://pokeapi.co/docs/v2) using Next
 6. Start production mode: `npm start`  
 
 ## Demonstration
-live demo: [https://react-pokedex-app-murex.vercel.app/](https://react-pokedex-app-murex.vercel.app/)
+live demo: https://pokedex-next-zeta-sand.vercel.app/en/pokemons
 
 ## Image credits
 
