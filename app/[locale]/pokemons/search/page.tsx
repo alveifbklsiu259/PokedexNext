@@ -3,6 +3,8 @@ import PokemonsServer from "@/components/pokemons/pokemons-server";
 import { PokemonsSkeleton } from "@/components/skeletons";
 import { Locale } from "@/i18nConfig";
 
+export const revalidate = 0;
+
 type PageProps = {
 	params: {
 		locale: Locale;
