@@ -4,6 +4,7 @@ import { PokemonsSkeleton } from "@/components/skeletons";
 import { Locale } from "@/i18nConfig";
 
 export const revalidate = 0;
+export const dynamic = 'force-dynamic'
 
 type PageProps = {
 	params: {
