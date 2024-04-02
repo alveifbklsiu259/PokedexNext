@@ -17,6 +17,10 @@ type CachedData = CachedEntries[keyof CachedEntries];
 
 export const getDataToFetch = <T extends string | number>(cachedData: CachedData, dataToDisplay: T[]): T[] => dataToDisplay.filter(data => !cachedData[data]);
 
+const isFulfilled = <T,>(response: PromiseSettledResult<T>): response is PromiseFulfilledResult<T> => {
+	return response.status === 'fulfilled'
+};
+
 // CachedEvolutionChain and CachedEvolutionChain[number] is the modified version, not the original response from the API.
 type PokemonDataResponseType = {
 	[K in keyof PokemonDataTypes]: K extends 'evolutionChain' ? { [chainId: string | number]: EvolutionChainResponse.Root } : PokemonDataTypes[K]
@@ -46,8 +50,8 @@ export async function getData(dataType: EndPointRequest, dataToFetch: (number | 
 		};
 	};
 
-	const dataResponses = await Promise.all(request.map(entry => fetch(`${BASE_URL}/${toEndPointString(dataType)}/${entry}`, { cache: 'force-cache' })));
-	const finalData: Array<GetReturnedDataType<EndPointRequest, undefined>> = await Promise.all(dataResponses.map(response => response.json()));
+	const dataResponses = await Promise.allSettled(request.map(entry => fetch(`${BASE_URL}/${toEndPointString(dataType)}/${entry}`, { cache: 'force-cache' })));
+	const finalData: Array<GetReturnedDataType<EndPointRequest, undefined>> = await Promise.all(dataResponses.filter(isFulfilled).map(response => response.value.json()));
 
 	if (resultKey) {
 		const returnedData: GetReturnedDataType<EndPointRequest, []> = {};
